@@ -36,6 +36,10 @@ site/
   streams/
     index.md        # Streams list (UA)
     001.md          # Stream 001 summary page (UA)
+  speakers.md       # Hall of Speakers index (UA)
+  speakers/
+    oleh-levchenko.md          # Speaker profile (UA)
+    oleksandr-blazheiko.md
   wiki/             # Community wiki (UA)
     mission.md
     values.md
@@ -46,9 +50,16 @@ site/
     about.md
     schedule.md
     streams/
+    speakers.md
+    speakers/
     wiki/
   public/
     CNAME           # Custom domain: itfriday.community
+    favicon.png     # Square icon mark (IT circle)
+    logo-dark.png   # Full logo, dark version
+    logo-light.png  # Full logo, light version
+    streams/        # Stream thumbnails: NNN.png
+    speakers/       # Speaker photos: {slug}.jpg (when provided)
   .vitepress/
     config.ts       # Nav, sidebar, i18n config
     dist/           # Built output (do not edit manually)
@@ -73,7 +84,49 @@ site/
 Add a new stream summary page:
 1. Create `streams/NNN.md` (UA) and `en/streams/NNN.md` (EN)
 2. Update `streams/index.md` and `en/streams/index.md` to include the new entry
-3. Content: title, date, guest (if any), key theses, YouTube link, resources mentioned
+3. Copy thumbnail to `public/streams/NNN.png`
+4. Content: thumbnail, date, participants (with profile links), key theses, YouTube link, resources
+
+---
+
+## Hall of Speakers
+
+**`/speakers`** — grid of everyone who has appeared on IT Friday. Social proof + speaker visibility.
+
+### How it works
+
+- `speakers.md` and `en/speakers.md` — index pages with a custom Vue grid (compact cards: avatar + name + role)
+- `speakers/{slug}.md` and `en/speakers/{slug}.md` — individual profile pages
+- Avatars: real photo in `public/speakers/{slug}.jpg` (preferred) or DiceBear placeholder: `https://api.dicebear.com/9.x/pixel-art/svg?seed={slug}`
+
+### Adding a new speaker
+
+1. Add their entry to the `speakers` array in `speakers.md` and `en/speakers.md`
+2. Create `speakers/{slug}.md` (UA) and `en/speakers/{slug}.md` (EN) — copy from an existing profile
+3. If they provided a photo: save to `public/speakers/{slug}.jpg`
+4. Update the stream page(s) where they appeared — link their name to their profile
+
+### Speaker profile slug convention
+
+`firstname-lastname` in Latin, lowercase, hyphenated. Example: `oleksandr-blazheiko`.
+
+### Speaker data to collect (before publishing profile)
+
+Mandatory: full name (UA + EN), title/role (UA + EN), LinkedIn URL, project link (if demoing).
+Optional: company, city/country.
+See full checklist in `streams/CLAUDE.md` → "Guest / Speaker Info".
+
+### Avatars
+
+- Ask the speaker directly — best quality
+- If no photo: DiceBear `pixel-art` style auto-generates a unique avatar from the slug seed
+- To replace placeholder with real photo later: put `{slug}.jpg` in `public/speakers/` and update the `avatar` field in `speakers.md`
+
+### Future ideas (not yet implemented)
+
+- **Gamification** — badges for speakers: "First speaker", "3 appearances", "Most discussed", etc.
+- **Voting** — community votes for best talk after each stream (needs backend or Telegram poll integration)
+- **Data loader** — `speakers.data.ts` VitePress data loader to auto-generate index from speaker markdown files instead of manually maintaining the `speakers` array
 
 ---
 
