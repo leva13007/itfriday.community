@@ -24,6 +24,7 @@ export default defineConfig({
         nav: [
           { text: 'Про нас', link: '/about' },
           { text: 'Стріми', link: '/streams/' },
+          { text: 'Спікери', link: '/speakers' },
           { text: 'Вікі', link: '/wiki/mission' },
           { text: 'Розклад', link: '/schedule' },
         ],
@@ -59,6 +60,7 @@ export default defineConfig({
         nav: [
           { text: 'About', link: '/en/about' },
           { text: 'Streams', link: '/en/streams/' },
+          { text: 'Speakers', link: '/en/speakers' },
           { text: 'Wiki', link: '/en/wiki/mission' },
           { text: 'Schedule', link: '/en/schedule' },
         ],

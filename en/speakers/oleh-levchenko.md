@@ -1,0 +1,31 @@
+---
+title: Oleh Levchenko
+---
+
+# Oleh Levchenko
+
+<img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=oleh-levchenko" alt="Oleh Levchenko" width="120" style="border-radius:12px;margin-bottom:16px" />
+
+**Senior Full Stack JavaScript Developer** · IT Friday Founder  
+The AA · Cardiff, UK
+
+[YouTube @zloyleva](https://youtube.com/@zloyleva) · [itfriday.community](https://itfriday.community)
+
+---
+
+Senior Full Stack JavaScript Developer with 7+ years of experience building scalable web applications with React, Node.js and AWS. Founder of IT Friday and Zengineers.Community — weekly Thursday meetups in Zaporizhzhia, Ukraine (2017–2021). After 2022, moved the format online.
+
+## Topics
+
+React · Node.js · TypeScript · AWS · System Design · IT Career · Community Building
+
+## Appearances on IT Friday
+
+| Stream | Role | Topic | Date |
+|--------|------|-------|------|
+| [#001](/en/streams/001) | Host | Launching Ukrainian IT Community from scratch | 15.05.2026 |
+| [#002](/en/streams/002) | Host | React 19.2: `<Activity />` — deep dive into the new component | 22.05.2026 |
+
+---
+
+← [All speakers](/en/speakers)
