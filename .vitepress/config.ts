@@ -25,8 +25,10 @@ export default defineConfig({
           { text: 'Про нас', link: '/about' },
           { text: 'Стріми', link: '/streams/' },
           { text: 'Спікери', link: '/speakers' },
+          { text: 'Новини', link: '/news/' },
           { text: 'Вікі', link: '/wiki/mission' },
           { text: 'Розклад', link: '/schedule' },
+          { text: 'Issues', link: '/issues' },
         ],
         sidebar: {
           '/wiki/': [
@@ -61,8 +63,10 @@ export default defineConfig({
           { text: 'About', link: '/en/about' },
           { text: 'Streams', link: '/en/streams/' },
           { text: 'Speakers', link: '/en/speakers' },
+          { text: 'News', link: '/en/news/' },
           { text: 'Wiki', link: '/en/wiki/mission' },
           { text: 'Schedule', link: '/en/schedule' },
+          { text: 'Issues', link: '/en/issues' },
         ],
         sidebar: {
           '/en/wiki/': [

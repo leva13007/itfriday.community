@@ -130,6 +130,44 @@ See full checklist in `streams/CLAUDE.md` → "Guest / Speaker Info".
 
 ---
 
+## News Section (`/news`)
+
+**`/news/index.md`** (UA) and **`/en/news/index.md`** (EN) — community news index.
+
+### Adding a news post
+
+1. Create `news/YYYY-MM-DD-slug.md` (UA) and `en/news/YYYY-MM-DD-slug.md` (EN)
+2. Add frontmatter:
+   ```markdown
+   ---
+   title: "..."
+   date: YYYY-MM-DD
+   tags: [community]   # or: [it-news], or both
+   ---
+   ```
+3. Add a link entry at the top of `news/index.md` and `en/news/index.md`
+
+**Tags:**
+- `community` — announcements, pauses, format changes, community events
+- `it-news` — tech news digests tied to a specific stream (#7 format)
+
+Future: a VitePress data loader + Vue component for tag filtering. For now, maintain the list manually.
+
+---
+
+## Issues / Feedback (`/issues`)
+
+**`/issues.md`** (UA) and **`/en/issues.md`** (EN) — explains how to report problems.
+
+Three channels:
+- **Site bugs** → GitHub Issues: `github.com/leva13007/itfriday.community/issues`
+- **Talk inaccuracies** → Telegram chat (content repo is private for now)
+- **Missing promised materials** → Telegram chat with `#матеріали` tag
+
+When the content repo becomes public on GitHub, update `issues.md` to add a direct GitHub link for content issues.
+
+---
+
 ## Deploy
 
 Push to `main` → GitHub Actions runs `pnpm build` → deploys to GitHub Pages → live at itfriday.community within ~1 minute.
