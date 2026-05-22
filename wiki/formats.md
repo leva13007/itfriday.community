@@ -14,6 +14,7 @@
 | 8 | **Code review** — анонімний або з автором | Optional |
 | 9 | **Interview prep** — mock-інтерв'ю, розбір питань, system design | Optional |
 | 10 | **Demo** — showcase проектів, інструментів, стартапів | Required |
+| 11 | **Змагання / Челенджі** — Coding Battles, Debugging Challenge, System Design Arena, AI Hack Nights, QA Bug Hunt *(майбутній напрямок — потребує критичної маси)* | Required |
 
 ## Розклад
 

@@ -14,6 +14,7 @@ Every stream belongs to one of 10 directions.
 | 8 | **Code review** — anonymous or with the author | Optional |
 | 9 | **Interview prep** — mock interviews, question breakdowns, system design | Optional |
 | 10 | **Demo** — community projects, tools, startup showcase | Required |
+| 11 | **Competitions / Challenges** — Coding Battles, Debugging Challenge, System Design Arena, AI Hack Nights, QA Bug Hunt *(future direction — needs critical mass)* | Required |
 
 ## Content plan
 
