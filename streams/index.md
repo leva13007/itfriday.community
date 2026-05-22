@@ -6,5 +6,5 @@
 
 | # | Дата | Тема | Гість | YouTube |
 |---|---|---|---|---|
-| [002](/streams/002) | 22.05.2026 | React 19.2: `<Activity />` + AI Language Teacher | Олександр Блаж | [Дивитись](https://youtube.com/live/R5IXxa1e8K4) |
+| [002](/streams/002) | 22.05.2026 | React 19.2: `<Activity />` + AI Language Teacher | Олександр Блажейко | [Дивитись](https://youtube.com/live/R5IXxa1e8K4) |
 | [001](/streams/001) | 15.05.2026 | Запускаємо українське IT-ком'юніті з нуля | — | [Дивитись](https://youtube.com/live/wht8lf-h9N8) |
