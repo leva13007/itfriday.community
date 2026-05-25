@@ -1,0 +1,1329 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Презентація itvibe-party</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      /* Колірна схема синхронізована з frontend/src/styles.css, тема Rose */
+      :root {
+        --bg-main: #ffffff;
+        --bg-alt: #faf0f3;
+        --text-dark: #2c3440;
+        --text-muted: #5e6977;
+        --primary: #a8627a;
+        --primary-hover: #96516a;
+        --primary-light: rgba(168, 98, 122, 0.1);
+        --primary-medium: rgba(168, 98, 122, 0.22);
+        --accent: #2e7d52;
+        --danger: #b83232;
+        --warning: #b06a10;
+        --info: #2a6a9e;
+        --border: #d8dde6;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+        --code-bg: #1c2130;
+        --code-text: #dce3ec;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #faf0f3;
+        margin: 0;
+        padding: 40px 0;
+        display: grid;
+        gap: 40px;
+        grid-template-columns: 1fr;
+        place-items: center;
+        font-family: "Inter", sans-serif;
+        color: var(--text-dark);
+      }
+
+      /* КОНТЕЙНЕР СЛАЙДА */
+      .slide {
+        width: 1280px;
+        height: 720px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(168, 98, 122, 0.05),
+            rgba(255, 255, 255, 0) 44%
+          ),
+          var(--bg-main);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 50px 70px;
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+
+      .slide::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 8px;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--primary-hover) 100%
+        );
+        z-index: 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin: 0;
+        z-index: 1;
+        font-weight: 700;
+        position: relative;
+      }
+
+      .slide-title {
+        font-size: 44px;
+        margin-bottom: 32px;
+        color: var(--text-dark);
+      }
+      .slide-title span {
+        color: var(--primary);
+      }
+
+      p,
+      li {
+        font-size: 20px;
+        line-height: 1.6;
+        color: var(--text-muted);
+        z-index: 1;
+        position: relative;
+      }
+      strong {
+        color: var(--text-dark);
+        font-weight: 600;
+      }
+
+      .content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        z-index: 1;
+      }
+
+      /* TITLE SLIDE */
+      .title-slide {
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+      }
+      .title-slide h1 {
+        font-size: 88px;
+        color: var(--text-dark);
+        margin-bottom: 16px;
+        letter-spacing: -2px;
+      }
+      .title-slide h1 span {
+        color: var(--primary);
+      }
+      .title-slide .subtitle {
+        font-size: 28px;
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .title-slide .promise {
+        font-size: 22px;
+        color: var(--text-muted);
+        max-width: 760px;
+        margin: 0 auto 36px;
+      }
+      .badge {
+        background: var(--primary-light);
+        color: var(--primary);
+        padding: 10px 22px;
+        border-radius: 100px;
+        font-weight: 600;
+        font-size: 18px;
+        display: inline-block;
+        margin-bottom: 26px;
+        border: 1px solid var(--primary-medium);
+      }
+      .title-cta {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+        padding: 16px 36px;
+        border-radius: 12px;
+        font-size: 20px;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(168, 98, 122, 0.3);
+        display: inline-block;
+      }
+      .url-tag {
+        color: var(--text-muted);
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      /* LAYOUTS */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        width: 100%;
+        align-items: center;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        width: 100%;
+      }
+
+      /* КАРТКИ */
+      .card {
+        background: var(--bg-alt);
+        border: 1px solid var(--border);
+        padding: 32px 28px;
+        border-radius: 20px;
+        position: relative;
+        z-index: 1;
+      }
+      .card .icon {
+        font-size: 40px;
+        color: var(--primary);
+        margin-bottom: 18px;
+      }
+      .card h3 {
+        font-size: 22px;
+        margin-bottom: 12px;
+        color: var(--text-dark);
+      }
+      .card p {
+        font-size: 16px;
+        margin: 0;
+        line-height: 1.55;
+      }
+
+      /* PROBLEM SLIDE */
+      .problem-card {
+        background: var(--bg-main);
+        border: 2px solid var(--border);
+        border-left: 6px solid var(--danger);
+        padding: 28px;
+        border-radius: 16px;
+      }
+      .problem-card .icon {
+        color: var(--danger);
+        font-size: 36px;
+        margin-bottom: 14px;
+      }
+      .problem-card h3 {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      .problem-quote {
+        font-style: italic;
+        color: var(--text-muted);
+        margin-top: 12px;
+        font-size: 15px;
+        border-left: 3px solid var(--primary-light);
+        padding-left: 12px;
+      }
+
+      /* СПИСКИ */
+      .feature-list {
+        list-style: none;
+        padding: 0;
+      }
+      .feature-list li {
+        position: relative;
+        padding-left: 56px;
+        margin-bottom: 22px;
+        font-size: 19px;
+        line-height: 1.5;
+      }
+      .feature-list i {
+        position: absolute;
+        left: 0;
+        top: 2px;
+        color: var(--primary);
+        font-size: 20px;
+        background: var(--primary-light);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+      }
+
+      /* ТАБЛИЦЯ ПОРІВНЯННЯ */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--bg-main);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      th {
+        background: var(--bg-alt);
+        color: var(--text-dark);
+        text-align: left;
+        padding: 16px 18px;
+        font-size: 17px;
+        font-weight: 600;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+        font-size: 16px;
+        color: var(--text-muted);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      .check {
+        color: var(--accent);
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .cross {
+        color: var(--danger);
+        font-size: 20px;
+      }
+      .partial {
+        color: var(--warning);
+        font-size: 20px;
+      }
+
+      /* WORKFLOW */
+      .workflow {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-top: 16px;
+        width: 100%;
+      }
+      .workflow::before {
+        content: "";
+        position: absolute;
+        top: 36px;
+        left: 10%;
+        right: 10%;
+        height: 4px;
+        background: var(--primary-light);
+        z-index: 0;
+        border-radius: 2px;
+      }
+      .step {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        width: 22%;
+      }
+      .step-num {
+        width: 72px;
+        height: 72px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 auto 18px;
+        border: 6px solid var(--bg-main);
+        box-shadow: var(--shadow);
+      }
+      .step h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      .step p {
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      /* LEARNING CYCLE */
+      .learning-cycle {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+        align-items: stretch;
+        width: 100%;
+        position: relative;
+      }
+      .cycle-card {
+        background: var(--bg-alt);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 22px 16px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        box-shadow: var(--shadow);
+      }
+      .cycle-card::after {
+        content: "→";
+        position: absolute;
+        top: 50%;
+        right: -14px;
+        transform: translateY(-50%);
+        color: var(--primary);
+        font-size: 26px;
+        font-weight: 700;
+      }
+      .cycle-card:last-child::after {
+        content: "↺";
+        right: auto;
+        left: 50%;
+        top: calc(100% + 10px);
+        transform: translateX(-50%);
+        font-size: 32px;
+      }
+      .cycle-icon {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 14px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary-light);
+        color: var(--primary);
+        font-size: 22px;
+        border: 1px solid var(--primary-medium);
+      }
+      .cycle-card h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      .cycle-card p {
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 0;
+      }
+      .cycle-note {
+        margin: 40px auto 0;
+        max-width: 900px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 20px;
+        line-height: 1.5;
+      }
+
+      /* SCREENSHOTS */
+      .screenshot-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-alt);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        height: 100%;
+        min-height: 380px;
+      }
+      .screenshot-wrap img {
+        max-width: 100%;
+        max-height: 480px;
+        display: block;
+        border-radius: 12px;
+      }
+      .screenshot-placeholder {
+        color: var(--text-muted);
+        font-size: 14px;
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .screenshot-placeholder i {
+        font-size: 48px;
+        color: var(--primary-medium);
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      /* ARCHITECTURE DIAGRAM */
+      .arch-diagram {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        width: 100%;
+      }
+      .arch-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+      }
+      .arch-node {
+        background: var(--bg-alt);
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        text-align: center;
+        position: relative;
+      }
+      .arch-node.primary {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+      .arch-node.accent {
+        border-color: var(--accent);
+        background: rgba(46, 125, 82, 0.08);
+      }
+      .arch-node.info {
+        border-color: var(--info);
+        background: rgba(42, 106, 158, 0.08);
+      }
+      .arch-node i {
+        font-size: 28px;
+        color: var(--primary);
+        margin-bottom: 8px;
+        display: block;
+      }
+      .arch-node.accent i {
+        color: var(--accent);
+      }
+      .arch-node.info i {
+        color: var(--info);
+      }
+      .arch-node h4 {
+        font-size: 17px;
+        margin-bottom: 6px;
+        color: var(--text-dark);
+      }
+      .arch-node p {
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.4;
+      }
+      .arch-arrow {
+        text-align: center;
+        font-size: 22px;
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      /* PIPELINE */
+      .pipeline {
+        display: flex;
+        align-items: stretch;
+        gap: 12px;
+        width: 100%;
+      }
+      .pipeline-step {
+        flex: 1;
+        background: var(--bg-alt);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px 16px;
+        text-align: center;
+        position: relative;
+      }
+      .pipeline-step::after {
+        content: "▶";
+        position: absolute;
+        top: 50%;
+        right: -12px;
+        transform: translateY(-50%);
+        color: var(--primary);
+        font-size: 14px;
+        background: var(--bg-main);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--primary-medium);
+        z-index: 2;
+      }
+      .pipeline-step:last-child::after {
+        display: none;
+      }
+      .pipeline-step .step-tag {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .pipeline-step h4 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+      .pipeline-step p {
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      /* TECH TAGS */
+      .tech-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .tech-tag {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        padding: 5px 12px;
+        border-radius: 100px;
+        font-size: 13px;
+        color: var(--text-dark);
+        font-weight: 500;
+      }
+
+      /* TEAM */
+      .team-card {
+        background: var(--bg-alt);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        max-width: 540px;
+        margin: 0 auto;
+      }
+      .team-avatar {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        font-weight: 700;
+      }
+      .team-card h3 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+      .team-role {
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+      .team-card p {
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      /* SECURITY METRICS */
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        width: 100%;
+      }
+      .metric-box {
+        background: var(--bg-alt);
+        border: 1px solid var(--border);
+        border-left: 5px solid var(--primary);
+        border-radius: 12px;
+        padding: 18px 22px;
+      }
+      .metric-box h4 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .metric-box h4 i {
+        color: var(--primary);
+      }
+      .metric-box p {
+        font-size: 15px;
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      /* QR PLACEHOLDER */
+      .qr-box {
+        width: 140px;
+        height: 140px;
+        background: white;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 12px;
+        text-align: center;
+        padding: 12px;
+      }
+      .qr-box i {
+        font-size: 60px;
+        color: var(--primary);
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. TITLE -->
+    <div class="slide">
+      <div class="content title-slide">
+        <div class="badge">AI Language Teacher · WebSocket-native</div>
+        <h1>itvibe<span>.party</span></h1>
+        <div class="subtitle">
+          Заговоріть новою мовою за 15 хвилин розмови на день
+        </div>
+        <p class="promise">
+          AI-викладач у реальному часі: голосовий діалог, миттєвий аналіз
+          помилок та персональні уроки зі словника, побудованого з ваших
+          власних розмов.
+        </p>
+        <div class="title-cta">
+          <a class="btn-primary" href="https://itvibe.party"
+            ><i class="fa-solid fa-play"></i> Спробувати демо</a
+          >
+          <span class="url-tag">itvibe.party</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PROBLEM -->
+    <div class="slide">
+      <h2 class="slide-title">
+        Чому існуючі рішення <span>не вчать говорити</span>
+      </h2>
+      <div class="content">
+        <div class="grid-3">
+          <div class="problem-card">
+            <div class="icon"><i class="fa-solid fa-face-frown"></i></div>
+            <h3>Страх говорити</h3>
+            <p>
+              Користувачі знають слова, але паралізовані страхом помилитися
+              перед носієм мови.
+            </p>
+            <div class="problem-quote">
+              «Я вчу англійську 5 років, але не можу сказати й речення вголос»
+            </div>
+          </div>
+          <div class="problem-card">
+            <div class="icon"><i class="fa-solid fa-gamepad"></i></div>
+            <h3>Гейміфікація без навичок</h3>
+            <p>
+              Duolingo та аналоги дають streak і бали, але реальної практики
+              говоріння там немає.
+            </p>
+            <div class="problem-quote">
+              500 днів стріку — і нуль реальних діалогів іноземною
+            </div>
+          </div>
+          <div class="problem-card">
+            <div class="icon"><i class="fa-solid fa-sack-dollar"></i></div>
+            <h3>Дорогі репетитори</h3>
+            <p>
+              Жива година коштує $20–50, потребує розкладу й не масштабується
+              під щоденну практику.
+            </p>
+            <div class="problem-quote">
+              Більшість залишає навчання після 2–3 місяців
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SOLUTION / LEARNING CYCLE -->
+    <div class="slide">
+      <h2 class="slide-title">
+        Розв'язання: <span>навчання від щоденної практики</span>
+      </h2>
+      <div class="content">
+        <div class="learning-cycle">
+          <div class="cycle-card">
+            <div class="cycle-icon"><i class="fa-solid fa-comments"></i></div>
+            <h3>Розмова</h3>
+            <p>Користувач говорить або перекладає реальну ситуацію.</p>
+          </div>
+          <div class="cycle-card">
+            <div class="cycle-icon"><i class="fa-solid fa-brain"></i></div>
+            <h3>AI-аналіз</h3>
+            <p>Система знаходить нові слова, помилки та патерни.</p>
+          </div>
+          <div class="cycle-card">
+            <div class="cycle-icon"><i class="fa-solid fa-book-open"></i></div>
+            <h3>Урок</h3>
+            <p>AI формує пояснення, граматику та домашнє завдання.</p>
+          </div>
+          <div class="cycle-card">
+            <div class="cycle-icon">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <h3>Словник</h3>
+            <p>Лексика стає картками для повторення та вимови.</p>
+          </div>
+          <div class="cycle-card">
+            <div class="cycle-icon">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <h3>Практика з AI</h3>
+            <p>AI закріплює матеріал у нових діалогах.</p>
+          </div>
+        </div>
+        <p class="cycle-note">
+          Кожна розмова повертається в наступну практику — користувач не просто
+          перекладає, а поступово вчиться говорити сам.
+        </p>
+      </div>
+    </div>
+
+    <!-- 4. 4 STEPS -->
+    <div class="slide">
+      <h2 class="slide-title">
+        Почніть говорити за <span>4 прості кроки</span>
+      </h2>
+      <div class="content">
+        <div class="workflow">
+          <div class="step">
+            <div class="step-num">1</div>
+            <h3>Вибір мови</h3>
+            <p>
+              Понад 30 мов. Налаштуйте свій поточний рівень володіння.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <h3>Практика</h3>
+            <p>
+              Живе спілкування з AI-викладачкою Джессікою в реальному часі.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3>Аналіз</h3>
+            <p>AI м'яко виправляє помилки й підлаштовується під ваші знання.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <h3>Прогрес</h3>
+            <p>Персональні уроки й закріплення матеріалу після діалогу.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. CHAT SCREENSHOT -->
+    <div class="slide">
+      <h2 class="slide-title">AI-викладач: <span>розмова в реальному часі</span></h2>
+      <div class="content">
+        <div class="grid-2">
+          <div>
+            <ul class="feature-list">
+              <li>
+                <i class="fa-solid fa-microphone"></i>
+                <strong>Голос або текст:</strong> Streaming-розпізнавання
+                мовлення та озвучення відповідей.
+              </li>
+              <li>
+                <i class="fa-solid fa-bolt"></i>
+                <strong>Низька латентність:</strong> WebSocket-канал, відповідь
+                за &lt;1 с після завершення фрази.
+              </li>
+              <li>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <strong>Адаптивність:</strong> Тон, складність і темп — під ваш
+                рівень CEFR.
+              </li>
+            </ul>
+          </div>
+          <div class="screenshot-wrap">
+            <img
+              src="./screenshots/chat.png"
+              alt="Чат із AI-викладачкою"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+            />
+            <div class="screenshot-placeholder" style="display:none">
+              <i class="fa-solid fa-image"></i>
+              ./screenshots/chat.png
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. DICTIONARY SCREENSHOT -->
+    <div class="slide">
+      <h2 class="slide-title">
+        Словник: <span>лексика з реальних діалогів</span>
+      </h2>
+      <div class="content">
+        <div class="grid-2">
+          <div class="screenshot-wrap">
+            <img
+              src="./screenshots/dictionary.png"
+              alt="Словник користувача"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+            />
+            <div class="screenshot-placeholder" style="display:none">
+              <i class="fa-solid fa-image"></i>
+              ./screenshots/dictionary.png
+            </div>
+          </div>
+          <div>
+            <ul class="feature-list">
+              <li>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <strong>AI-генерація добірок:</strong> тематичні колекції з
+                перекладом, транскрипцією та прикладами.
+              </li>
+              <li>
+                <i class="fa-solid fa-chart-line"></i>
+                <strong>Стани засвоєння:</strong> new → learning → reviewing →
+                mastered з відсотком прогресу.
+              </li>
+              <li>
+                <i class="fa-solid fa-volume-high"></i>
+                <strong>Аудіо та вимова:</strong> запис голосу та AI-оцінка
+                прямо в картці слова.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. LESSON SCREENSHOT -->
+    <div class="slide">
+      <h2 class="slide-title">
+        Уроки: <span>граматика з ваших помилок</span>
+      </h2>
+      <div class="content">
+        <div class="grid-2">
+          <div>
+            <ul class="feature-list">
+              <li>
+                <i class="fa-solid fa-microscope"></i>
+                <strong>З вашого діалогу:</strong> AI бере конкретні помилки та
+                будує навколо них пояснення.
+              </li>
+              <li>
+                <i class="fa-solid fa-list-check"></i>
+                <strong>Інтерактивні вправи:</strong> заповнення, переклад,
+                голосові завдання — все генерується на льоту.
+              </li>
+              <li>
+                <i class="fa-solid fa-rotate"></i>
+                <strong>Spaced repetition:</strong> повторення підлаштовується
+                під ваш рівень засвоєння.
+              </li>
+            </ul>
+          </div>
+          <div class="screenshot-wrap">
+            <img
+              src="./screenshots/lesson.png"
+              alt="Згенерований урок"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+            />
+            <div class="screenshot-placeholder" style="display:none">
+              <i class="fa-solid fa-image"></i>
+              ./screenshots/lesson.png
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. COMPETITORS -->
+    <div class="slide">
+      <h2 class="slide-title">Чому <span>ми</span></h2>
+      <div class="content">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:30%">Функція</th>
+              <th>Google Translate</th>
+              <th>Duolingo</th>
+              <th>ChatGPT</th>
+              <th style="color: var(--primary)">itvibe.party</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Голосова розмова в реал-таймі</strong></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-circle-half-stroke partial"></i></td>
+              <td><i class="fa-solid fa-check check"></i></td>
+            </tr>
+            <tr>
+              <td><strong>Структуроване навчання</strong></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-check check"></i></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-check check"></i></td>
+            </tr>
+            <tr>
+              <td><strong>Адаптивний AI-викладач</strong></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-circle-half-stroke partial"></i></td>
+              <td><i class="fa-solid fa-check check"></i></td>
+            </tr>
+            <tr>
+              <td><strong>Словник із власних діалогів</strong></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-check check"></i></td>
+            </tr>
+            <tr>
+              <td><strong>Уроки з ваших помилок</strong></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td><i class="fa-solid fa-xmark cross"></i></td>
+              <td style="color: var(--primary); font-weight: bold">
+                Унікально
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 9. ARCHITECTURE DIAGRAM -->
+    <div class="slide">
+      <h2 class="slide-title">Архітектура <span>системи</span></h2>
+      <div class="content">
+        <div class="arch-diagram">
+          <div class="arch-row">
+            <div class="arch-node primary">
+              <i class="fa-brands fa-vuejs"></i>
+              <h4>Frontend (Vue 3 PWA)</h4>
+              <p>Pinia · Vue Router · Vite · Service Worker</p>
+            </div>
+          </div>
+          <div class="arch-arrow">⇅ WebSocket + HTTP</div>
+          <div class="arch-row">
+            <div class="arch-node">
+              <i class="fa-solid fa-server"></i>
+              <h4>Backend (uWebSockets.js)</h4>
+              <p>Node.js 20 · TypeScript · ArkType · Pino</p>
+            </div>
+            <div class="arch-node">
+              <i class="fa-solid fa-shield-halved"></i>
+              <h4>Middleware</h4>
+              <p>Auth · Session · Rate limits · Validation</p>
+            </div>
+            <div class="arch-node">
+              <i class="fa-solid fa-cubes"></i>
+              <h4>Shared package</h4>
+              <p>ArkType brands · Schemas · Enums (через workspace:*)</p>
+            </div>
+          </div>
+          <div class="arch-arrow">⇅</div>
+          <div class="arch-row">
+            <div class="arch-node accent">
+              <i class="fa-solid fa-database"></i>
+              <h4>PostgreSQL</h4>
+              <p>Drizzle ORM · pg pool · міграції</p>
+            </div>
+            <div class="arch-node accent">
+              <i class="fa-solid fa-bolt"></i>
+              <h4>Redis</h4>
+              <p>ioredis · sessions · rate-limit · pub/sub</p>
+            </div>
+            <div class="arch-node accent">
+              <i class="fa-solid fa-box-archive"></i>
+              <h4>MinIO</h4>
+              <p>S3-сумісне сховище аудіо й файлів</p>
+            </div>
+            <div class="arch-node info">
+              <i class="fa-solid fa-robot"></i>
+              <h4>LLM Providers</h4>
+              <p>OpenAI · xAI · Mistral · Vercel AI SDK</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. AI / LLM PIPELINE -->
+    <div class="slide">
+      <h2 class="slide-title">AI / LLM <span>pipeline</span></h2>
+      <div class="content">
+        <div class="pipeline">
+          <div class="pipeline-step">
+            <div class="step-tag">1 · Input</div>
+            <h4>Speech / Text</h4>
+            <p>STT-потік або текстове повідомлення в WS-каналі</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-tag">2 · Route</div>
+            <h4>Provider router</h4>
+            <p>Vercel AI SDK обирає OpenAI / xAI / Mistral за задачею</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-tag">3 · Validate</div>
+            <h4>ArkType schema</h4>
+            <p>Структурована відповідь з типобезпечним парсингом</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-tag">4 · Stream</div>
+            <h4>WS chunks → клієнт</h4>
+            <p>Чанковий стрімінг плюс паралельне TTS-озвучення</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-tag">5 · Persist</div>
+            <h4>Drizzle + Redis</h4>
+            <p>Зберігаємо діалог, лексику, помилки для наступних уроків</p>
+          </div>
+        </div>
+        <p
+          style="
+            margin-top: 32px;
+            text-align: center;
+            font-size: 18px;
+            color: var(--text-muted);
+          "
+        >
+          Multi-provider за дизайном: жодного жорсткого vendor-lock, fallback
+          між моделями при rate limit або падінні API.
+        </p>
+      </div>
+    </div>
+
+    <!-- 11. SECURITY / RATE LIMITS -->
+    <div class="slide">
+      <h2 class="slide-title">Надійність та <span>безпека</span></h2>
+      <div class="content">
+        <div class="metric-grid">
+          <div class="metric-box">
+            <h4><i class="fa-solid fa-gauge-high"></i> Rate limits</h4>
+            <p>
+              Per-route ліміти на рівні роутера: захист від abuse та контроль
+              витрат на LLM-провайдерів.
+            </p>
+          </div>
+          <div class="metric-box">
+            <h4><i class="fa-solid fa-circle-check"></i> ArkType validation</h4>
+            <p>
+              Body + query валідовані ArkType-схемами зі строгим режимом, 422
+              на нелегальні ключі.
+            </p>
+          </div>
+          <div class="metric-box">
+            <h4><i class="fa-solid fa-key"></i> Session management</h4>
+            <p>
+              <code>session_web</code> + <code>session_api</code> +
+              <code>auth_guard</code> middleware-ланцюги з Redis-сховищем.
+            </p>
+          </div>
+          <div class="metric-box">
+            <h4>
+              <i class="fa-solid fa-file-shield"></i> Body size limits
+            </h4>
+            <p>
+              Окремі ліміти на JSON / multipart / octet-stream; whitelist
+              <code>allowedContentTypes</code> на роутах.
+            </p>
+          </div>
+          <div class="metric-box">
+            <h4><i class="fa-solid fa-bug"></i> Sentry + Pino</h4>
+            <p>
+              Структуровані логи та централізований error reporting; trace
+              correlation через request-id.
+            </p>
+          </div>
+          <div class="metric-box">
+            <h4>
+              <i class="fa-solid fa-shield"></i> Strict TypeScript
+            </h4>
+            <p>
+              <code>noUncheckedIndexedAccess</code>,
+              <code>exactOptionalPropertyTypes</code>,
+              <code>Result&lt;T, AppError&gt;</code> у сервісах.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. DEVOPS -->
+    <div class="slide">
+      <h2 class="slide-title">DevOps та <span>деплой</span></h2>
+      <div class="content">
+        <div class="grid-2">
+          <ul class="feature-list">
+            <li>
+              <i class="fa-brands fa-docker"></i>
+              <strong>Multi-stage Dockerfile:</strong> build усіх пакетів →
+              міграції → запуск, один образ для прод.
+            </li>
+            <li>
+              <i class="fa-solid fa-cubes-stacked"></i>
+              <strong>Monorepo (pnpm workspaces):</strong> 4 пакети,
+              <code>shared</code> будується першим.
+            </li>
+            <li>
+              <i class="fa-solid fa-database"></i>
+              <strong>Drizzle migrations:</strong>
+              <code>db:generate</code> / <code>db:migrate</code> /
+              <code>db:studio</code> у CI.
+            </li>
+            <li>
+              <i class="fa-solid fa-chart-line"></i>
+              <strong>Observability:</strong> Sentry (frontend + backend) +
+              Pino structured logs.
+            </li>
+          </ul>
+          <div class="card" style="background: var(--bg-main)">
+            <div class="icon" style="color: var(--accent)">
+              <i class="fa-solid fa-code-branch"></i>
+            </div>
+            <h3>Єдина екосистема</h3>
+            <p>
+              Все TypeScript end-to-end: ArkType-схеми зі
+              <code>shared</code> працюють однаково на бекенді й фронтенді —
+              жодних дрейфів типів між клієнтом і сервером.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. TECH STACK -->
+    <div class="slide">
+      <h2 class="slide-title">Технологічний <span>стек</span></h2>
+      <div class="content">
+        <div class="grid-2">
+          <div class="card">
+            <div class="icon"><i class="fa-brands fa-vuejs"></i></div>
+            <h3>Frontend</h3>
+            <p>Vue 3 PWA + Composition API, повна типізація.</p>
+            <div class="tech-tags">
+              <span class="tech-tag">Vue 3</span>
+              <span class="tech-tag">Vite</span>
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">Pinia</span>
+              <span class="tech-tag">Vue Router</span>
+              <span class="tech-tag">Vue I18n</span>
+              <span class="tech-tag">VueUse</span>
+              <span class="tech-tag">WaveSurfer.js</span>
+              <span class="tech-tag">Sentry Vue</span>
+              <span class="tech-tag">Vitest</span>
+              <span class="tech-tag">Playwright</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="icon"><i class="fa-solid fa-server"></i></div>
+            <h3>Backend</h3>
+            <p>Високопродуктивний uWS-сервер на Node.js 20.</p>
+            <div class="tech-tags">
+              <span class="tech-tag">Node.js 20</span>
+              <span class="tech-tag">uWebSockets.js</span>
+              <span class="tech-tag">Drizzle ORM</span>
+              <span class="tech-tag">PostgreSQL</span>
+              <span class="tech-tag">Redis</span>
+              <span class="tech-tag">ArkType</span>
+              <span class="tech-tag">OpenAI</span>
+              <span class="tech-tag">xAI</span>
+              <span class="tech-tag">Mistral</span>
+              <span class="tech-tag">MinIO</span>
+              <span class="tech-tag">Pino</span>
+              <span class="tech-tag">Sentry</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14. TEAM -->
+    <div class="slide">
+      <h2 class="slide-title">Команда</h2>
+      <div class="content">
+        <div class="team-card">
+          <div class="team-avatar">ОБ</div>
+          <h3>Олександр Блажейко</h3>
+          <div class="team-role">Founder · Fullstack TypeScript Developer</div>
+          <p>
+            Solo-розробник проєкту. Від архітектури та інфраструктури до UX,
+            AI-інтеграцій і деплою — увесь стек в одних руках, що дає змогу
+            швидко ітерувати продукт.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15. CTA -->
+    <div class="slide">
+      <div class="content title-slide">
+        <h2
+          style="font-size: 56px; margin-bottom: 20px; color: var(--text-dark)"
+        >
+          Готові <span>спробувати?</span>
+        </h2>
+        <p
+          style="
+            font-size: 22px;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+          "
+        >
+          Відкрийте itvibe.party, оберіть мову та почніть першу розмову з AI
+          вже за 60 секунд. Демо безкоштовно.
+        </p>
+        <div
+          style="
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+          "
+        >
+          <a class="btn-primary" href="https://itvibe.party"
+            ><i class="fa-solid fa-rocket"></i> itvibe.party</a
+          >
+          <div class="qr-box">
+            <i class="fa-solid fa-qrcode"></i>
+            <div>Скануйте для відкриття</div>
+          </div>
+        </div>
+        <p style="margin-top: 32px; font-weight: 600; color: var(--text-muted)">
+          itvibe.party · AI Language Teacher
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
