@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>uWebSockets.js — Презентація</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --slide-w: 100vw;
+    --slide-h: 100vh;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-snap-type: y mandatory; overflow-x: hidden; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: #0a0a0f;
+    color: #f0f0f0;
+  }
+
+  .slide {
+    width: var(--slide-w);
+    min-height: var(--slide-h);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 50px 80px;
+  }
+
+  /* ========== SLIDE 1 — TITLE ========== */
+  .slide-title {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1035 40%, #0d0d1a 100%);
+  }
+  .slide-title::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    animation: pulse-glow 4s ease-in-out infinite alternate;
+  }
+  .slide-title::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%);
+    bottom: -150px; left: -50px;
+    animation: pulse-glow 5s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes pulse-glow {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.3); opacity: 1; }
+  }
+
+  .logo-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .slide-title h1 {
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    line-height: 1.1;
+    position: relative; z-index: 1;
+  }
+  .slide-title .subtitle {
+    font-size: clamp(16px, 2.2vw, 26px);
+    color: #a5a5c0;
+    margin-top: 20px;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    position: relative; z-index: 1;
+  }
+
+  /* ========== SLIDE 2 — WHAT IS IT ========== */
+  .slide-what {
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+  }
+  .slide-what::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(90deg, rgba(99,102,241,0.03) 0px, rgba(99,102,241,0.03) 1px, transparent 1px, transparent 80px),
+      repeating-linear-gradient(0deg, rgba(99,102,241,0.03) 0px, rgba(99,102,241,0.03) 1px, transparent 1px, transparent 80px);
+  }
+  .slide-what h2 {
+    font-size: clamp(32px, 4.5vw, 56px);
+    font-weight: 800;
+    color: #818cf8;
+    margin-bottom: 40px;
+    position: relative; z-index: 1;
+  }
+  .what-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    width: 100%;
+    position: relative; z-index: 1;
+  }
+  .what-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(129,140,248,0.15);
+    border-radius: 16px;
+    padding: 32px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .what-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(129,140,248,0.4);
+  }
+  .what-card .icon { font-size: 36px; margin-bottom: 12px; }
+  .what-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #c4b5fd; }
+  .what-card p { font-size: 15px; line-height: 1.6; color: #94a3b8; }
+
+  /* ========== CODE SLIDES ========== */
+  .slide-code {
+    position: relative;
+  }
+  .slide-code-1 { background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 40%, #0a0f1e 100%); }
+  .slide-code-2 { background: linear-gradient(135deg, #0f0a1e 0%, #1a103a 40%, #0d0a1e 100%); }
+  .slide-code-3 { background: linear-gradient(135deg, #0a1e1e 0%, #0d2a2a 40%, #0a1518 100%); }
+
+  .code-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+  .code-badge.cyan { background: rgba(34,211,238,0.12); color: #22d3ee; border: 1px solid rgba(34,211,238,0.25); }
+  .code-badge.violet { background: rgba(167,139,250,0.12); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+  .code-badge.teal { background: rgba(45,212,191,0.12); color: #2dd4bf; border: 1px solid rgba(45,212,191,0.25); }
+
+  .slide-code h2 {
+    font-size: clamp(26px, 3.8vw, 46px);
+    font-weight: 800;
+    margin-bottom: 28px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .slide-code-1 h2 { color: #22d3ee; }
+  .slide-code-2 h2 { color: #a78bfa; }
+  .slide-code-3 h2 { color: #2dd4bf; }
+
+  .code-block {
+    max-width: 820px;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .code-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+  .code-dot.r { background: #ef4444; }
+  .code-dot.y { background: #eab308; }
+  .code-dot.g { background: #22c55e; }
+  .code-filename {
+    margin-left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .code-body {
+    background: #0d1117;
+    padding: 24px 28px;
+    overflow-x: auto;
+  }
+  .code-body pre {
+    margin: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #c9d1d9;
+    white-space: pre;
+    tab-size: 2;
+  }
+  .code-body .kw   { color: #ff7b72; }
+  .code-body .fn   { color: #d2a8ff; }
+  .code-body .str  { color: #a5d6ff; }
+  .code-body .cmt  { color: #484f58; font-style: italic; }
+  .code-body .num  { color: #79c0ff; }
+  .code-body .obj  { color: #ffa657; }
+  .code-body .mth  { color: #7ee787; }
+  .code-body .par  { color: #c9d1d9; }
+
+  .code-desc {
+    margin-top: 24px;
+    max-width: 700px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #64748b;
+  }
+
+  /* ========== SLIDE — PERFORMANCE ========== */
+  .slide-perf {
+    background: linear-gradient(135deg, #042f2e 0%, #0f172a 50%, #1a0a2e 100%);
+  }
+  .slide-perf h2 {
+    font-size: clamp(28px, 4vw, 50px);
+    font-weight: 800;
+    color: #34d399;
+    margin-bottom: 50px;
+  }
+  .perf-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 800px;
+    width: 100%;
+  }
+  .perf-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .perf-label {
+    width: 160px;
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+  .perf-track {
+    flex: 1;
+    height: 44px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .perf-fill {
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding-left: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    animation: bar-grow 1.5s ease-out forwards;
+    width: 0;
+  }
+  @keyframes bar-grow {
+    to { width: var(--w); }
+  }
+  .perf-fill.uws    { background: linear-gradient(90deg, #10b981, #34d399); --w: 95%; }
+  .perf-fill.bun    { background: linear-gradient(90deg, #f472b6, #ec4899); --w: 86%; }
+  .perf-fill.fastify { background: linear-gradient(90deg, #f59e0b, #fbbf24); --w: 19%; }
+  .perf-fill.express { background: linear-gradient(90deg, #ef4444, #f87171); --w: 8%; }
+  .perf-note {
+    margin-top: 30px;
+    font-size: 13px;
+    color: #64748b;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* ========== SLIDES PROS ========== */
+  .slide-pro { position: relative; }
+  .slide-pro-1 { background: linear-gradient(135deg, #0c1a0c 0%, #052e16 40%, #0a1a2e 100%); }
+  .slide-pro-2 { background: linear-gradient(135deg, #1a0a2e 0%, #1e1b4b 50%, #0f172a 100%); }
+  .slide-pro-3 { background: linear-gradient(135deg, #0f172a 0%, #172554 50%, #0c4a6e 100%); }
+
+  .pro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+  }
+  .pro-badge.green  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+  .pro-badge.purple { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+  .pro-badge.blue   { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+
+  .slide-pro h2 {
+    font-size: clamp(30px, 4.5vw, 54px);
+    font-weight: 900;
+    margin-bottom: 30px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .slide-pro-1 h2 { color: #34d399; }
+  .slide-pro-2 h2 { color: #a78bfa; }
+  .slide-pro-3 h2 { color: #38bdf8; }
+
+  .pro-content {
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+  }
+  .pro-item {
+    background: rgba(255,255,255,0.03);
+    border-left: 4px solid;
+    border-radius: 0 12px 12px 0;
+    padding: 22px 30px;
+    width: 100%;
+    transition: transform 0.3s;
+  }
+  .pro-item:hover { transform: translateX(6px); }
+  .slide-pro-1 .pro-item { border-left-color: #34d399; }
+  .slide-pro-2 .pro-item { border-left-color: #a78bfa; }
+  .slide-pro-3 .pro-item { border-left-color: #38bdf8; }
+
+  .pro-item h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .slide-pro-1 .pro-item h3 { color: #6ee7b7; }
+  .slide-pro-2 .pro-item h3 { color: #c4b5fd; }
+  .slide-pro-3 .pro-item h3 { color: #7dd3fc; }
+  .pro-item p { font-size: 15px; line-height: 1.6; color: #94a3b8; }
+
+  /* ========== SLIDES CONS ========== */
+  .slide-con { position: relative; }
+  .slide-con-1 { background: linear-gradient(135deg, #1a0505 0%, #3b0a0a 40%, #1a0a0a 100%); }
+  .slide-con-2 { background: linear-gradient(135deg, #2a1505 0%, #1a0f0a 50%, #0f0a1a 100%); }
+  .slide-con-3 { background: linear-gradient(135deg, #1a1005 0%, #2a1a0a 40%, #1a0a10 100%); }
+
+  .con-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+  }
+  .con-badge.red    { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .con-badge.orange { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+  .con-badge.amber  { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+
+  .slide-con h2 {
+    font-size: clamp(28px, 4vw, 50px);
+    font-weight: 900;
+    margin-bottom: 30px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .slide-con-1 h2 { color: #f87171; }
+  .slide-con-2 h2 { color: #fb923c; }
+  .slide-con-3 h2 { color: #fbbf24; }
+
+  .con-content {
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+  }
+  .con-item {
+    background: rgba(255,255,255,0.03);
+    border-left: 4px solid;
+    border-radius: 0 12px 12px 0;
+    padding: 22px 30px;
+    width: 100%;
+    transition: transform 0.3s;
+  }
+  .con-item:hover { transform: translateX(6px); }
+  .slide-con-1 .con-item { border-left-color: #f87171; }
+  .slide-con-2 .con-item { border-left-color: #fb923c; }
+  .slide-con-3 .con-item { border-left-color: #fbbf24; }
+
+  .con-item h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .slide-con-1 .con-item h3 { color: #fca5a5; }
+  .slide-con-2 .con-item h3 { color: #fdba74; }
+  .slide-con-3 .con-item h3 { color: #fde68a; }
+  .con-item p { font-size: 15px; line-height: 1.6; color: #94a3b8; }
+
+  /* ========== SLIDE — USE CASES ========== */
+  .slide-use {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+  .slide-use h2 {
+    font-size: clamp(28px, 4vw, 50px);
+    font-weight: 800;
+    background: linear-gradient(90deg, #fbbf24, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 40px;
+  }
+  .use-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    width: 100%;
+  }
+  .use-card {
+    text-align: center;
+    padding: 36px 24px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(251,191,36,0.1);
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .use-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(251,191,36,0.4);
+  }
+  .use-card .icon { font-size: 42px; margin-bottom: 14px; }
+  .use-card h3 { font-size: 17px; font-weight: 700; color: #fbbf24; margin-bottom: 8px; }
+  .use-card p { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+
+  /* ========== SLIDE — CONCLUSION ========== */
+  .slide-end {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1035 50%, #0d0d1a 100%);
+    text-align: center;
+  }
+  .slide-end::before {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse-glow 5s ease-in-out infinite alternate;
+  }
+  .slide-end h2 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #818cf8, #f472b6, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .slide-end p {
+    font-size: clamp(16px, 2vw, 22px);
+    color: #94a3b8;
+    max-width: 700px;
+    line-height: 1.7;
+    position: relative; z-index: 1;
+  }
+  .slide-end .link {
+    margin-top: 30px;
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #818cf8;
+    border: 1px solid rgba(129,140,248,0.3);
+    padding: 12px 28px;
+    border-radius: 100px;
+    text-decoration: none;
+    position: relative; z-index: 1;
+    transition: background 0.3s;
+  }
+  .slide-end .link:hover { background: rgba(129,140,248,0.1); }
+
+  /* ========== NAV ========== */
+  .nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+  }
+  .nav a {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s;
+    display: block;
+  }
+  .nav a:hover, .nav a.active {
+    background: #818cf8;
+    border-color: #818cf8;
+    transform: scale(1.3);
+  }
+
+  .slide-number {
+    position: absolute;
+    bottom: 20px;
+    right: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 30px 20px; }
+    .perf-bar-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .perf-label { width: auto; text-align: left; }
+    .nav { right: 8px; }
+    .nav a { width: 7px; height: 7px; }
+    .code-body pre { font-size: 11px; }
+    .code-body { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV DOTS -->
+<nav class="nav" id="nav">
+  <a href="#s1" title="Титульний"></a>
+  <a href="#s2" title="Що це?"></a>
+  <a href="#s3" title="Код: URL-параметри"></a>
+  <a href="#s4" title="Код: cork() та end()"></a>
+  <a href="#s5" title="Код: WebSocket & Pub/Sub"></a>
+  <a href="#s6" title="Продуктивність"></a>
+  <a href="#s7" title="Плюси: Швидкість"></a>
+  <a href="#s8" title="Плюси: Архітектура"></a>
+  <a href="#s9" title="Плюси: Можливості"></a>
+  <a href="#s10" title="Мінуси: API"></a>
+  <a href="#s11" title="Мінуси: Екосистема"></a>
+  <a href="#s12" title="Мінуси: Docker & Node"></a>
+  <a href="#s13" title="Де використовувати"></a>
+  <a href="#s14" title="Підсумок"></a>
+</nav>
+
+<!-- ===================== SLIDE 1 — TITLE ===================== -->
+<section class="slide slide-title" id="s1">
+  <div class="logo-icon">⚡</div>
+  <h1>uWebSockets.js</h1>
+  <div class="subtitle">Найшвидший WebSocket &amp; HTTP сервер для Node.js</div>
+  <span class="slide-number">01 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 2 — WHAT IS IT ===================== -->
+<section class="slide slide-what" id="s2">
+  <h2>Що таке uWebSockets.js?</h2>
+  <div class="what-grid">
+    <div class="what-card">
+      <div class="icon">🧬</div>
+      <h3>C++ ядро</h3>
+      <p>Бібліотека µWebSockets написана на C/C++ і обгорнута тонким JavaScript-шаром через N-API</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">🌐</div>
+      <h3>HTTP + WebSocket</h3>
+      <p>Один сервер обслуговує HTTP/1.1 та WebSocket з'єднання без додаткових залежностей</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">🔒</div>
+      <h3>TLS з коробки</h3>
+      <p>Вбудована підтримка SSL/TLS через BoringSSL для захищених з'єднань</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">📦</div>
+      <h3>Прекомпільований</h3>
+      <p>Поставляється як готовий npm-пакет з бінарниками — без node-gyp та зовнішніх залежностей</p>
+    </div>
+  </div>
+  <span class="slide-number">02 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 3 — CODE: HTTP + URL PARAMS ===================== -->
+<section class="slide slide-code slide-code-1" id="s3">
+  <span class="code-badge cyan">{ } Приклад коду</span>
+  <h2>HTTP та URL-параметри</h2>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot r"></span>
+      <span class="code-dot y"></span>
+      <span class="code-dot g"></span>
+      <span class="code-filename">http-params.js</span>
+    </div>
+    <div class="code-body"><pre><span class="kw">import</span> { <span class="obj">App</span> } <span class="kw">from</span> <span class="str">'uWebSockets.js'</span>;
+
+<span class="obj">App</span>()
+  <span class="cmt">// Route-параметри через :param</span>
+  .<span class="mth">get</span>(<span class="str">'/api/users/:id'</span>, (<span class="par">res, req</span>) => {
+    <span class="kw">const</span> id = req.<span class="fn">getParameter</span>(<span class="num">0</span>);  <span class="cmt">// перший :param</span>
+    res.<span class="fn">end</span>(<span class="str">`User ID: ${</span>id<span class="str">}`</span>);
+  })
+
+  <span class="cmt">// Кілька параметрів у маршруті</span>
+  .<span class="mth">get</span>(<span class="str">'/api/:version/items/:itemId'</span>, (<span class="par">res, req</span>) => {
+    <span class="kw">const</span> version = req.<span class="fn">getParameter</span>(<span class="num">0</span>); <span class="cmt">// "v1"</span>
+    <span class="kw">const</span> itemId  = req.<span class="fn">getParameter</span>(<span class="num">1</span>); <span class="cmt">// "42"</span>
+    res.<span class="fn">end</span>(<span class="str">`${</span>version<span class="str">} → item ${</span>itemId<span class="str">}`</span>);
+  })
+
+  <span class="cmt">// Query-параметри — парсимо вручну</span>
+  .<span class="mth">get</span>(<span class="str">'/search'</span>, (<span class="par">res, req</span>) => {
+    <span class="kw">const</span> query = req.<span class="fn">getQuery</span>();       <span class="cmt">// "q=hello&page=2"</span>
+    <span class="kw">const</span> params = <span class="kw">new</span> <span class="obj">URLSearchParams</span>(query);
+    <span class="kw">const</span> q    = params.<span class="fn">get</span>(<span class="str">'q'</span>);      <span class="cmt">// "hello"</span>
+    <span class="kw">const</span> page = params.<span class="fn">get</span>(<span class="str">'page'</span>);   <span class="cmt">// "2"</span>
+    res.<span class="fn">end</span>(<span class="str">`Search: ${</span>q<span class="str">}, page ${</span>page<span class="str">}`</span>);
+  })
+
+  .<span class="mth">listen</span>(<span class="num">3000</span>, (<span class="par">token</span>) => {
+    <span class="kw">if</span> (token) <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">'Server on :3000'</span>);
+  });</pre></div>
+  </div>
+  <div class="code-desc">Route-параметри отримуються через <strong style="color:#22d3ee">req.getParameter(index)</strong> за порядковим номером, а не за іменем. Query-string доступний через <strong style="color:#22d3ee">req.getQuery()</strong> — парсити потрібно самостійно.</div>
+  <span class="slide-number">03 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 4 — CODE: cork() & end() ===================== -->
+<section class="slide slide-code slide-code-2" id="s4">
+  <span class="code-badge violet">{ } Приклад коду</span>
+  <h2>cork() та обмеження end()</h2>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot r"></span>
+      <span class="code-dot y"></span>
+      <span class="code-dot g"></span>
+      <span class="code-filename">cork-and-end.js</span>
+    </div>
+    <div class="code-body"><pre><span class="obj">App</span>().<span class="mth">get</span>(<span class="str">'/api/data'</span>, (<span class="par">res, req</span>) => {
+
+  <span class="cmt">// ✅ cork() — групує всі записи в один syscall</span>
+  <span class="cmt">// Без нього кожен writeHeader/write — окремий виклик</span>
+  res.<span class="fn">cork</span>(() => {
+    res.<span class="fn">writeStatus</span>(<span class="str">'200 OK'</span>);
+    res.<span class="fn">writeHeader</span>(<span class="str">'Content-Type'</span>, <span class="str">'application/json'</span>);
+    res.<span class="fn">writeHeader</span>(<span class="str">'X-Custom'</span>, <span class="str">'value'</span>);
+    res.<span class="fn">end</span>(<span class="obj">JSON</span>.<span class="fn">stringify</span>({ <span class="par">ok</span>: <span class="num">true</span> }));
+  });
+
+  <span class="cmt">// ❌ ПОМИЛКА — end() вже викликано вище!</span>
+  <span class="cmt">// res.end('second call'); // → CRASH / UB</span>
+
+  <span class="cmt">// ❌ ПОМИЛКА — writeHeader після end()</span>
+  <span class="cmt">// res.writeHeader('X-Late', 'too late');</span>
+});
+
+<span class="cmt">// ⚠️ Async + cork — правильний патерн</span>
+<span class="obj">App</span>().<span class="mth">get</span>(<span class="str">'/api/async'</span>, (<span class="par">res, req</span>) => {
+  <span class="cmt">// Зберігаємо дані з req ДО async</span>
+  <span class="kw">const</span> url = req.<span class="fn">getUrl</span>();
+  <span class="kw">let</span> aborted = <span class="num">false</span>;
+  res.<span class="fn">onAborted</span>(() => { aborted = <span class="num">true</span>; });
+
+  <span class="fn">fetchData</span>(url).<span class="fn">then</span>(<span class="par">data</span> => {
+    <span class="kw">if</span> (aborted) <span class="kw">return</span>;
+    res.<span class="fn">cork</span>(() => {
+      res.<span class="fn">writeHeader</span>(<span class="str">'Content-Type'</span>, <span class="str">'application/json'</span>);
+      res.<span class="fn">end</span>(<span class="obj">JSON</span>.<span class="fn">stringify</span>(data));
+    });
+  });
+});</pre></div>
+  </div>
+  <div class="code-desc"><strong style="color:#a78bfa">cork()</strong> об'єднує writeStatus + writeHeader + end в один системний виклик — суттєвий приріст швидкості. <strong style="color:#f87171">end()</strong> можна викликати лише <strong style="color:#f87171">ОДИН раз</strong> — повторний виклик призведе до краша або undefined behavior.</div>
+  <span class="slide-number">04 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 5 — CODE: WebSocket + Pub/Sub ===================== -->
+<section class="slide slide-code slide-code-3" id="s5">
+  <span class="code-badge teal">{ } Приклад коду</span>
+  <h2>WebSocket та Pub/Sub</h2>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot r"></span>
+      <span class="code-dot y"></span>
+      <span class="code-dot g"></span>
+      <span class="code-filename">websocket-pubsub.js</span>
+    </div>
+    <div class="code-body"><pre><span class="kw">import</span> { <span class="obj">App</span> } <span class="kw">from</span> <span class="str">'uWebSockets.js'</span>;
+
+<span class="obj">App</span>().<span class="mth">ws</span>(<span class="str">'/*'</span>, {
+  <span class="par">maxPayloadLength</span>: <span class="num">16</span> * <span class="num">1024</span>,
+  <span class="par">idleTimeout</span>: <span class="num">120</span>,
+
+  <span class="fn">open</span>: (<span class="par">ws</span>) => {
+    <span class="cmt">// Підписуємо клієнта на канал</span>
+    ws.<span class="fn">subscribe</span>(<span class="str">'chat/general'</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">'Connected & subscribed'</span>);
+  },
+
+  <span class="fn">message</span>: (<span class="par">ws, message, isBinary</span>) => {
+    <span class="cmt">// Pub: розсилаємо всім підписникам</span>
+    ws.<span class="fn">publish</span>(<span class="str">'chat/general'</span>, message, isBinary);
+  },
+
+  <span class="fn">drain</span>: (<span class="par">ws</span>) => {
+    <span class="cmt">// Backpressure: буфер звільнився</span>
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">'Buffered: '</span> + ws.<span class="fn">getBufferedAmount</span>());
+  },
+
+  <span class="fn">close</span>: (<span class="par">ws, code, msg</span>) => {
+    <span class="cmt">// Відписка від каналів — автоматична</span>
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">'Disconnected'</span>);
+  }
+}).<span class="mth">listen</span>(<span class="num">9001</span>, (<span class="par">token</span>) => {
+  <span class="kw">if</span> (token) <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">'WS on :9001'</span>);
+});</pre></div>
+  </div>
+  <div class="code-desc">Вбудований <strong style="color:#2dd4bf">Pub/Sub</strong> без Redis чи брокерів. Подія <strong style="color:#2dd4bf">drain</strong> контролює backpressure. При <strong style="color:#2dd4bf">close</strong> відписка від каналів відбувається автоматично.</div>
+  <span class="slide-number">05 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 6 — PERFORMANCE ===================== -->
+<section class="slide slide-perf" id="s6">
+  <h2>🚀 Бенчмарк продуктивності</h2>
+  <div class="perf-bars">
+    <div class="perf-bar-row">
+      <span class="perf-label">uWebSockets.js</span>
+      <div class="perf-track">
+        <div class="perf-fill uws">~121 000 req/s</div>
+      </div>
+    </div>
+    <div class="perf-bar-row">
+      <span class="perf-label">Bun.serve</span>
+      <div class="perf-track">
+        <div class="perf-fill bun">~110 000 req/s</div>
+      </div>
+    </div>
+    <div class="perf-bar-row">
+      <span class="perf-label">Fastify</span>
+      <div class="perf-track">
+        <div class="perf-fill fastify">~24 000 req/s</div>
+      </div>
+    </div>
+    <div class="perf-bar-row">
+      <span class="perf-label">Express.js</span>
+      <div class="perf-track">
+        <div class="perf-fill express">~7 000 req/s</div>
+      </div>
+    </div>
+  </div>
+  <div class="perf-note">* Hello World, single-thread, Intel i9-9940X · Джерело: GitHub oven-sh/bun#8643, uWebSockets.js#1097</div>
+  <span class="slide-number">06 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 7 — PRO: SPEED ===================== -->
+<section class="slide slide-pro slide-pro-1" id="s7">
+  <span class="pro-badge green">✦ Перевага</span>
+  <h2>Екстремальна швидкість</h2>
+  <div class="pro-content">
+    <div class="pro-item">
+      <h3>Мільйони повідомлень на секунду</h3>
+      <p>Нативний C++ код обробляє WebSocket-фрейми без накладних витрат JavaScript event loop. Це на порядок швидше за будь-яку чисто JS-реалізацію.</p>
+    </div>
+    <div class="pro-item">
+      <h3>Мінімальне споживання пам'яті</h3>
+      <p>Кожне з'єднання споживає в рази менше RAM порівняно з ws чи socket.io. 100K одночасних з'єднань — не проблема.</p>
+    </div>
+    <div class="pro-item">
+      <h3>Низька затримка (latency)</h3>
+      <p>Відсутність проміжних абстракцій між мережевим сокетом і вашим кодом дає мікросекундні затримки.</p>
+    </div>
+  </div>
+  <span class="slide-number">07 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 8 — PRO: ARCHITECTURE ===================== -->
+<section class="slide slide-pro slide-pro-2" id="s8">
+  <span class="pro-badge purple">✦ Перевага</span>
+  <h2>Продумана архітектура</h2>
+  <div class="pro-content">
+    <div class="pro-item">
+      <h3>Backpressure handling</h3>
+      <p>Вбудований механізм контролю зворотного тиску дозволяє відстежувати стан буфера клієнта й уникати перевантаження.</p>
+    </div>
+    <div class="pro-item">
+      <h3>Вбудований Pub/Sub</h3>
+      <p>Нативна система підписок на теми (topics) для WebSocket — масштабне розсилання без зовнішніх брокерів повідомлень.</p>
+    </div>
+    <div class="pro-item">
+      <h3>Zero-copy де можливо</h3>
+      <p>Мінімізація копіювання даних між C++ та JS шарами — ще один фактор продуктивності.</p>
+    </div>
+  </div>
+  <span class="slide-number">08 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 9 — PRO: FEATURES ===================== -->
+<section class="slide slide-pro slide-pro-3" id="s9">
+  <span class="pro-badge blue">✦ Перевага</span>
+  <h2>Зручні можливості</h2>
+  <div class="pro-content">
+    <div class="pro-item">
+      <h3>HTTP + WebSocket в одному процесі</h3>
+      <p>Не потрібно піднімати окремий сервер для WebSocket — маршрутизація, апгрейд і обробка в одному місці.</p>
+    </div>
+    <div class="pro-item">
+      <h3>Без node-gyp</h3>
+      <p>Прекомпільовані бінарники для Linux, macOS, Windows. npm install — і працює, без компіляції.</p>
+    </div>
+    <div class="pro-item">
+      <h3>Chunked transfer & streaming</h3>
+      <p>Підтримка потокової відправки відповідей для великих файлів або Server-Sent Events.</p>
+    </div>
+  </div>
+  <span class="slide-number">09 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 10 — CON: API ===================== -->
+<section class="slide slide-con slide-con-1" id="s10">
+  <span class="con-badge red">✗ Недолік</span>
+  <h2>Несумісний API</h2>
+  <div class="con-content">
+    <div class="con-item">
+      <h3>Не працює з Express/Koa/Fastify</h3>
+      <p>API повністю відрізняється від стандартного http.Server Node.js. Жоден популярний фреймворк не підключиться без адаптера.</p>
+    </div>
+    <div class="con-item">
+      <h3>HttpRequest живе лише в колбеку</h3>
+      <p>Об'єкт запиту не можна зберегти або передати в async-ланцюжок — потрібно копіювати заголовки й параметри одразу. Це ламає звичні патерни.</p>
+    </div>
+    <div class="con-item">
+      <h3>Крива навчання</h3>
+      <p>Звичні патерни Node.js (middleware, pipe, async/await на req/res) не працюють. Потрібно перебудовувати мислення під колбек-стиль uWS.</p>
+    </div>
+    <div class="con-item">
+      <h3>end() лише один раз — інакше краш</h3>
+      <p>Повторний виклик res.end() призводить до undefined behavior або сегфолту. В Express це безпечно ігнорується — тут ні. Потрібно ретельно контролювати потік відповіді.</p>
+    </div>
+    <div class="con-item">
+      <h3>Обов'язковий cork() для продуктивності</h3>
+      <p>Без cork() кожен writeHeader/write — окремий системний виклик. Це неочевидний патерн, якого немає в жодному іншому Node.js фреймворку, і без нього втрачається значна частина переваг швидкості.</p>
+    </div>
+  </div>
+  <span class="slide-number">10 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 11 — CON: ECOSYSTEM ===================== -->
+<section class="slide slide-con slide-con-2" id="s11">
+  <span class="con-badge orange">✗ Недолік</span>
+  <h2>Ризики та екосистема</h2>
+  <div class="con-content">
+    <div class="con-item">
+      <h3>Один основний мейнтейнер</h3>
+      <p>Проєкт здебільшого веде Alex Hultman. Були випадки видалення репозиторіїв і зміни ліцензій — bus factor = 1.</p>
+    </div>
+    <div class="con-item">
+      <h3>Мала екосистема</h3>
+      <p>Мінімум плагінів, middleware, прикладів і туторіалів. Документація існує, але значно поступається Express чи Fastify.</p>
+    </div>
+    <div class="con-item">
+      <h3>Складне відлагодження</h3>
+      <p>C++ ядро означає неінформативні стектрейси при краші. Стандартні Node.js профайлери бачать лише JS-частину.</p>
+    </div>
+  </div>
+  <span class="slide-number">11 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 12 — CON: DOCKER & NODE VERSIONS ===================== -->
+<section class="slide slide-con slide-con-3" id="s12">
+  <span class="con-badge amber">✗ Недолік</span>
+  <h2>Docker та версії Node.js</h2>
+  <div class="con-content">
+    <div class="con-item">
+      <h3>🐳 Потрібен повний Node.js — не Alpine</h3>
+      <p>uWebSockets.js використовує нативні C++ бінарники, скомпільовані під glibc. Alpine Linux використовує musl, тому <strong style="color:#fde68a">node:alpine</strong> образи не підходять. Потрібен повний <strong style="color:#fde68a">node:20</strong> (~350 MB) або node:slim (~70 MB з обмеженнями), що суттєво збільшує розмір Docker-іміджа.</p>
+    </div>
+    <div class="con-item">
+      <h3>📦 Великий Docker-імідж у продакшені</h3>
+      <p>Типовий alpine-образ для Node.js сервісу ~50 MB. З uWS потрібен debian-based образ: ~180–350 MB. Для мікросервісної архітектури з десятками контейнерів це відчутне навантаження на registry та деплой.</p>
+    </div>
+    <div class="con-item">
+      <h3>🕐 Відставання від нових версій Node.js</h3>
+      <p>Оскільки бінарники прекомпільовані під конкретні версії Node.js N-API, підтримка нових мажорних релізів (Node 22, 23+) може з'являтися із затримкою в тижні або місяці. Це блокує оновлення Node.js в проєкті.</p>
+    </div>
+    <div class="con-item">
+      <h3>⚠️ Прив'язка до конкретних версій</h3>
+      <p>Часто потрібно фіксувати точну версію Node.js у Dockerfile та CI/CD, бо оновлення рантайму може зламати сумісність з uWS бінарником. Це додаткове навантаження на DevOps.</p>
+    </div>
+  </div>
+  <span class="slide-number">12 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 13 — USE CASES ===================== -->
+<section class="slide slide-use" id="s13">
+  <h2>Де використовувати?</h2>
+  <div class="use-grid">
+    <div class="use-card">
+      <div class="icon">🎮</div>
+      <h3>Ігрові сервери</h3>
+      <p>Real-time мультиплеєр з мінімальною затримкою</p>
+    </div>
+    <div class="use-card">
+      <div class="icon">💬</div>
+      <h3>Чат-системи</h3>
+      <p>Сотні тисяч одночасних з'єднань</p>
+    </div>
+    <div class="use-card">
+      <div class="icon">📈</div>
+      <h3>Фінансові біржі</h3>
+      <p>Потокова передача котирувань з мікросекундною затримкою</p>
+    </div>
+    <div class="use-card">
+      <div class="icon">📡</div>
+      <h3>IoT платформи</h3>
+      <p>Масове підключення пристроїв з низьким споживанням ресурсів</p>
+    </div>
+  </div>
+  <span class="slide-number">13 / 14</span>
+</section>
+
+<!-- ===================== SLIDE 14 — CONCLUSION ===================== -->
+<section class="slide slide-end" id="s14">
+  <h2>Висновок</h2>
+  <p>uWebSockets.js — ідеальний вибір, коли продуктивність є головним пріоритетом. Але врахуйте обмеження з Docker, версіями Node.js та відсутністю екосистеми middleware. Для типових задач — Fastify або Express будуть прагматичнішим вибором.</p>
+  <a class="link" href="https://github.com/uNetworking/uWebSockets.js" target="_blank">github.com/uNetworking/uWebSockets.js →</a>
+  <span class="slide-number">14 / 14</span>
+</section>
+
+<script>
+  // Highlight active nav dot
+  const dots = document.querySelectorAll('.nav a');
+  const slides = document.querySelectorAll('.slide');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        dots.forEach(d => d.classList.toggle('active', d.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { threshold: 0.5 });
+  slides.forEach(s => observer.observe(s));
+
+  // Restart bar animations when perf slide is visible
+  const perfObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.perf-fill').forEach(bar => {
+          bar.style.animation = 'none';
+          bar.offsetHeight;
+          bar.style.animation = '';
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+  const perfSlide = document.querySelector('.slide-perf');
+  if (perfSlide) perfObserver.observe(perfSlide);
+</script>
+
+</body>
+</html>

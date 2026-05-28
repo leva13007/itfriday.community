@@ -12,7 +12,7 @@ const speakers = [
     profile: '/en/speakers/oleh-levchenko',
   },
   {
-    avatar: 'https://api.dicebear.com/9.x/pixel-art/svg?seed=oleksandr-blazheiko',
+    avatar: '/speakers/oleksandr-blazheiko.jpg',
     name: 'Oleksandr Blazheiko',
     title: 'Software Development Engineer',
     org: 'itvibe.party',

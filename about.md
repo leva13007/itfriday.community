@@ -14,7 +14,7 @@
 
 ## Що ми робимо
 
-Щоп'ятниці о **20:00 London / 22:00 Kyiv** — живий стрім ~40 хвилин на YouTube [@zloyleva](https://youtube.com/@zloyleva).
+Щоп'ятниці о **19:00 London / 21:00 Kyiv** — живий стрім ~40 хвилин на YouTube [@zloyleva](https://youtube.com/@zloyleva).
 
 Теми чергуються: технічні та людські рівноцінні.
 

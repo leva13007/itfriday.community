@@ -4,7 +4,7 @@ title: Олександр Блажейко
 
 # Олександр Блажейко
 
-<img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=oleksandr-blazheiko" alt="Олександр Блажейко" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleksandr-blazheiko.jpg" alt="Олександр Блажейко" width="120" style="border-radius:12px;margin-bottom:16px" />
 
 **Software Development Engineer** · Fullstack  
 Україна
@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#003](/streams/003) | Гість | uWebSockets.js — архітектура, cork(), Docker | 29.05.2026 |
 | [#002](/streams/002) | Гість | AI Language Teacher — itvibe.party | 22.05.2026 |
 
 ---

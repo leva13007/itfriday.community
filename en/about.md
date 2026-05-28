@@ -14,7 +14,7 @@ People scattered across the world. Connections broke.
 
 ## What we do
 
-Every Friday at **20:00 London / 22:00 Kyiv** — live stream ~40 min on YouTube [@zloyleva](https://youtube.com/@zloyleva).
+Every Friday at **19:00 London / 21:00 Kyiv** — live stream ~40 min on YouTube [@zloyleva](https://youtube.com/@zloyleva).
 
 Topics alternate between technical and human — both are equally valued.
 

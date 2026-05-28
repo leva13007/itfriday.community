@@ -4,7 +4,7 @@ title: Oleksandr Blazheiko
 
 # Oleksandr Blazheiko
 
-<img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=oleksandr-blazheiko" alt="Oleksandr Blazheiko" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleksandr-blazheiko.jpg" alt="Oleksandr Blazheiko" width="120" style="border-radius:12px;margin-bottom:16px" />
 
 **Software Development Engineer** · Fullstack  
 Ukraine
@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#003](/en/streams/003) | Guest | uWebSockets.js — architecture, cork(), Docker | 29.05.2026 |
 | [#002](/en/streams/002) | Guest | AI Language Teacher — itvibe.party | 22.05.2026 |
 
 ---
