@@ -4,7 +4,7 @@ title: Олег Левченко
 
 # Олег Левченко
 
-<img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=oleh-levchenko" alt="Олег Левченко" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleh-levchenko.jpg" alt="Олег Левченко" width="120" style="border-radius:12px;margin-bottom:16px" />
 
 **Senior Full Stack JavaScript Developer** · Засновник IT Friday  
 The AA · Cardiff, UK
@@ -23,8 +23,9 @@ React · Node.js · TypeScript · AWS · System Design · Кар'єра в IT ·
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
-| [#001](/streams/001) | Хост | Запускаємо українське IT-ком'юніті з нуля | 15.05.2026 |
+| [#003](/streams/003) | Хост | useEffectEvent — React Conf 2025 | 29.05.2026 |
 | [#002](/streams/002) | Хост | React 19.2: `<Activity />` — розбір нового компонента | 22.05.2026 |
+| [#001](/streams/001) | Хост | Запускаємо українське IT-ком'юніті з нуля | 15.05.2026 |
 
 ---
 

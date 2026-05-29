@@ -10,6 +10,9 @@ hero:
       text: YouTube Live →
       link: https://youtube.com/@zloyleva
     - theme: alt
+      text: LinkedIn
+      link: https://www.linkedin.com/company/it-friday/
+    - theme: alt
       text: Telegram
       link: https://t.me/+QRJNFfHaLxMwYzcy
     - theme: alt

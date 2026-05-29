@@ -29,6 +29,7 @@ Topics alternate between technical and human — both are equally valued.
 ## Find us
 
 - 🎥 **YouTube:** [youtube.com/@zloyleva](https://youtube.com/@zloyleva)
+- 💼 **LinkedIn:** [linkedin.com/company/it-friday](https://www.linkedin.com/company/it-friday/) — news & announcements in English
 - 💬 **Telegram:** [t.me/+QRJNFfHaLxMwYzcy](https://t.me/+QRJNFfHaLxMwYzcy) — announcements & posts between streams
 - 🛠️ **Discord:** [discord.gg/ZpWpDQq2EP](https://discord.gg/ZpWpDQq2EP) — technical discussions any day
 

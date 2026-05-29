@@ -13,4 +13,4 @@ Always announced publicly in advance.
 ## Want to contribute?
 
 The best way is to become a speaker or suggest a topic.  
-Write in [Telegram](https://t.me/+QRJNFfHaLxMwYzcy) or [Discord](https://discord.gg/ZpWpDQq2EP).
+Write in [Telegram](https://t.me/+QRJNFfHaLxMwYzcy), [Discord](https://discord.gg/ZpWpDQq2EP) or [LinkedIn](https://www.linkedin.com/company/it-friday/).

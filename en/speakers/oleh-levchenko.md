@@ -4,7 +4,7 @@ title: Oleh Levchenko
 
 # Oleh Levchenko
 
-<img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=oleh-levchenko" alt="Oleh Levchenko" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleh-levchenko.jpg" alt="Oleh Levchenko" width="120" style="border-radius:12px;margin-bottom:16px" />
 
 **Senior Full Stack JavaScript Developer** · IT Friday Founder  
 The AA · Cardiff, UK
@@ -23,8 +23,9 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
-| [#001](/en/streams/001) | Host | Launching Ukrainian IT Community from scratch | 15.05.2026 |
+| [#003](/en/streams/003) | Host | useEffectEvent — React Conf 2025 | 29.05.2026 |
 | [#002](/en/streams/002) | Host | React 19.2: `<Activity />` — deep dive into the new component | 22.05.2026 |
+| [#001](/en/streams/001) | Host | Launching Ukrainian IT Community from scratch | 15.05.2026 |
 
 ---
 

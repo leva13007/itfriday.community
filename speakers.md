@@ -5,7 +5,7 @@ title: Спікери
 <script setup>
 const speakers = [
   {
-    avatar: 'https://api.dicebear.com/9.x/pixel-art/svg?seed=oleh-levchenko',
+    avatar: '/speakers/oleh-levchenko.jpg',
     name: 'Олег Левченко',
     title: 'Senior Full Stack Developer · Засновник IT Friday',
     org: 'The AA',

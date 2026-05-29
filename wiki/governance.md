@@ -13,4 +13,4 @@
 ## Хочеш допомогти?
 
 Найкращий спосіб — стати спікером або запропонувати тему.  
-Пиши в [Telegram](https://t.me/+QRJNFfHaLxMwYzcy) або [Discord](https://discord.gg/ZpWpDQq2EP).
+Пиши в [Telegram](https://t.me/+QRJNFfHaLxMwYzcy), [Discord](https://discord.gg/ZpWpDQq2EP) або [LinkedIn](https://www.linkedin.com/company/it-friday/).

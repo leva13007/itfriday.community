@@ -110,6 +110,14 @@ Add a new stream summary page:
 
 `firstname-lastname` in Latin, lowercase, hyphenated. Example: `oleksandr-blazheiko`.
 
+### Table sort order — newest first
+
+**All tables on the site must be sorted newest-first (descending by date):**
+- Speaker profile "Appearances" tables: most recent stream at the top
+- Stream index (`streams/index.md`): most recent stream at the top
+
+When adding a new entry to any table, insert it at the **top**, not the bottom.
+
 ### Speaker data to collect (before publishing profile)
 
 Mandatory: full name (UA + EN), title/role (UA + EN), LinkedIn URL, project link (if demoing).

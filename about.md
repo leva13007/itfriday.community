@@ -29,6 +29,7 @@
 ## Де нас знайти
 
 - 🎥 **YouTube:** [youtube.com/@zloyleva](https://youtube.com/@zloyleva)
+- 💼 **LinkedIn:** [linkedin.com/company/it-friday](https://www.linkedin.com/company/it-friday/) — новини та анонси англійською
 - 💬 **Telegram:** [t.me/+QRJNFfHaLxMwYzcy](https://t.me/+QRJNFfHaLxMwYzcy) — анонси і пости між стрімами
 - 🛠️ **Discord:** [discord.gg/ZpWpDQq2EP](https://discord.gg/ZpWpDQq2EP) — технічне спілкування будь-якого дня
 
