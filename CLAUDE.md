@@ -86,6 +86,7 @@ Add a new stream summary page:
 2. Update `streams/index.md` and `en/streams/index.md` to include the new entry
 3. Copy thumbnail to `public/streams/NNN.png`
 4. Content: thumbnail, date, participants (with profile links), key theses, YouTube link, resources
+5. Resources section must include: LinkedIn, Telegram, Discord links (in that order after content-specific links)
 
 ---
 
@@ -138,26 +139,37 @@ See full checklist in `streams/CLAUDE.md` → "Guest / Speaker Info".
 
 ---
 
-## News Section (`/news`)
+## Posts Section (`/posts`)
 
-**`/news/index.md`** (UA) and **`/en/news/index.md`** (EN) — community news index.
+**`/posts/index.md`** (UA) and **`/en/posts/index.md`** (EN) — community blog / publications index.
 
-### Adding a news post
+No fixed schedule. Publish when there's something worth saying.
 
-1. Create `news/YYYY-MM-DD-slug.md` (UA) and `en/news/YYYY-MM-DD-slug.md` (EN)
+### Content tiers
+
+| Tier | Length | When to use |
+|------|--------|-------------|
+| Нотатка / Note | 200–400 words | A thought, observation, quick reaction |
+| Пост / Post | 500–800 words | A topic with context, a story |
+| Стаття / Article | 1000+ words | Deep-dive, structured material |
+
+### Adding a post
+
+1. Create `posts/YYYY-MM-DD-slug.md` (UA) and `en/posts/YYYY-MM-DD-slug.md` (EN)
 2. Add frontmatter:
    ```markdown
    ---
    title: "..."
    date: YYYY-MM-DD
-   tags: [community]   # or: [it-news], or both
+   tags: [community]   # community | tech | career
    ---
    ```
-3. Add a link entry at the top of `news/index.md` and `en/news/index.md`
+3. Add a link entry at the **top** of `posts/index.md` and `en/posts/index.md` (newest first)
 
 **Tags:**
-- `community` — announcements, pauses, format changes, community events
-- `it-news` — tech news digests tied to a specific stream (#7 format)
+- `community` — about the community, pauses, format changes, events
+- `tech` — technical content, tools, ecosystem
+- `career` — career, relocation, burnout, job search
 
 Future: a VitePress data loader + Vue component for tag filtering. For now, maintain the list manually.
 
