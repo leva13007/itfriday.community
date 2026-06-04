@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#004](/en/streams/004) | Host | React Performance Tracks — new profiler in Chrome DevTools | 05.06.2026 |
 | [#003](/en/streams/003) | Host | useEffectEvent — React Conf 2025 | 29.05.2026 |
 | [#002](/en/streams/002) | Host | React 19.2: `<Activity />` — deep dive into the new component | 22.05.2026 |
 | [#001](/en/streams/001) | Host | Launching Ukrainian IT Community from scratch | 15.05.2026 |

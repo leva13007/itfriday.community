@@ -1,3 +1,9 @@
+---
+status: active
+category: community
+stack: VitePress, GitHub Pages, pnpm
+---
+
 # itfriday.community
 
 Public website for the [IT Friday](https://itfriday.community) community — weekly live streams for Ukrainian IT professionals worldwide.

@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · Кар'єра в IT ·
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#004](/streams/004) | Хост | React Performance Tracks — новий профайлер у Chrome DevTools | 05.06.2026 |
 | [#003](/streams/003) | Хост | useEffectEvent — React Conf 2025 | 29.05.2026 |
 | [#002](/streams/002) | Хост | React 19.2: `<Activity />` — розбір нового компонента | 22.05.2026 |
 | [#001](/streams/001) | Хост | Запускаємо українське IT-ком'юніті з нуля | 15.05.2026 |

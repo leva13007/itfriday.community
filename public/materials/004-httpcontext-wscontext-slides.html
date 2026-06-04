@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200" />
+    <title>HttpContext &amp; WsContext — формування і валідація</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reset.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/night.css" id="theme" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css" />
+    <style>
+      .reveal pre { font-size: 0.44em; line-height: 1.25; box-shadow: none; }
+      .reveal pre code { max-height: 560px; padding: 14px 18px; }
+      .reveal h1 { font-size: 1.8em; }
+      .reveal h2 { font-size: 1.25em; color: #80c8ff; }
+      .reveal h3 { color: #a8e6a3; }
+      .reveal table { font-size: 0.52em; }
+      .reveal th { color: #80c8ff; }
+      .reveal td, .reveal th { padding: 5px 11px; }
+      .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      .reveal .small { font-size: 0.7em; }
+      .reveal .tag { display: inline-block; padding: 2px 10px; margin: 2px; border-radius: 12px; background: #2a4a6a; font-size: 0.55em; color: #cfe6ff; }
+      .reveal ul { font-size: 0.74em; }
+      .reveal ol { font-size: 0.74em; }
+      .reveal .ascii { font-family: "Menlo", monospace; font-size: 0.42em; text-align: left; white-space: pre; line-height: 1.2; color: #cfe6ff; }
+      .reveal .footnote { font-size: 0.5em; color: #888; margin-top: 20px; }
+      .reveal .title-slide h1 { color: #80c8ff; }
+      .reveal .hl { color: #ffd479; }
+      .reveal .bad { color: #ff8a8a; }
+      .reveal .ok { color: #a8e6a3; }
+      .reveal code { color: #ffd479; }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+<!-- 1 -->
+<section class="title-slide">
+  <h1>HttpContext &amp; WsContext</h1>
+  <h3>Формування контексту та валідація всіх даних</h3>
+  <p class="small">itvibe-template · packages/backend · vendor (ядро фреймворку)<br/>uWebSockets.js → snapshot → validation → context → handler</p>
+  <p class="footnote">Поглиблення на основі коду <code>src/vendor</code> та <code>src/app</code></p>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2>Про що ця презентація</h2>
+  <ul>
+    <li><b>Два контексти</b> фреймворку: <code>HttpContext&lt;T, Q&gt;</code> та <code>WsContext&lt;T&gt;</code></li>
+    <li>Покроковий <b>life-cycle формування</b> кожного з них</li>
+    <li><b>Валідація всіх даних</b>, що потрапляють у контекст:
+      <ul>
+        <li>body (payload) · query · URL-params · content-type · body-size</li>
+        <li>WS-envelope · WS-payload · upgrade-token · session</li>
+      </ul>
+    </li>
+    <li>Де народжуються коди <b>400 / 413 / 415 / 422 / 429</b> та WS-error envelopes</li>
+    <li>Чому <code>WsContext</code> <b>не має</b> session/auth, а <code>HttpContext</code> має</li>
+  </ul>
+  <p class="footnote">Ключова ідея: у handler потрапляють <b>лише валідовані, типобезпечні</b> структури.</p>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2>Два контексти — порівняння</h2>
+  <table>
+    <tr><th>Аспект</th><th>HttpContext&lt;T, Q&gt;</th><th>WsContext&lt;T&gt;</th></tr>
+    <tr><td>Транспорт</td><td>HTTP request/response</td><td>WS frame (подія)</td></tr>
+    <tr><td>Дані запиту</td><td><code>httpData</code></td><td><code>wsData</code></td></tr>
+    <tr><td>Відповідь</td><td><code>responseData</code> (status/headers/cookies)</td><td><code>responseData</code> (event/data/error)</td></tr>
+    <tr><td>Identity</td><td><code>session</code> + <code>auth</code> (наповнює middleware)</td><td><code>userData</code> (з handshake), <code>session=null</code>, <code>auth=null</code></td></tr>
+    <tr><td>requestId / logger</td><td>є (scoped child)</td><td>є (scoped child)</td></tr>
+    <tr><td>Валідація payload</td><td>per-route <code>validator</code></td><td>per-route <code>validator</code></td></tr>
+    <tr><td>Валідація query</td><td>per-route <code>queryValidator</code></td><td>—</td></tr>
+    <tr><td>Auth-перевірка</td><td>на <b>кожен</b> запит (middleware)</td><td><b>один раз</b> на handshake</td></tr>
+  </table>
+  <p class="small">Обидва будуються однаковою філософією: <b>raw → snapshot → validate → context</b>.</p>
+</section>
+
+<!-- 4 -->
+<section>
+  <h2>HttpContext — повний тип</h2>
+  <pre><code class="language-ts">// vendor/types/types.d.ts
+export interface HttpContext&lt;TPayload = unknown, TQuery = null&gt; {
+  requestId: string;            // randomUUID, у логах/Sentry
+  logger: Logger;               // pino.child({ requestId })
+  httpData: HttpData&lt;TPayload, TQuery&gt;;   // ← усі вхідні дані
+  responseData: ResponseData;   // status / payload / headers / cookies
+  session: Session;             // Redis-сесія (default → реальна в middleware)
+  auth: Auth;                   // login/logout/getUserId/check
+}</code></pre>
+  <p class="small">Дженерики <code>TPayload</code> / <code>TQuery</code> виводяться автоматично з <code>validator</code> / <code>queryValidator</code> маршруту. Якщо схеми немає — тип звужується до <code>unknown</code> / <code>null</code>, і звернення до полів стає <b>помилкою компіляції</b>.</p>
+</section>
+
+<!-- 5 -->
+<section>
+  <h2>WsContext — повний тип</h2>
+  <pre><code class="language-ts">// vendor/types/types.d.ts
+export interface WsContext&lt;TPayload = unknown&gt; {
+  requestId: string;
+  ws: MyWebSocket;              // сам сокет
+  wsData: WsData&lt;TPayload&gt;;     // payload + middlewareData + status
+  responseData: WsResponseData; // event / data / error / timestamp / status
+  userData: UserConnection | null; // identity з handshake
+  session: null;                // ← навмисно завжди null
+  auth: null;                   // ← навмисно завжди null
+  logger: Logger;
+}</code></pre>
+  <ul>
+    <li><code>session</code>/<code>auth</code> жорстко типізовані як <code>null</code> — це контракт, не випадковість</li>
+    <li>Identity (userId, sessionId, role) живе у <code>userData</code></li>
+  </ul>
+</section>
+
+<!-- 6 -->
+<section>
+  <h2>Аксіома uWS: <code>req</code> живе до першого <code>await</code></h2>
+  <p>У uWebSockets.js об'єкт <code>HttpRequest</code> стає <span class="bad">невалідним</span> одразу після першого <code>await</code> у хендлері.</p>
+  <pre><code class="language-ts">// vendor/start/server.ts
+// uWS `req` is only valid until the first `await`. Collect everything
+// synchronously here so rate-limit (and any other pre-body checks) can run
+// against a detached snapshot.
+const collectRequestMetadata = (req, res, route): RequestMetadata =&gt; { ... }</code></pre>
+  <ul>
+    <li>Тому <b>весь</b> подальший pipeline працює зі «снепшотом», а не з <code>req</code></li>
+    <li>Зчитування з <code>req</code> після <code>await</code> = <b>undefined behaviour / краш</b></li>
+    <li>Це причина існування <code>HttpData</code> — детачнутих звичайних структур (Map/об'єкти)</li>
+  </ul>
+</section>
+
+<!-- 7 -->
+<section>
+  <h2>HTTP — конвеєр формування контексту</h2>
+  <div class="ascii">setHttpHandler(res, req, route)            ← vendor/start/server.ts
+  │
+  ├─ 1. collectRequestMetadata(req,res,route)   синхронний snapshot
+  │       cookies · query · headers · params · ip · contentType · bodyKind
+  │
+  ├─ 2. checkRateLimit(ip, route, groupRateLimit)   ← ДО body (anti-DoS)
+  │       не пройшов → 429 + Retry-After, далі не йдемо
+  │
+  ├─ 3. validateQuery(meta, route)                  flattenQuery → ArkType
+  │       немає queryValidator → null;  невалідне → 422
+  │
+  ├─ 4. await readAndParseBody(res, meta, route)    415 / 413 / parse
+  │       validator → validateRoutePayload → 422
+  │
+  ├─ 5. збірка HttpData { payload, query, params, headers, files... }
+  │       contextHandler(httpData, responseData) → HttpContext
+  │
+  ├─ 6. executeMiddlewares(route.middlewares, context)
+  │       session_web → csrf_guard → auth_guard ... (наповнюють session/auth)
+  │
+  └─ 7. route.handler(context) → responseData.payload → sendResponse</div>
+  <p class="footnote">Порядок не випадковий: rate-limit і guards стоять <b>до</b> читання тіла.</p>
+</section>
+
+<!-- 8 -->
+<section>
+  <h2>Крок 1 — snapshot (collectRequestMetadata)</h2>
+  <pre><code class="language-ts">interface RequestMetadata {
+  ip: string; cookies: Map&lt;string,string&gt;; query: URLSearchParams;
+  headers: Map&lt;string,string&gt;; params: Record&lt;string,string&gt;;
+  contentType: string | undefined; bodyKind: BodyKind; hasBody: boolean;
+}
+
+const collectRequestMetadata = (req, res, route) =&gt; {
+  const cookies = parseCookies(req.getHeader("cookie"));
+  const query   = new URLSearchParams(req.getQuery());
+  const headers = getHeaders(req);
+  const params  = route.parametersKey?.length
+    ? extractParameters(route.parametersKey, req) : {};   // ← :params з URL
+  const contentType = headers.get("content-type");
+  const ip = getIP(req, res);                              // trusted-proxy aware
+  const hasBody  = route.method === "post" || route.method === "put";
+  const bodyKind = contentType ? detectBodyKind(contentType) : "other";
+  return { ip, cookies, query, headers, params, contentType, bodyKind, hasBody };
+};</code></pre>
+  <p class="small">Усе синхронно. <code>extractParameters</code> дістає <code>:param</code> сегменти за <code>parametersKey</code>; невалідний параметр → <code>ParameterValidationError</code> (400).</p>
+</section>
+
+<!-- 8b -->
+<section>
+  <h2>Валідація cookies — санітайзер під час snapshot</h2>
+  <p class="small">Cookies — <b>єдине</b> поле контексту, що валідується синхронно прямо в <code>collectRequestMetadata</code> (не per-route схемою). Фіксований allowlist у ядрі, без ArkType.</p>
+  <pre><code class="language-ts">// parseCookies → validateCookie (http-request-handlers.ts / cookie-checker.ts)
+if (i === -1) return;                         // немає '=' → тихо відкинути
+if (validateCookie(key, value))               // ← gate, повертає boolean (не кидає)
+  list.set(key, decodeURIComponent(value));   // зберігаємо ДЕКОДОВАНЕ; биті %xx → drop
+
+COOKIE_NAME_PATTERN  = /^[a-zA-Z0-9_-]+$/            // key,  &lt; 255
+COOKIE_VALUE_PATTERN = /^[a-zA-Z0-9\-_.~*+/=%]+$/    // value (ще закодоване), &lt; 10000
+PERCENT_ENCODING     = /^(?:%[0-9A-Fa-f]{2}|[^%])*$/ // якщо value містить '%'</code></pre>
+  <ul>
+    <li><b>Тиха відмова, без 400/422:</b> невалідна cookie не потрапляє в <code>Map</code> → у контексті лише валідні, decoded значення</li>
+    <li>Зіпсована session-cookie → <code>get() === undefined</code> → <code>resolveSessionCookie:"none"</code> → запит стає <b>анонімним</b>, а не помилковим (cookie — необов'язковий канал)</li>
+    <li>Патерн — на <b>raw</b> value (тому є <code>%</code>); коректність encoding окремо; у Map лягає <b>decoded</b></li>
+    <li>Семантику (валідний токен/CSRF) вирішують далі: <code>resolveSessionCookie</code> → <code>sessionHandler</code> → <code>checkToken</code></li>
+  </ul>
+  <p class="footnote">Allowlist-санітайзер проти injection через імена/значення cookie та abuse завеликими cookie — <b>до</b> того, як дані стануть частиною <code>HttpContext</code>. Той самий <code>parseCookies</code> працює і в static-server.</p>
+</section>
+
+<!-- 8c -->
+<section>
+  <h2>Валідація headers — санітайзер під час snapshot</h2>
+  <p class="small">Симетрично до cookies: headers валідуються синхронно в <code>getHeaders</code> фіксованим allowlist (<code>header-checker.ts</code>), не per-route схемою. uWS віддає <b>lowercase</b> ключі.</p>
+  <pre><code class="language-ts">// getHeaders — http-request-handlers.ts
+req.forEach((key, value) =&gt; {
+  if (key === "cookie") return;          // ← навмисно: парситься окремо в httpData.cookies
+  if (validateHeader(key, value)) headers.set(key, value.trim()); // зберігаємо trimmed
+  else logger.warn(`Invalid header detected and skipped: ${key}`);// тиха відмова
+});</code></pre>
+  <pre><code class="language-ts">// validateHeader — header-checker.ts  (boolean, НЕ кидає)
+HEADER_NAME_PATTERN  = /^[a-zA-Z0-9\-_]+$/   // name: 1…256, жорсткіше за RFC-token
+HEADER_VALUE_PATTERN = /^[\x09\x20-\x7E]*$/  // tab + printable ASCII; value ≤ 3072
+//   '*' → порожнє value дозволене (на відміну від cookies)</code></pre>
+  <ul>
+    <li><b>Захист від header/response injection:</b> <code>CR</code>/<code>LF</code> (<code>0x0D/0x0A</code>) поза діапазоном → відкидаються (блок response splitting / smuggling)</li>
+    <li><b>Тиха відмова, без 400:</b> невалідний header просто не потрапляє в Map; запит продовжується без нього</li>
+    <li>Похідні значення snapshot беруться вже з цього Map: <code>headers.get("content-type")</code> → <code>detectBodyKind</code>; відкинутий content-type → <code>bodyKind:"other"</code></li>
+    <li>Семантику читають далі: <code>csrf_guard</code> (X-CSRF-Token/Origin), <code>session_api</code> (Bearer), <code>getIP</code> (X-Forwarded-For)</li>
+    <li><b>Cookie навмисно виключений</b> із headers-мапи: сирий <code>cookie</code> несе session/csrf/ws-секрети, а доступний уже розпарсений у <code>httpData.cookies</code>. Це усуває подвійну валідацію та запобігає витоку при дампі заголовків (напр. <code>testHeaders</code>). <code>authorization</code> лишається (його читає <code>session_api</code>), тож його маскують на віддачі.</li>
+  </ul>
+  <p class="footnote">Ліміти узгоджені з uWS (~4 KB на всі заголовки). Той самий <code>getHeaders</code> працює і в static-server.</p>
+</section>
+
+<!-- 9 -->
+<section>
+  <h2>Крок 2 — rate-limit ДО тіла (чому саме тут)</h2>
+  <pre><code class="language-ts">const rateLimitPassed = checkRateLimit(
+  meta.ip, responseData, route, route.groupRateLimit);
+if (!rateLimitPassed) {
+  if (abortSignal.aborted) return;
+  res.cork(() =&gt; sendResponse(res, responseData, origin));  // 429
+  return;
+}</code></pre>
+  <ul>
+    <li><b>Anti-DoS:</b> інакше зловмисник змусив би сервер буферизувати й парсити тіло (до <code>maxOctetBodySize</code>) навіть на заблокованих маршрутах</li>
+    <li><span class="hl">Sync by design</span>: якщо тут зробити <code>await</code>, uWS може доставити тіло маленького POST до реєстрації <code>res.onData()</code> — і хендлер <b>назавжди зависне</b> в pending</li>
+    <li>На 429 додається <code>Retry-After</code> + <code>X-RateLimit-*</code></li>
+  </ul>
+</section>
+
+<!-- 10 -->
+<section>
+  <h2>Крок 3 — валідація query</h2>
+  <pre><code class="language-ts">export const validateQuery = (meta, route): unknown =&gt; {
+  if (route.queryValidator === undefined) {
+    return null;                       // ← немає схеми → query === null
+  }
+  const arrayKeys  = new Set(route.queryArrays ?? []);
+  const flattened  = flattenQuery(meta.query, arrayKeys);   // URLSearchParams → obj
+  return validateRoutePayload(route.queryValidator, flattened);  // 422 при помилці
+};</code></pre>
+  <ul>
+    <li>Виконується <b>після</b> rate-limit та <b>до</b> body — не витрачаємо IO/parse на вже невалідну query</li>
+    <li>Middleware і handler <b>завжди</b> бачать або типізований об'єкт, або <code>null</code> — ніколи raw <code>URLSearchParams</code></li>
+    <li>Без <code>queryValidator</code> читання <code>httpData.query.*</code> — помилка TypeScript</li>
+  </ul>
+</section>
+
+<!-- 11 -->
+<section>
+  <h2>flattenQuery — масиви та дублікати</h2>
+  <pre><code class="language-ts">export function flattenQuery(q: URLSearchParams,
+  arrayKeys: ReadonlySet&lt;string&gt; = new Set()): FlattenedQuery {
+  const out: FlattenedQuery = {}; const seen = new Set&lt;string&gt;();
+  for (const [key, value] of q) {
+    if (arrayKeys.has(key)) {                       // оголошений як масив
+      const slot = out[key];
+      Array.isArray(slot) ? slot.push(value) : (out[key] = [value]);
+      continue;                                     // 1 входження → ['x'], не 'x'
+    }
+    if (seen.has(key)) throw new ValidationError([`Duplicate query key: ${key}`]);
+    seen.add(key); out[key] = value;
+  }
+  return out;
+}</code></pre>
+  <ul>
+    <li>Ключ у <code>queryArrays</code> → завжди <code>string[]</code> (навіть одне значення) → схема сміливо пише <code>'string[]'</code></li>
+    <li>Повтор не-масивного ключа → <b>422</b> (а не «тихо лишити останній», як <code>Object.fromEntries</code>)</li>
+  </ul>
+</section>
+
+<!-- 12 -->
+<section>
+  <h2>queryValidator — strict / loose / morphs</h2>
+  <pre><code class="language-ts">// app/routing/define-route.ts — обгортка схеми при defineRoute
+const applyStrictPolicy = (schema, allowExtra) =&gt;
+  schema.onUndeclaredKey(allowExtra ? "delete" : "reject");
+
+const wrappedQueryValidator = config.queryValidator
+  ? defaultValidator(applyStrictPolicy(config.queryValidator,
+                                       config.queryAllowExtra === true))
+  : undefined;</code></pre>
+  <table>
+    <tr><th>Налаштування</th><th>Поведінка зайвих ключів</th></tr>
+    <tr><td>default (strict)</td><td><code>reject</code> → зайвий ключ = <b>422</b></td></tr>
+    <tr><td><code>queryAllowExtra: true</code></td><td><code>delete</code> → пропустити, але <b>зрізати</b> з query</td></tr>
+  </table>
+  <p class="small">ArkType <code>onUndeclaredKey</code> зберігає morphs/defaults — змінюється лише політика зайвих ключів. Приклад морфів: <code>type('string.integer.parse').pipe(type('number &gt; 0'))</code> з дефолтом.</p>
+</section>
+
+<!-- 13 -->
+<section>
+  <h2>Крок 4 — body: guard ДО читання (415 / 413)</h2>
+  <pre><code class="language-ts">export const readAndParseBody = async (res, meta, route, abortSignal) =&gt; {
+  if (!meta.hasBody || meta.contentType === undefined)
+    return { payload: null, files: null };
+
+  const allowed = route.allowedContentTypes ?? ["json"];
+  if (!allowed.includes(meta.bodyKind))                    // ← 415
+    throw new UnsupportedMediaTypeError(meta.contentType, allowed);
+
+  const limit = resolveMaxBodySize(meta.bodyKind);         // json/multipart/octet
+  const declared = /^\d+$/.test(rawContentLength) ? Number(rawContentLength) : null;
+  if (declared !== null &amp;&amp; declared &gt; limit)               // ← 413 до читання!
+    throw new PayloadTooLargeError(limit, meta.contentType);
+
+  const result = await getData(res, meta.contentType, meta.headers, limit, abortSignal);
+  ...</code></pre>
+  <p class="small">Content-Type поза allowlist → <b>415</b>. <code>Content-Length</code> &gt; ліміт → <b>413</b> <i>до</i> виділення буфера. <code>getData</code> ще раз ріже за <code>limit</code> під час стрімінгу (захист від брехливого Content-Length).</p>
+</section>
+
+<!-- 14 -->
+<section>
+  <h2>Крок 4 — валідація тіла (payload)</h2>
+  <pre><code class="language-ts">// продовження readAndParseBody
+  if (route.validator !== undefined &amp;&amp; result.payload !== null) {
+    return {
+      payload: validateRoutePayload(route.validator, result.payload) as Payload,
+      files: result.files,
+    };
+  }
+  return { payload: null, files: result.files };  // ← НЕМАЄ validator → payload відкидається
+};</code></pre>
+  <p class="hl">Критично: якщо у маршруту немає <code>validator</code> — тіло <b>повністю відкидається</b>, <code>payload = null</code>.</p>
+  <ul>
+    <li>Це навмисно: жоден не-валідований об'єкт не доходить до handler</li>
+    <li><code>files</code> (multipart) проходять окремо й завжди доступні через <code>httpData.files</code></li>
+  </ul>
+</section>
+
+<!-- 15 -->
+<section>
+  <h2>validateRoutePayload + ArkType adapter</h2>
+  <pre><code class="language-ts">// vendor/utils/validation/validate-route-payload.ts
+export const validateRoutePayload = &lt;T&gt;(validator: Validator&lt;T&gt;, payload): T =&gt; {
+  const out = validator.validate(payload);
+  if (!out.ok) throw new ValidationError(out.messages);   // → 422 (HTTP) / envelope (WS)
+  return out.value;
+};</code></pre>
+  <pre><code class="language-ts">// app/validate/adapters/arktype-adapter.ts — єдиний engine
+export function arkValidator&lt;T&gt;(schema: Type&lt;T&gt;): Validator&lt;T&gt; {
+  return {
+    validate(input): ValidationResult&lt;T&gt; {
+      const result = schema(input);
+      if (result instanceof type.errors)
+        return { ok: false, messages: [result.summary] };
+      return { ok: true, value: result as T };     // ← morphs/defaults застосовані
+    },
+  };
+}</code></pre>
+  <p class="small">Контракт <code>Validator&lt;T&gt;</code> ({ <code>validate(input) → {ok,value} | {ok,messages}</code> }) абстрагує движок. Body, query, WS-payload, WS-envelope — усі йдуть через <b>один</b> інтерфейс.</p>
+</section>
+
+<!-- 16 -->
+<section>
+  <h2>Крок 5 — збірка HttpData (всі поля)</h2>
+  <pre><code class="language-ts">const httpData: HttpData = {
+  method:      route.method,
+  ip:          meta.ip,
+  params:      meta.params,            // валідовані :params
+  payload,                             // валідоване body | null
+  query:       validatedQuery,         // валідована query | null
+  headers:     meta.headers,           // Map
+  contentType: meta.contentType,
+  cookies:     meta.cookies,           // Map
+  isJson:      meta.hasBody &amp;&amp; meta.bodyKind === "json",
+  files,                               // Map&lt;name, UploadedFile&gt; | null
+  hasFile: (name) =&gt; files?.has(name) ?? false,
+};
+const context = contextHandler(httpData, responseData);</code></pre>
+  <p class="small">До цього моменту кожне поле, що могло бути «небезпечним» (payload/query/params/content-type/size), вже <b>пройшло перевірку</b>. <code>cookies</code> і <code>headers</code> вже просанітизовані (allowlist) при snapshot — без control-символів та CRLF, зі здоровими лімітами. Семантику обох читають конкретні middleware (csrf, session).</p>
+</section>
+
+<!-- 17 -->
+<section>
+  <h2>contextHandler — народження HttpContext</h2>
+  <pre><code class="language-ts">// vendor/utils/context/http-context.ts
+const session: Session = getDefaultSession();   // no-op сесія (singleton)
+const auth: Auth = getDefaultAuth();            // getUserId → null, check → false
+
+export default (httpData, responseData): HttpContext =&gt; {
+  const requestId = randomUUID();
+  const requestLogger = logger.child({ requestId });   // scoped pino
+  return { requestId, logger: requestLogger,
+           httpData, responseData, session, auth };
+};</code></pre>
+  <ul>
+    <li>Контекст народжується з <b>default</b> session/auth (анонім: <code>check()===false</code>)</li>
+    <li><code>requestId</code> → у <code>logger.child</code> → у всіх логах і Sentry цього запиту</li>
+    <li>Реальні session/auth <b>підставляє middleware</b> (наступний слайд)</li>
+  </ul>
+</section>
+
+<!-- 18 -->
+<section>
+  <h2>session / auth — наповнює middleware</h2>
+  <pre><code class="language-ts">// middleware session_web завантажує Redis-сесію з cookie
+// та підмінює context.session / context.auth реальними реалізаціями
+const adminGuard: Middleware = async (context, next) =&gt; {
+  const userId = context.auth.getUserId();   // вже не null, якщо session_web відпрацював
+  if (userId === null) {
+    context.responseData.status = 403;
+    context.responseData.payload = { status: 'forbidden', ... };
+    return;                                   // коротке замикання — next() НЕ викликаємо
+  }
+  await next();
+};</code></pre>
+  <ul>
+    <li><code>session_web</code> → сесія з cookie · <code>session_api</code> → за Bearer-токеном</li>
+    <li><code>csrf_guard</code> читає <code>headers</code> / <code>cookies</code> з <code>httpData</code> та <code>session.data.csrfToken</code></li>
+    <li><code>auth_guard</code> → 401, якщо <code>context.auth.check() === false</code></li>
+  </ul>
+  <p class="small">Handler виконується лише якщо ланцюг middleware не замкнувся і <code>status ∈ [200,300)</code>.</p>
+</section>
+
+<!-- 19 -->
+<section>
+  <h2>Типобезпечний доступ: getTypedPayload / getTypedQuery</h2>
+  <pre><code class="language-ts">// vendor/utils/validation/get-typed-payload.ts
+export function getTypedPayload&lt;T&gt;(context: HttpContext&lt;T&gt; | WsContext&lt;T&gt;): T {
+  const payload = "httpData" in context
+    ? context.httpData.payload : context.wsData.payload;
+  if (payload === null) throw new Error("Payload is missing");  // навмисно — баг конфігу
+  return payload as T;            // runtime-валідація вже пройшла у server/dispatcher
+}
+
+export function getTypedQuery&lt;T&gt;(context: HttpContext): T {
+  const query = context.httpData.query;
+  if (query === null)
+    throw new Error("getTypedQuery called on a route without queryValidator");
+  return query;
+}</code></pre>
+  <ul>
+    <li>Хелпери <b>не валідують</b> — лише звужують тип (валідація вже відбулась раніше)</li>
+    <li><code>null</code> → throw: це сигнал, що маршрут забув оголосити схему — баг має «вилізти» одразу</li>
+  </ul>
+</section>
+
+<!-- 20 -->
+<section>
+  <h2>HTTP — матриця валідації даних контексту</h2>
+  <table>
+    <tr><th>Дані</th><th>Де перевіряються</th><th>Помилка → статус</th></tr>
+    <tr><td>client IP</td><td>getIP (trusted-proxy / CIDRs)</td><td>—</td></tr>
+    <tr><td>rate limit</td><td>checkRateLimit (до body)</td><td>429 + Retry-After</td></tr>
+    <tr><td>URL <code>:params</code></td><td>extractParameters / checker</td><td>400 (ParameterValidationError)</td></tr>
+    <tr><td>query</td><td>flattenQuery + queryValidator</td><td>422 (ValidationError)</td></tr>
+    <tr><td>Content-Type</td><td>allowedContentTypes</td><td>415 (UnsupportedMediaType)</td></tr>
+    <tr><td>body size</td><td>Content-Length + стрім-ліміт</td><td>413 (PayloadTooLarge)</td></tr>
+    <tr><td>body (payload)</td><td>validator (ArkType)</td><td>422 (ValidationError)</td></tr>
+    <tr><td>auth / role</td><td>session/csrf/auth/admin guards</td><td>401 / 403</td></tr>
+  </table>
+  <p class="small">Усі ці помилки централізовано мапить <code>handleError()</code> у канонічний <code>{ status, code, message, details }</code>.</p>
+</section>
+
+<!-- 21 -->
+<section>
+  <h2>WS — конвеєр формування контексту</h2>
+  <div class="ascii">handshake:  handleUpgrade(res, req, ctx)        ← vendor/utils/network/ws-handlers.ts
+  │  token з Sec-WebSocket-Protocol → checkToken (формат)
+  │  onUpgrade(token) → verifyUpgradeToken (Redis)
+  └─ res.upgrade(userData{ userId, sessionId, userToken, ip, appType... })
+
+per-message:  onMessage(ws, buf, isBinary, routes)
+  │  "ping" → "pong";  isBinary → reject
+  │  JSON.parse → getWsMessageValidator().validate(envelope)   ← 1. envelope
+  │  wsSessionHandler(sessionId, userToken) → session | null   ← 2. session (Redis)
+  │     null → closeExpiredSession(4001)
+  └─ wsApiHandler(message, ws, userData, session, routes)
+        │  route = routes[event.split(":")[0]]   not found → error envelope
+        │  checkRateLimitWs(ws, route)            → rate envelope
+        │  validateRoutePayload(route.validator)  ← 3. payload (422-аналог)
+        │  WsData збірка → createWsContext(...) → middleware → handler</div>
+</section>
+
+<!-- 22 -->
+<section>
+  <h2>WS handshake — token → userData</h2>
+  <pre><code class="language-ts">// handleUpgrade — token приходить через Sec-WebSocket-Protocol
+const token   = protocols[0] ?? "";
+const appType = normalizeAppTypeProtocol(protocols[1] ?? "");  // web | pwa
+
+if (!checkToken(token)) {                       // формат: довжина + [a-zA-Z0-9]
+  res.writeStatus("401 Unauthorized").end("Invalid token format");
+  return;
+}
+const dataAccess = await getAppHooks().onUpgrade(token);  // → Redis verify
+
+res.upgrade({
+  ip, ip2, token, uuid: generateUUID(),
+  sessionId: dataAccess?.sessionId, userId: dataAccess?.userId,
+  userToken: dataAccess?.userToken, appType, userAgent, timeStart: Date.now(),
+}, secWebsocketKey, token, secWebsocketExtensions, context);</code></pre>
+  <p class="small">Браузерний WebSocket API дозволяє лише <code>Sec-WebSocket-Protocol</code> як кастомний заголовок — туди й кладеться токен. <code>checkToken</code> валідує <b>формат</b> ще до Redis-перевірки.</p>
+</section>
+
+<!-- 23 -->
+<section>
+  <h2>WS — верифікація сесії (verifyUpgradeToken)</h2>
+  <pre><code class="language-ts">// app/websocket/ws-session-auth.ts
+const tokenData = await redis.get(`auth:ws:${token}`);   // короткоживучий ключ
+const { sessionId, userId, userToken } = JSON.parse(tokenData);
+// усі поля мають бути непорожні, інакше → null
+
+const sessionKey  = `session:${userToken}:${sessionId}`;
+const sessionData = await redis.get(sessionKey);
+const sessionInfo = JSON.parse(sessionData);
+if (String(sessionInfo.data.userId) === userId)          // ← звірка identity
+  return { sessionId, userId, userToken };
+return null;                                              // mismatch → відмова</code></pre>
+  <ul>
+    <li>Двоступенева перевірка: <b>ws-token</b> (TTL 120с) → <b>session</b> у Redis</li>
+    <li>Звірка <code>session.data.userId === token.userId</code> — захист від підміни</li>
+    <li>Будь-яке неспівпадіння/відсутність → identity не формується</li>
+  </ul>
+</section>
+
+<!-- 24 -->
+<section>
+  <h2>WS — валідація envelope (рівень повідомлення)</h2>
+  <pre><code class="language-ts">// onMessage — кожен фрейм спершу проходить envelope-валідатор
+const parsedMessage = JSON.parse(jsonMessage);
+const validatedMessage = getWsMessageValidator().validate(parsedMessage);
+if (!validatedMessage.ok) {
+  sendJson(ws, { status: "error",
+    error: createWsErrorEnvelope("validation_failed", "Validation failure",
+      { details: { kind: "validation", messages: validatedMessage.messages } }),
+    event, timestamp, data: null });
+  return;
+}
+const message = validatedMessage.value;   // { event, payload, timestamp }</code></pre>
+  <ul>
+    <li><code>WsMessage</code> = <code>{ event: string; payload: object|null; timestamp: number }</code></li>
+    <li>Валідатор реєструється на старті: <code>registerWsMessageValidator(...)</code> (fail-fast, якщо забули)</li>
+    <li>Це <b>зовнішня оболонка</b> — до маршрутизації; невалідний конверт = одразу error envelope</li>
+  </ul>
+</section>
+
+<!-- 25 -->
+<section>
+  <h2>WS — dispatcher: маршрут, rate-limit, payload</h2>
+  <pre><code class="language-ts">// vendor/utils/routing/ws-api-dispatcher.ts
+const nameRoute = message.event.split(":")[0];     // "event_typing:42" → "event_typing"
+const route = wsRoutesByUrl[nameRoute];
+if (route === undefined) { /* error: not_found */ }
+
+const rl = checkRateLimitWs(ws, route, route.groupRateLimit);
+if (!rl.allowed) return createWsRateLimitErrorResponse(rl.errorMessage, rl.retryAfter, event);
+
+let payload = message.payload ?? null;
+if (route.validator !== undefined) {                       // ← 3-й рівень валідації
+  payload = validateRoutePayload(route.validator, rawPayload);  // throw ValidationError
+}</code></pre>
+  <p class="small">Три рівні валідації WS: <b>(1)</b> envelope у <code>onMessage</code> → <b>(2)</b> session у Redis → <b>(3)</b> per-route <code>validator</code> payload тут. ValidationError ловиться у <code>catch</code> і стає <code>error: { code:"validation_failed", ... }</code>.</p>
+</section>
+
+<!-- 26 -->
+<section>
+  <h2>WS — збірка WsData (immutable payload)</h2>
+  <pre><code class="language-ts">const wsData: WsData = {
+  ws,
+  middlewareData: {},          // ← аналог "session/auth" контейнера для WS-middleware
+  status: "200",
+  payload:
+    payload !== null &amp;&amp; typeof payload === "object" &amp;&amp; !Buffer.isBuffer(payload)
+      ? Object.freeze({ ...payload })   // ← заморожена копія: handler не мутує вхід
+      : (payload ?? {}),
+};</code></pre>
+  <ul>
+    <li><code>Object.freeze({...payload})</code> — валідований payload стає <b>незмінним</b> знімком</li>
+    <li><code>middlewareData</code> — місце, куди WS-middleware кладе похідну identity (бо <code>session</code>/<code>auth</code> = null)</li>
+    <li>Не-об'єктний payload (буфер/скаляр) передається як є; <code>null → {}</code></li>
+  </ul>
+</section>
+
+<!-- 27 -->
+<section>
+  <h2>createWsContext — народження WsContext</h2>
+  <pre><code class="language-ts">// vendor/utils/context/ws-context.ts
+export default (wsData, responseData, userData, _session): WsContext =&gt; {
+  const requestId = randomUUID();
+  const requestLogger = logger.child({ requestId });
+  return {
+    requestId, logger: requestLogger,
+    ws: wsData.ws, wsData, responseData,
+    userData,           // ← identity з handshake (userId, sessionId, role, appType)
+    session: null,      // ← навмисно
+    auth: null,         // ← навмисно
+  };
+};</code></pre>
+  <p class="small">Зверніть увагу: <code>session</code> передається аргументом, але <b>навмисно ігнорується</b> (<code>_session</code>) — у контекст кладеться <code>null</code>. Сесія вже перевірена на рівні <code>onMessage</code>; для логіки handler-у вистачає <code>userData</code> + <code>middlewareData</code>.</p>
+</section>
+
+<!-- 28 -->
+<section>
+  <h2>Чому WsContext без session/auth?</h2>
+  <div class="two-col">
+    <div>
+      <h3>HTTP</h3>
+      <ul>
+        <li>Кожен запит — окрема перевірка</li>
+        <li>session/auth наповнюються <b>на кожен</b> запит у middleware</li>
+        <li>Stateless-транспорт → identity щоразу заново</li>
+      </ul>
+    </div>
+    <div>
+      <h3>WebSocket</h3>
+      <ul>
+        <li>Auth <b>один раз</b> — на handshake</li>
+        <li>Далі identity «прибита» до сокета у <code>userData</code></li>
+        <li>Сесія перевіряється на <b>кожне</b> повідомлення (TTL!), але в контекст не кладеться</li>
+      </ul>
+    </div>
+  </div>
+  <pre><code class="language-ts">// controllers/ws — identity береться з userData / middlewareData, не з auth
+eventTyping(context: WsContext&lt;WSEventTypingPayload&gt;) {
+  return wsService.eventTyping(getTypedPayload(context));   // payload вже заморожений+валідний
+}</code></pre>
+  <p class="small">Перевага: немає round-trip за сесією на кожен метод; недолік — потрібен явний контроль протермінованої сесії (<code>closeExpiredSession 4001</code>).</p>
+</section>
+
+<!-- 29 -->
+<section>
+  <h2>WS — матриця валідації &amp; error envelope</h2>
+  <table>
+    <tr><th>Дані</th><th>Де</th><th>Реакція</th></tr>
+    <tr><td>token формат</td><td>checkToken (handshake)</td><td>401, end</td></tr>
+    <tr><td>ws-token + session</td><td>verifyUpgradeToken (Redis)</td><td>userData без identity / 4001</td></tr>
+    <tr><td>binary frame</td><td>onMessage</td><td>ignore + log</td></tr>
+    <tr><td>envelope</td><td>wsMessageValidator</td><td><code>validation_failed</code></td></tr>
+    <tr><td>session TTL</td><td>wsSessionHandler</td><td><code>unauthorized</code> + close 4001</td></tr>
+    <tr><td>route</td><td>wsRoutesByUrl[name]</td><td><code>not_found</code></td></tr>
+    <tr><td>rate limit</td><td>checkRateLimitWs</td><td><code>rate</code> + retryAfter</td></tr>
+    <tr><td>payload</td><td>route.validator</td><td><code>validation_failed</code></td></tr>
+  </table>
+  <pre><code class="language-ts">WsResponseData = { event, status, timestamp,
+                   data: Payload | null,
+                   error: { code, message, reason?, details? } | null }</code></pre>
+  <p class="small">Замість HTTP-статусів — уніфікований <code>error</code> envelope; <code>status: "error"</code> + машинно-читабельний <code>code</code>.</p>
+</section>
+
+<!-- 30 -->
+<section>
+  <h1>Підсумок</h1>
+  <ul>
+    <li><b>Один принцип</b> на обидва транспорти: <code>raw → snapshot → validate → context → handler</code></li>
+    <li><b>uWS snapshot</b>: <code>req</code> живе до першого <code>await</code> → <code>collectRequestMetadata</code> рятує дані синхронно</li>
+    <li><b>Порядок перевірок невипадковий:</b> rate-limit → query → content-type → size → body — безпека й анти-DoS <i>до</i> читання тіла</li>
+    <li><b>Усе валідується одним движком</b> (ArkType через <code>Validator&lt;T&gt;</code>): body, query, params, WS-envelope, WS-payload</li>
+    <li><b>Немає схеми → немає даних:</b> body/query без validator → <code>null</code>; <code>getTyped*</code> кидає, щоб баг конфігу вилазив одразу</li>
+    <li><b>HttpContext</b>: session/auth наповнює middleware на кожен запит</li>
+    <li><b>WsContext</b>: identity з handshake (<code>userData</code>), payload <code>Object.freeze</code>, session/auth = <code>null</code> — auth один раз на з'єднання</li>
+    <li><b>Типобезпека наскрізна:</b> <code>HttpContext&lt;T, Q&gt;</code> / <code>WsContext&lt;T&gt;</code> виводяться з validator-ів автоматично</li>
+  </ul>
+  <p class="footnote">Код: <code>vendor/start/server.ts</code> · <code>vendor/utils/context/*</code> · <code>vendor/utils/validation/*</code> · <code>vendor/utils/routing/ws-api-dispatcher.ts</code> · <code>app/websocket/ws-session-auth.ts</code></p>
+</section>
+
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        width: 1280,
+        height: 800,
+        margin: 0.06,
+        plugins: [RevealHighlight, RevealNotes],
+      })
+    </script>
+  </body>
+</html>
