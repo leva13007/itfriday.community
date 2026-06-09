@@ -48,3 +48,7 @@ pnpm version major   # 1.0.0 → 2.0.0  (breaking redesign)
 ## Deploy
 
 Push to `main` → GitHub Actions → GitHub Pages → live at [itfriday.community](https://itfriday.community) in ~1 min.
+
+## Next Step
+
+Publish stream page for the most recent IT Friday stream: create `site/streams/NNN.md` (UA + EN) and update `streams/index.md`.

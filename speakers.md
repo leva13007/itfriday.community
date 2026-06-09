@@ -12,6 +12,13 @@ const speakers = [
     profile: '/speakers/oleh-levchenko',
   },
   {
+    avatar: '/speakers/oleh-talanov.jpg',
+    name: 'Олег Таланов',
+    title: 'CTO & Co-Founder · WebCap Digitals',
+    org: 'WebCap Digitals',
+    profile: '/speakers/oleh-talanov',
+  },
+  {
     avatar: '/speakers/oleksandr-blazheiko.jpg',
     name: 'Олександр Блажейко',
     title: 'Software Development Engineer',
