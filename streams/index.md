@@ -6,7 +6,7 @@
 
 | # | Дата | Тема | Гість | YouTube |
 |---|---|---|---|---|
-| [005](/streams/005) | 12.06.2026 | CTO, метал і TALL stack · інтерв'ю з Олегом Талановим | Олег Таланов | [Дивитись](https://youtube.com/live/bEW6pQlMDBc) |
+| [005](/streams/005) | 12.06.2026 | CTO, метал і Laravel + Inertia.js · інтерв'ю з Олегом Талановим | Олег Таланов | [Дивитись](https://youtube.com/live/bEW6pQlMDBc) |
 | [004](/streams/004) | 05.06.2026 | uWebSockets.js Security + React Performance Tracks | Олександр Блажейко | [Дивитись](https://youtube.com/live/Pad_b_yQyt8) |
 | [003](/streams/003) | 29.05.2026 | uWebSockets.js + React Conf 2025: useEffectEvent | Олександр Блажейко | [Дивитись](https://youtube.com/live/7wR_NxpsSFw) |
 | [002](/streams/002) | 22.05.2026 | React 19.2: `<Activity />` + AI Language Teacher | Олександр Блажейко | [Дивитись](https://youtube.com/live/R5IXxa1e8K4) |
