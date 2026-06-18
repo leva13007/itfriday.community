@@ -23,6 +23,8 @@ React · Node.js · TypeScript · AWS · System Design · Кар'єра в IT ·
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#006](/streams/006) | Хост | React ViewTransition — плавні переходи без бібліотек | 19.06.2026 |
+| [#005](/streams/005) | Хост | Інтерв'ю з Олегом Талановим — CTO, метал і Laravel | 12.06.2026 |
 | [#004](/streams/004) | Хост | React Performance Tracks — новий профайлер у Chrome DevTools | 05.06.2026 |
 | [#003](/streams/003) | Хост | useEffectEvent — React Conf 2025 | 29.05.2026 |
 | [#002](/streams/002) | Хост | React 19.2: `<Activity />` — розбір нового компонента | 22.05.2026 |
