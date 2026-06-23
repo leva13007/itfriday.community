@@ -19,4 +19,5 @@ Tags: `community` — about the community · `tech` — technical content · `ca
 
 | Date | Title | Tags |
 |------|-------|------|
+| Jun 22, 2026 | [Web Push API](./2026-06-22-web-push-api.md) | `tech` |
 | May 31, 2026 | [Why you should give talks — even if you know nothing](./2026-05-31-chomu-varto-robyty-dopovidi.md) | `career` |
