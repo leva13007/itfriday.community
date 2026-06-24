@@ -4,11 +4,12 @@
 
 ## 2026
 
-| # | Дата | Тема | Гість | YouTube |
+| # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
-| [006](/streams/006) | 19.06.2026 | React ViewTransition + PWA у WEB | Олександр Блажейко | [Дивитись](https://youtube.com/live/RJ9xqAfUl6M) |
-| [005](/streams/005) | 12.06.2026 | CTO, метал і Laravel + Inertia.js · інтерв'ю з Олегом Талановим | Олег Таланов | [Дивитись](https://youtube.com/live/bEW6pQlMDBc) |
-| [004](/streams/004) | 05.06.2026 | uWebSockets.js Security + React Performance Tracks | Олександр Блажейко | [Дивитись](https://youtube.com/live/Pad_b_yQyt8) |
-| [003](/streams/003) | 29.05.2026 | uWebSockets.js + React Conf 2025: useEffectEvent | Олександр Блажейко | [Дивитись](https://youtube.com/live/7wR_NxpsSFw) |
-| [002](/streams/002) | 22.05.2026 | React 19.2: `<Activity />` + AI Language Teacher | Олександр Блажейко | [Дивитись](https://youtube.com/live/R5IXxa1e8K4) |
-| [001](/streams/001) | 15.05.2026 | Запускаємо українське IT-ком'юніті з нуля | — | [Дивитись](https://youtube.com/live/wht8lf-h9N8) |
+| [007](/streams/007) | 26.06.2026 | React Fragment + WebRTC | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/leT3mUEmIqA) |
+| [006](/streams/006) | 19.06.2026 | React ViewTransition + PWA у WEB | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/RJ9xqAfUl6M) |
+| [005](/streams/005) | 12.06.2026 | CTO, метал і Laravel + Inertia.js · інтерв'ю з Олегом Талановим | [Олег Левченко](/speakers/oleh-levchenko) · [Олег Таланов](/speakers/oleh-talanov) | [Дивитись](https://youtube.com/live/bEW6pQlMDBc) |
+| [004](/streams/004) | 05.06.2026 | uWebSockets.js Security + React Performance Tracks | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/Pad_b_yQyt8) |
+| [003](/streams/003) | 29.05.2026 | uWebSockets.js + React Conf 2025: useEffectEvent | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/7wR_NxpsSFw) |
+| [002](/streams/002) | 22.05.2026 | React 19.2: `<Activity />` + AI Language Teacher | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/R5IXxa1e8K4) |
+| [001](/streams/001) | 15.05.2026 | Запускаємо українське IT-ком'юніті з нуля | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/wht8lf-h9N8) |

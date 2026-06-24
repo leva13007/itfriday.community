@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#007](/streams/007) | Гість | WebRTC — відео та дані напряму між браузерами | 26.06.2026 |
 | [#006](/streams/006) | Гість | PWA у WEB — Service Worker, Manifest, офлайн-режим | 19.06.2026 |
 | [#004](/streams/004) | Гість | uWebSockets.js Security — HttpContext & WsContext, валідація | 05.06.2026 |
 | [#003](/streams/003) | Гість | uWebSockets.js — архітектура, cork(), Docker | 29.05.2026 |

@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#007](/en/streams/007) | Host | React Fragment — component deep dive and FragmentInstance | 26.06.2026 |
 | [#006](/en/streams/006) | Host | React ViewTransition — smooth transitions without libraries | 19.06.2026 |
 | [#005](/en/streams/005) | Host | Interview with Oleh Talanov — CTO, metal & Laravel | 12.06.2026 |
 | [#004](/en/streams/004) | Host | React Performance Tracks — new profiler in Chrome DevTools | 05.06.2026 |

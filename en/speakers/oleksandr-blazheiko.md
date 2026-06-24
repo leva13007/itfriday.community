@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#007](/en/streams/007) | Guest | WebRTC — video and data directly between browsers | 26.06.2026 |
 | [#006](/en/streams/006) | Guest | PWA in the Web — Service Worker, Manifest, offline mode | 19.06.2026 |
 | [#004](/en/streams/004) | Guest | uWebSockets.js Security — HttpContext & WsContext, validation | 05.06.2026 |
 | [#003](/en/streams/003) | Guest | uWebSockets.js — architecture, cork(), Docker | 29.05.2026 |
