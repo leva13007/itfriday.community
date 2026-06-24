@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWA у WEB — Олександр Блажейко</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1F2A; --ink2:#10303F; --ink3:#16404F;
+    --teal:#0D9488; --teal2:#14B8A6; --mint:#5EEAD4;
+    --light:#F6FAFB; --card:#FFFFFF; --slate:#475569; --slate2:#64748B;
+    --dark:#0F172A; --line:#DCE6E6; --warn:#DC6B4F;
+    --display:'Fraunces',Georgia,serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--body); background:#06141C; color:var(--dark);
+    overflow:hidden; -webkit-font-smoothing:antialiased;
+  }
+  .deck{position:relative; width:100vw; height:100vh; overflow:hidden}
+
+  .slide{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    padding:5.2vh 6vw 8vh; opacity:0; visibility:hidden;
+    transform:translateY(14px); transition:opacity .5s ease, transform .5s ease, visibility .5s;
+    background:var(--light);
+  }
+  .slide.active{opacity:1; visibility:visible; transform:none}
+  .slide.dark{background:var(--ink); color:#fff}
+
+  /* decorative blobs on dark slides */
+  .blob{position:absolute; border-radius:50%; background:var(--ink2); z-index:0}
+
+  h1.title{font-family:var(--display); font-weight:600; font-size:clamp(28px,4.4vw,62px); line-height:1.04; letter-spacing:-.01em; color:var(--dark)}
+  .dark h1.title{color:#fff}
+  .eyebrow{font-weight:700; letter-spacing:.28em; font-size:clamp(11px,1.1vw,14px); color:var(--teal); text-transform:uppercase}
+  .dark .eyebrow{color:var(--mint)}
+  .sub{font-family:var(--display); font-style:italic; font-weight:500; color:var(--teal); font-size:clamp(16px,1.9vw,26px)}
+  .lead{color:var(--slate); font-size:clamp(14px,1.45vw,20px); line-height:1.5; max-width:60ch}
+  .dark .lead{color:#C7D6DD}
+
+  /* layout helpers */
+  .head{position:relative; z-index:2}
+  .body{position:relative; z-index:2; flex:1; display:flex; min-height:0}
+  .mt-s{margin-top:1.2vh}.mt-m{margin-top:2.4vh}.mt-l{margin-top:4vh}
+
+  /* SLIDE 1 — title */
+  .s-title .stack{display:flex; flex-direction:column; gap:1.8vh; margin-top:4vh}
+  .pill-row{display:flex; align-items:center; gap:18px}
+  .ic-circle{flex:none; display:grid; place-items:center; border-radius:50%; background:#E6F6F4; color:var(--teal)}
+  .dark .ic-circle{background:var(--ink2); color:var(--mint)}
+  .ic-circle svg{width:55%; height:55%}
+  .pill-row .t{font-weight:700; font-size:clamp(15px,1.5vw,21px)}
+  .pill-row .d{color:var(--slate2); font-size:clamp(13px,1.25vw,18px)}
+  .dark .pill-row .d{color:#9DB2BC}
+  .chip{position:absolute; right:6vw; bottom:8vh; background:var(--teal); color:#fff;
+    padding:14px 26px; border-radius:14px; font-weight:600; font-size:clamp(14px,1.5vw,20px);
+    box-shadow:0 10px 30px rgba(0,0,0,.3); z-index:2}
+
+  /* cards / grids */
+  .grid{display:grid; gap:1.6vw; width:100%}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:1fr 1fr}
+  .card{background:var(--card); border-radius:16px; padding:clamp(16px,1.8vw,28px);
+    box-shadow:0 8px 26px rgba(15,40,55,.08); display:flex; flex-direction:column}
+  .card h3{font-size:clamp(15px,1.55vw,21px); color:var(--dark); margin-top:1.4vh}
+  .card .ct{color:var(--teal)}
+  .card p{color:var(--slate2); font-size:clamp(12px,1.2vw,16px); line-height:1.45; margin-top:.7vh}
+  .num{font-family:var(--display); font-weight:600; font-size:clamp(34px,4.2vw,58px); color:#D6EBE9; line-height:1}
+
+  .ic-sq{display:grid; place-items:center; width:clamp(44px,3.6vw,64px); height:clamp(44px,3.6vw,64px);
+    border-radius:50%; background:#E6F6F4; color:var(--teal)}
+  .ic-sq svg{width:50%; height:50%}
+
+  /* two-column intro slide */
+  .two{display:grid; grid-template-columns:1.25fr 1fr; gap:3vw; width:100%}
+  .merge{background:var(--ink); color:#fff; border-radius:18px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:1.4vh; padding:3vh}
+  .merge .big{font-family:var(--display); font-weight:700; font-size:clamp(26px,3.6vw,52px); color:var(--mint)}
+  .merge .plus{font-family:var(--display); font-size:clamp(24px,3vw,44px); color:#fff}
+  .merge .eq{color:#9DB2BC; font-style:italic; font-family:var(--display)}
+  .featrow{display:flex; align-items:center; gap:14px; background:var(--card); border-radius:12px;
+    padding:12px 16px; box-shadow:0 6px 18px rgba(15,40,55,.07)}
+  .featrow .ic-circle{width:42px;height:42px}
+  .featrow b{font-size:clamp(13px,1.3vw,18px)} .featrow span{color:var(--slate2); font-size:clamp(12px,1.15vw,15px)}
+
+  /* stats row */
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:1.6vw}
+  .stat{background:var(--ink); color:#fff; border-radius:14px; padding:clamp(16px,1.8vw,26px)}
+  .stat .v{font-family:var(--display); font-weight:700; color:var(--mint); font-size:clamp(28px,3.6vw,50px); line-height:1}
+  .stat .v small{color:#fff; font-size:.42em; font-weight:600; font-family:var(--body)}
+  .stat .d{color:#9DB2BC; font-size:clamp(12px,1.15vw,15px); margin-top:1vh; line-height:1.4}
+  .benefits{background:var(--card); border-radius:16px; padding:clamp(18px,2vw,30px);
+    box-shadow:0 8px 26px rgba(15,40,55,.08); display:grid; grid-template-columns:1fr 1fr;
+    gap:1.4vh 3vw; align-content:center}
+  .ben{display:flex; align-items:center; gap:14px; font-size:clamp(13px,1.35vw,18px); color:var(--dark)}
+  .ben .ck{flex:none; width:clamp(22px,2vw,30px); height:clamp(22px,2vw,30px); color:var(--teal)}
+
+  /* table */
+  table{width:100%; border-collapse:separate; border-spacing:0; font-size:clamp(12px,1.25vw,17px)}
+  th,td{padding:clamp(9px,1.3vh,16px) 14px; text-align:center; border-bottom:1px solid var(--line)}
+  thead th{background:var(--ink); color:#fff; font-weight:600}
+  thead th:first-child{border-top-left-radius:12px} thead th:last-child{border-top-right-radius:12px}
+  tbody th{text-align:left; font-weight:600; background:#EEF4F4; color:var(--dark)}
+  td.yes{color:var(--teal); font-weight:700} td.no{color:#94A3B8; font-weight:700}
+  td.hi{color:var(--teal)} td.warn{color:var(--warn)}
+  tbody tr:last-child td,tbody tr:last-child th{border-bottom:none}
+
+  /* CODE slides */
+  .code-wrap{display:grid; grid-template-columns:1fr 1.35fr; gap:2.6vw; width:100%; min-height:0}
+  .code-side{display:flex; flex-direction:column; gap:1.6vh; align-self:center}
+  .code-side .ic-sq{width:clamp(50px,4vw,72px); height:clamp(50px,4vw,72px)}
+  .filename{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-weight:600;
+    font-size:clamp(13px,1.3vw,18px); color:var(--teal); background:#E6F6F4; padding:6px 14px; border-radius:8px; width:fit-content}
+  .keyfacts{list-style:none; display:flex; flex-direction:column; gap:1vh}
+  .keyfacts li{display:flex; gap:10px; color:var(--slate); font-size:clamp(12px,1.25vw,16px); line-height:1.4}
+  .keyfacts li::before{content:"›"; color:var(--teal); font-weight:700; flex:none}
+  pre{background:var(--ink); border-radius:14px; padding:clamp(14px,1.6vw,24px) clamp(16px,1.8vw,26px);
+    overflow:auto; box-shadow:0 14px 40px rgba(0,0,0,.18); align-self:center; max-height:78vh; width:100%}
+  pre .bar{display:flex; gap:7px; margin-bottom:14px}
+  pre .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  code{font-family:var(--mono); font-size:clamp(11px,1.15vw,15.5px); line-height:1.65; color:#CBD5E1; white-space:pre; display:block}
+  .tok-key{color:#5EEAD4} .tok-str{color:#FCD9A8} .tok-num{color:#F8A6A0}
+  .tok-com{color:#5B7686; font-style:italic} .tok-fn{color:#7DD3FC} .tok-punc{color:#8DA4AE}
+  .tok-bool{color:#C4B5FD}
+
+  /* conclusion */
+  .takeaways{display:flex; flex-wrap:wrap; gap:14px; margin-top:1vh}
+  .tk{display:flex; align-items:center; gap:10px; background:var(--ink2); color:#fff;
+    padding:12px 22px; border-radius:12px; font-weight:600; font-size:clamp(13px,1.3vw,18px)}
+  .tk .ck{width:22px;height:22px;color:var(--mint)}
+  .sign{position:absolute; left:6vw; bottom:7vh; display:flex; align-items:center; gap:16px; z-index:2}
+  .sign .name{font-weight:700; color:#fff; font-size:clamp(14px,1.4vw,19px)}
+  .sign .role{color:var(--mint); font-size:clamp(11px,1.2vw,15px)}
+  .thanks{position:absolute; right:6vw; bottom:7vh; font-family:var(--display); font-style:italic;
+    font-weight:600; color:var(--mint); font-size:clamp(20px,2.6vw,38px); z-index:2}
+
+  /* nav chrome */
+  .progress{position:fixed; top:0; left:0; height:4px; background:var(--teal2); width:0;
+    transition:width .4s ease; z-index:50}
+  .nav{position:fixed; bottom:22px; right:26px; display:flex; align-items:center; gap:10px; z-index:50}
+  .nav button{width:42px;height:42px;border:none;border-radius:50%; background:rgba(255,255,255,.92);
+    color:var(--ink); font-size:18px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.18);
+    display:grid;place-items:center; transition:background .2s, transform .15s}
+  .nav button:hover{background:#fff; transform:translateY(-2px)}
+  .nav button:disabled{opacity:.35; cursor:default; transform:none}
+  .counter{position:fixed; bottom:30px; left:26px; z-index:50; font-weight:600;
+    font-size:13px; color:var(--slate2); background:rgba(255,255,255,.85); padding:6px 12px; border-radius:20px}
+  .slide.dark ~ .counter{}
+  .dots{position:fixed; bottom:30px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:50}
+  .dot{width:9px;height:9px;border-radius:50%; background:rgba(100,116,139,.4); border:none; cursor:pointer; padding:0; transition:all .2s}
+  .dot.on{background:var(--teal); width:24px; border-radius:6px}
+  .hint{position:fixed; bottom:30px; left:50%; transform:translateX(-50%); z-index:40}
+
+  @media (max-width:820px){
+    .slide{padding:4vh 6vw 9vh}
+    .two,.code-wrap{grid-template-columns:1fr; gap:2vh}
+    .g3,.stats{grid-template-columns:1fr}
+    .benefits{grid-template-columns:1fr}
+    .merge{display:none}
+    pre{max-height:46vh}
+    .thanks{position:static; text-align:left; margin-top:2vh}
+    .sign{position:static; margin-top:2vh}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .slide{transition:opacity .01s}
+    .nav button:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1 — Title -->
+  <section class="slide dark s-title active">
+    <div class="blob" style="width:34vw;height:34vw;right:-8vw;top:-12vw"></div>
+    <div class="blob" style="width:22vw;height:22vw;right:4vw;bottom:-10vw"></div>
+    <div class="head">
+      <div class="eyebrow">Доповідач</div>
+      <h1 class="title mt-s">Олександр Блажейко</h1>
+      <div class="sub mt-s">Full Stack розробник</div>
+    </div>
+    <div class="body" style="align-items:flex-end">
+      <div class="stack">
+        <div class="pill-row">
+          <span class="ic-circle" style="width:54px;height:54px">
+            <svg viewBox="0 0 512 512" fill="currentColor"><path d="M505.1 19.1C503.8 13 499 8.2 492.9 6.9 460.7 0 435.5 0 410.4 0 307.2 0 245.3 55.2 199.1 128H94.9c-18.6 0-45 12.6-53.4 29.3L1.3 237.7c-5.4 10.7 2.3 23.3 14.3 23.3h83.3c-9.2 23.7-15.4 50.2-19.2 79.4-1.2 9.2 2 18.4 8.6 24.9l44.4 44.4c6.6 6.6 15.7 9.8 24.9 8.6 29.1-3.7 55.6-9.9 79.3-19.1v83.2c0 12 12.7 19.7 23.4 14.3l80.3-40.1c16.7-8.4 29.3-34.8 29.3-53.4V382.9c72.9-46.2 128-108.1 128-211.2 0-25.2 0-50.4-6.9-82.6zM384 168c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40-17.9 40-40 40z"/></svg>
+          </span>
+          <div><span class="t">7 років</span> <span class="d">— досвіду в комерційній розробці</span></div>
+        </div>
+        <div class="pill-row">
+          <span class="ic-circle" style="width:54px;height:54px">
+            <svg viewBox="0 0 448 512" fill="currentColor"><path d="M356.9 64.3H280l-56 88.6-48-88.6H0L224 448 448 64.3h-91.1zm-301.2 32h53.8L224 294.5 338.4 96.3h53.8L224 384.7 55.7 96.3z"/></svg>
+          </span>
+          <div><span class="t">Vue.js</span> <span class="d">— основний фронтенд-стек</span></div>
+        </div>
+        <div class="pill-row">
+          <span class="ic-circle" style="width:54px;height:54px">
+            <svg viewBox="0 0 448 512" fill="currentColor"><path d="M224 508c-6.7 0-13.5-1.8-19.4-5.2l-61.7-36.5c-9.2-5.2-4.7-7-1.7-8 12.3-4.3 14.8-5.2 27.9-12.7 1.4-.8 3.2-.5 4.6.4l47.4 28.1c1.7 1 4.1 1 5.7 0l184.7-106.6c1.7-1 2.8-3 2.8-5V149.3c0-2.1-1.1-4-2.9-5.1L226.8 37.7c-1.7-1-4-1-5.7 0L36.6 144.3c-1.8 1-2.9 3-2.9 5.1v213.1c0 2 1.1 4 2.9 4.9l50.6 29.2c27.5 13.7 44.3-2.4 44.3-18.7V167.5c0-3 2.4-5.3 5.4-5.3h23.4c2.9 0 5.4 2.3 5.4 5.3v210.4c0 36.6-20 57.6-54.7 57.6-10.7 0-19.1 0-42.5-11.6l-48.4-27.9C8.1 380.2 0 366.1 0 351V137.9c0-15.1 8.1-29.2 21.2-36.7L205.9 1.5c12.8-7.3 29.6-7.3 42.3 0L432.8 101.2c13.1 7.6 21.2 21.6 21.2 36.7v213.1c0 15.1-8.1 29.1-21.2 36.7L248.2 494.3c-5.9 3.4-12.6 5.2-19.4 5.2zM377.1 348.4c0-39.9-27-50.5-83.7-58-57.4-7.6-63.2-11.5-63.2-24.9 0-11.1 4.9-25.9 47.4-25.9 37.9 0 51.9 8.2 57.7 33.8.5 2.4 2.7 4.2 5.2 4.2h24c1.5 0 2.9-.6 3.9-1.7s1.5-2.6 1.4-4.1c-3.7-44.1-33-64.6-92.2-64.6-52.7 0-84.1 22.2-84.1 59.5 0 40.4 31.3 51.6 81.8 56.6 60.5 5.9 65.2 14.8 65.2 26.7 0 20.6-16.6 29.4-55.5 29.4-48.9 0-59.6-12.3-63.2-36.6-.4-2.6-2.6-4.5-5.3-4.5h-23.9c-3 0-5.3 2.4-5.3 5.3 0 31.1 16.9 68.2 97.7 68.2 58.4 0 91.9-23.2 91.9-63.6z"/></svg>
+          </span>
+          <div><span class="t">Node.js</span> <span class="d">— серверна частина та API</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="chip">Тема: PWA у WEB</div>
+  </section>
+
+  <!-- SLIDE 2 — What is PWA -->
+  <section class="slide">
+    <div class="head">
+      <h1 class="title">Що таке PWA?</h1>
+      <div class="sub mt-s">Progressive Web Application</div>
+    </div>
+    <div class="body mt-m">
+      <div class="two" style="align-items:center">
+        <div>
+          <p class="lead">PWA — це вебзастосунок, побудований на звичайних веб-технологіях
+            (HTML, CSS, JavaScript), який поводиться як нативний мобільний чи десктопний
+            додаток. Користувач відкриває його у браузері, але може встановити на пристрій,
+            працювати офлайн та отримувати сповіщення.</p>
+          <div style="display:flex;flex-direction:column;gap:1.4vh;margin-top:3vh">
+            <div class="featrow">
+              <span class="ic-circle"><svg viewBox="0 0 496 512" fill="currentColor"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.5 0-200-89.5-200-200S137.5 56 248 56s200 89.5 200 200-89.5 200-200 200z"/><path d="M248 96c-88.2 0-160 71.8-160 160s71.8 160 160 160 160-71.8 160-160S336.2 96 248 96zm111.8 144h-49.6c-2-44.6-13-83.4-29.4-109.6 39.1 16.6 68.6 56.5 79 109.6zM248 144c11.6 13 27.6 47.2 30.1 96h-60.2c2.5-48.8 18.5-83 30.1-96zM136.2 240c10.4-53.1 39.9-93 79-109.6-16.4 26.2-27.4 65-29.4 109.6h-49.6zm0 32h49.6c2 44.6 13 83.4 29.4 109.6-39.1-16.6-68.6-56.5-79-109.6zM248 368c-11.6-13-27.6-47.2-30.1-96h60.2c-2.5 48.8-18.5 83-30.1 96zm32.8 13.6c16.4-26.2 27.4-65 29.4-109.6h49.6c-10.4 53.1-39.9 93-79 109.6z"/></svg></span>
+              <div><b>Доступність вебу</b> <span>— одне посилання, без магазину застосунків</span></div>
+            </div>
+            <div class="featrow">
+              <span class="ic-circle"><svg viewBox="0 0 320 512" fill="currentColor"><path d="M272 0H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h224c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zM160 480c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm112-108c0 6.6-5.4 12-12 12H60c-6.6 0-12-5.4-12-12V60c0-6.6 5.4-12 12-12h200c6.6 0 12 5.4 12 12v312z"/></svg></span>
+              <div><b>UX нативного</b> <span>— іконка на екрані, повноекранний режим</span></div>
+            </div>
+            <div class="featrow">
+              <span class="ic-circle"><svg viewBox="0 0 448 512" fill="currentColor"><path d="M349.4 44.6c5.9-13.7 1.5-29.7-10.6-38.5s-28.6-8-39.9 1.8l-256 224c-10 8.8-13.6 22.9-8.9 35.3S40.6 288 54 288h132.7l-65.1 145.6c-5.9 13.7-1.5 29.7 10.6 38.5s28.6 8 39.9-1.8l256-224c10-8.8 13.6-22.9 8.9-35.3S407.4 224 394 224H261.3l88.1-179.4z"/></svg></span>
+              <div><b>Швидкість</b> <span>— кешування та миттєве завантаження</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="merge" style="height:60vh">
+          <div class="big">WEB</div>
+          <div class="plus">+</div>
+          <div class="big">APP</div>
+          <div class="eq" style="margin-top:1.5vh">= Progressive Web App</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3 — Key characteristics -->
+  <section class="slide">
+    <div class="head"><h1 class="title">Ключові характеристики</h1></div>
+    <div class="body mt-m">
+      <div class="grid g3" style="grid-auto-rows:1fr; align-content:center">
+        <div class="card">
+          <span class="ic-sq"><svg viewBox="0 0 640 512" fill="currentColor"><path d="M634 171L322 511c-1.2 1.4-2.9 1-4 0L2.3 171c-3.4-3.7-3-9.4 1-12.5C77.2 100.3 187 64 320 64s243 36.3 396.7 94.5c4 3.1 4.3 8.8 1.3 12.5z"/></svg></span>
+          <h3>Робота офлайн</h3>
+          <p>Service Worker кешує ресурси — застосунок працює навіть без мережі.</p>
+        </div>
+        <div class="card">
+          <span class="ic-sq"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24z"/></svg></span>
+          <h3>Встановлюваність</h3>
+          <p>Додається на домашній екран без магазину застосунків.</p>
+        </div>
+        <div class="card">
+          <span class="ic-sq"><svg viewBox="0 0 448 512" fill="currentColor"><path d="M224 512c35.3 0 63.9-28.7 63.9-64H160.1c0 35.3 28.6 64 63.9 64zm215.4-149.7c-19.3-20.8-55.5-52.1-55.5-154.3 0-77.7-54.5-139.9-127.9-155.2V32c0-17.7-14.3-32-32-32s-32 14.3-32 32v20.8C118.6 68.1 64.1 130.3 64.1 208c0 102.2-36.2 133.5-55.5 154.3-6 6.5-8.7 14.3-8.6 22 .1 16.8 13.2 33.7 33.1 33.7h381.8c19.9 0 33-16.9 33.1-33.7.1-7.7-2.6-15.5-8.6-22z"/></svg></span>
+          <h3>Push-сповіщення</h3>
+          <p>Повертають користувачів навіть при закритому застосунку.</p>
+        </div>
+        <div class="card">
+          <span class="ic-sq"><svg viewBox="0 0 448 512" fill="currentColor"><path d="M349.4 44.6c5.9-13.7 1.5-29.7-10.6-38.5s-28.6-8-39.9 1.8l-256 224c-10 8.8-13.6 22.9-8.9 35.3S40.6 288 54 288h132.7l-65.1 145.6c-5.9 13.7-1.5 29.7 10.6 38.5s28.6 8 39.9-1.8l256-224c10-8.8 13.6-22.9 8.9-35.3S407.4 224 394 224H261.3l88.1-179.4z"/></svg></span>
+          <h3>Висока швидкість</h3>
+          <p>Миттєве завантаження завдяки кешу та оптимізації ресурсів.</p>
+        </div>
+        <div class="card">
+          <span class="ic-sq"><svg viewBox="0 0 448 512" fill="currentColor"><path d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"/></svg></span>
+          <h3>Безпека (HTTPS)</h3>
+          <p>Обовʼязкове захищене зʼєднання для всіх можливостей.</p>
+        </div>
+        <div class="card">
+          <span class="ic-sq"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M370.7 133.3C339.5 104 298.9 88 255.8 88c-77.5 0-144.1 53.2-160.9 126.4-2.3 9.8 5.1 19.6 15.2 19.6h28.5c6.9 0 13-4.4 15.4-10.9 13.5-37 49.1-63.1 90.3-63.1 28.2 0 53.4 12.3 71 31.6L298.6 215c-15.1 15.1-4.4 41 17 41H441c13.3 0 24-10.7 24-24V90.6c0-21.4-25.9-32.1-41-17l-53.3 53.3zM48 256H183.5c21.4 0 32.1 25.9 17 41l-37.3 37.3c17.6 19.4 42.8 31.6 71 31.6 41.1 0 76.7-26.1 90.3-63.1 2.4-6.5 8.5-10.9 15.4-10.9H368c10.2 0 17.5 9.8 15.2 19.6C366.5 370.8 299.9 424 222.4 424c-43.2 0-83.7-16-114.9-45.3L54.1 432C39 447.1 13 436.4 13 415V280c0-13.3 10.7-24 24-24z"/></svg></span>
+          <h3>Адаптивність</h3>
+          <p>Один код для мобільних, планшетів і десктопів.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4 — How it works -->
+  <section class="slide">
+    <div class="head">
+      <h1 class="title">Як це працює: 3 опори</h1>
+      <p class="lead mt-s">Будь-який PWA тримається на трьох обовʼязкових компонентах.</p>
+    </div>
+    <div class="body mt-m">
+      <div class="grid g3" style="align-content:center">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <span class="num">01</span>
+            <span class="ic-sq"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3l-42.6 24.6c-18-15.4-38.6-27.3-60.9-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7v49.3c-22.3 7.8-42.9 19.7-60.9 35.1L88.7 85.6c-4.8-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14l42.6 24.6c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c18 15.4 38.6 27.3 60.9 35.1v49.3c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.3c22.3-7.8 42.9-19.7 60.9-35.1l42.6 24.6c4.8 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"/></svg></span>
+          </div>
+          <h3 class="ct">Service Worker</h3>
+          <p>JS-скрипт, що працює у фоні окремо від сторінки. Перехоплює мережеві запити, кешує відповіді й забезпечує офлайн-режим та фонову синхронізацію.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <span class="num">02</span>
+            <span class="ic-sq"><svg viewBox="0 0 384 512" fill="currentColor"><path d="M0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm129 289l-32 32 32 32c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-48-48c-9.4-9.4-9.4-24.6 0-33.9l48-48c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zm126-33.9l48 48c9.4 9.4 9.4 24.6 0 33.9l-48 48c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l32-32-32-32c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"/></svg></span>
+          </div>
+          <h3 class="ct">Web App Manifest</h3>
+          <p>JSON-файл з метаданими: назва, іконки, кольори, режим відображення. Саме він дозволяє встановити застосунок на пристрій.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <span class="num">03</span>
+            <span class="ic-sq"><svg viewBox="0 0 448 512" fill="currentColor"><path d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"/></svg></span>
+          </div>
+          <h3 class="ct">HTTPS</h3>
+          <p>Захищене зʼєднання — обовʼязкова умова. Без нього Service Worker і більшість можливостей PWA не активуються.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5 — manifest.json -->
+  <section class="slide">
+    <div class="head"><h1 class="title">Web App Manifest</h1>
+      <p class="lead mt-s">Конфігураційний JSON, що описує, як застосунок виглядає після встановлення.</p>
+    </div>
+    <div class="body mt-m">
+      <div class="code-wrap">
+        <div class="code-side">
+          <span class="ic-sq" style="background:#E6F6F4"><svg viewBox="0 0 384 512" fill="#0D9488"><path d="M0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z"/></svg></span>
+          <span class="filename">manifest.json</span>
+          <ul class="keyfacts">
+            <li><b>name / short_name</b> — повна та скорочена назва на іконці.</li>
+            <li><b>start_url</b> — сторінка, що відкривається при запуску.</li>
+            <li><b>display: standalone</b> — без адресного рядка, як нативний.</li>
+            <li><b>icons</b> — набори іконок під різні роздільності.</li>
+            <li>Підключається через <span style="font-family:var(--mono);color:var(--teal)">&lt;link rel="manifest"&gt;</span>.</li>
+          </ul>
+        </div>
+        <pre><span class="bar"><i style="background:#FF5F56"></i><i style="background:#FFBD2E"></i><i style="background:#27C93F"></i></span><code><span class="tok-punc">{</span>
+  <span class="tok-key">"name"</span><span class="tok-punc">:</span> <span class="tok-str">"PWA Demo — Олександр Блажейко"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"short_name"</span><span class="tok-punc">:</span> <span class="tok-str">"PWA Demo"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"start_url"</span><span class="tok-punc">:</span> <span class="tok-str">"/index.html"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"display"</span><span class="tok-punc">:</span> <span class="tok-str">"standalone"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"background_color"</span><span class="tok-punc">:</span> <span class="tok-str">"#0B1F2A"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"theme_color"</span><span class="tok-punc">:</span> <span class="tok-str">"#0D9488"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"orientation"</span><span class="tok-punc">:</span> <span class="tok-str">"portrait"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"lang"</span><span class="tok-punc">:</span> <span class="tok-str">"uk"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"icons"</span><span class="tok-punc">:</span> <span class="tok-punc">[</span>
+    <span class="tok-punc">{</span>
+      <span class="tok-key">"src"</span><span class="tok-punc">:</span> <span class="tok-str">"/icons/icon-192.png"</span><span class="tok-punc">,</span>
+      <span class="tok-key">"sizes"</span><span class="tok-punc">:</span> <span class="tok-str">"192x192"</span><span class="tok-punc">,</span>
+      <span class="tok-key">"type"</span><span class="tok-punc">:</span> <span class="tok-str">"image/png"</span>
+    <span class="tok-punc">}</span><span class="tok-punc">,</span>
+    <span class="tok-punc">{</span>
+      <span class="tok-key">"src"</span><span class="tok-punc">:</span> <span class="tok-str">"/icons/icon-512.png"</span><span class="tok-punc">,</span>
+      <span class="tok-key">"sizes"</span><span class="tok-punc">:</span> <span class="tok-str">"512x512"</span><span class="tok-punc">,</span>
+      <span class="tok-key">"type"</span><span class="tok-punc">:</span> <span class="tok-str">"image/png"</span><span class="tok-punc">,</span>
+      <span class="tok-key">"purpose"</span><span class="tok-punc">:</span> <span class="tok-str">"any maskable"</span>
+    <span class="tok-punc">}</span>
+  <span class="tok-punc">]</span>
+<span class="tok-punc">}</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6 — service-worker.js -->
+  <section class="slide">
+    <div class="head"><h1 class="title">Service Worker</h1>
+      <p class="lead mt-s">Скрипт-посередник між застосунком і мережею — кешує ресурси й дає офлайн.</p>
+    </div>
+    <div class="body mt-m">
+      <div class="code-wrap">
+        <div class="code-side">
+          <span class="ic-sq" style="background:#E6F6F4"><svg viewBox="0 0 512 512" fill="#0D9488"><path d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3l-42.6 24.6c-18-15.4-38.6-27.3-60.9-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7v49.3c-22.3 7.8-42.9 19.7-60.9 35.1L88.7 85.6c-4.8-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14l42.6 24.6c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c18 15.4 38.6 27.3 60.9 35.1v49.3c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.3c22.3-7.8 42.9-19.7 60.9-35.1l42.6 24.6c4.8 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"/></svg></span>
+          <span class="filename">service-worker.js</span>
+          <ul class="keyfacts">
+            <li><b>install</b> — попередньо кешує ключові файли.</li>
+            <li><b>activate</b> — чистить застарілі версії кешу.</li>
+            <li><b>fetch</b> — стратегія «спершу кеш, потім мережа».</li>
+            <li>Реєструється з основного скрипту сторінки.</li>
+          </ul>
+        </div>
+        <pre><span class="bar"><i style="background:#FF5F56"></i><i style="background:#FFBD2E"></i><i style="background:#27C93F"></i></span><code><span class="tok-key">const</span> CACHE <span class="tok-punc">=</span> <span class="tok-str">"pwa-cache-v1"</span><span class="tok-punc">;</span>
+<span class="tok-key">const</span> ASSETS <span class="tok-punc">=</span> <span class="tok-punc">[</span><span class="tok-str">"/"</span><span class="tok-punc">,</span> <span class="tok-str">"/index.html"</span><span class="tok-punc">,</span> <span class="tok-str">"/app.js"</span><span class="tok-punc">,</span> <span class="tok-str">"/style.css"</span><span class="tok-punc">];</span>
+
+<span class="tok-com">// 1. Встановлення — кешуємо оболонку застосунку</span>
+self.<span class="tok-fn">addEventListener</span><span class="tok-punc">(</span><span class="tok-str">"install"</span><span class="tok-punc">,</span> <span class="tok-punc">(</span>e<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span> <span class="tok-punc">{</span>
+  e.<span class="tok-fn">waitUntil</span><span class="tok-punc">(</span>
+    caches.<span class="tok-fn">open</span><span class="tok-punc">(</span>CACHE<span class="tok-punc">).</span><span class="tok-fn">then</span><span class="tok-punc">((</span>c<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span> c.<span class="tok-fn">addAll</span><span class="tok-punc">(</span>ASSETS<span class="tok-punc">))</span>
+  <span class="tok-punc">);</span>
+<span class="tok-punc">});</span>
+
+<span class="tok-com">// 2. Активація — видаляємо старі кеші</span>
+self.<span class="tok-fn">addEventListener</span><span class="tok-punc">(</span><span class="tok-str">"activate"</span><span class="tok-punc">,</span> <span class="tok-punc">(</span>e<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span> <span class="tok-punc">{</span>
+  e.<span class="tok-fn">waitUntil</span><span class="tok-punc">(</span>
+    caches.<span class="tok-fn">keys</span><span class="tok-punc">().</span><span class="tok-fn">then</span><span class="tok-punc">((</span>keys<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span>
+      Promise.<span class="tok-fn">all</span><span class="tok-punc">(</span>keys
+        .<span class="tok-fn">filter</span><span class="tok-punc">((</span>k<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span> k <span class="tok-punc">!==</span> CACHE<span class="tok-punc">)</span>
+        .<span class="tok-fn">map</span><span class="tok-punc">((</span>k<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span> caches.<span class="tok-fn">delete</span><span class="tok-punc">(</span>k<span class="tok-punc">)))</span>
+    <span class="tok-punc">)</span>
+  <span class="tok-punc">);</span>
+<span class="tok-punc">});</span>
+
+<span class="tok-com">// 3. Запити — спершу кеш, інакше мережа</span>
+self.<span class="tok-fn">addEventListener</span><span class="tok-punc">(</span><span class="tok-str">"fetch"</span><span class="tok-punc">,</span> <span class="tok-punc">(</span>e<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span> <span class="tok-punc">{</span>
+  e.<span class="tok-fn">respondWith</span><span class="tok-punc">(</span>
+    caches.<span class="tok-fn">match</span><span class="tok-punc">(</span>e.request<span class="tok-punc">).</span><span class="tok-fn">then</span><span class="tok-punc">(</span>
+      <span class="tok-punc">(</span>hit<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span> hit <span class="tok-punc">||</span> <span class="tok-fn">fetch</span><span class="tok-punc">(</span>e.request<span class="tok-punc">)</span>
+    <span class="tok-punc">)</span>
+  <span class="tok-punc">);</span>
+<span class="tok-punc">});</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7 — Registration (bonus glue between the two) -->
+  <section class="slide">
+    <div class="head"><h1 class="title">Підключення в застосунку</h1>
+      <p class="lead mt-s">Два рядки у HTML та реєстрація Service Worker зв'язують усе разом.</p>
+    </div>
+    <div class="body mt-m">
+      <div class="grid g2" style="align-content:center; gap:2.6vw">
+        <div>
+          <span class="filename" style="margin-bottom:1.4vh">index.html</span>
+          <pre style="max-height:46vh"><code><span class="tok-punc">&lt;</span><span class="tok-key">link</span> <span class="tok-fn">rel</span><span class="tok-punc">=</span><span class="tok-str">"manifest"</span> <span class="tok-fn">href</span><span class="tok-punc">=</span><span class="tok-str">"/manifest.json"</span><span class="tok-punc">&gt;</span>
+<span class="tok-punc">&lt;</span><span class="tok-key">meta</span> <span class="tok-fn">name</span><span class="tok-punc">=</span><span class="tok-str">"theme-color"</span>
+      <span class="tok-fn">content</span><span class="tok-punc">=</span><span class="tok-str">"#0D9488"</span><span class="tok-punc">&gt;</span></code></pre>
+        </div>
+        <div>
+          <span class="filename" style="margin-bottom:1.4vh">app.js</span>
+          <pre style="max-height:46vh"><code><span class="tok-key">if</span> <span class="tok-punc">(</span><span class="tok-str">"serviceWorker"</span> <span class="tok-key">in</span> navigator<span class="tok-punc">)</span> <span class="tok-punc">{</span>
+  navigator.serviceWorker
+    .<span class="tok-fn">register</span><span class="tok-punc">(</span><span class="tok-str">"/service-worker.js"</span><span class="tok-punc">)</span>
+    .<span class="tok-fn">then</span><span class="tok-punc">((</span>reg<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span>
+      console.<span class="tok-fn">log</span><span class="tok-punc">(</span><span class="tok-str">"SW зареєстровано"</span><span class="tok-punc">,</span> reg.scope<span class="tok-punc">))</span>
+    .<span class="tok-fn">catch</span><span class="tok-punc">((</span>err<span class="tok-punc">)</span> <span class="tok-key">=&gt;</span>
+      console.<span class="tok-fn">error</span><span class="tok-punc">(</span><span class="tok-str">"Помилка SW"</span><span class="tok-punc">,</span> err<span class="tok-punc">));</span>
+<span class="tok-punc">}</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8 — Advantages -->
+  <section class="slide">
+    <div class="head"><h1 class="title">Переваги для бізнесу та користувача</h1></div>
+    <div class="body mt-m" style="flex-direction:column; gap:2.4vh; justify-content:center">
+      <div class="stats">
+        <div class="stat"><div class="v">1<small> кодова база</small></div><div class="d">замість окремих iOS / Android / Web</div></div>
+        <div class="stat"><div class="v">~70%</div><div class="d">менше відмов завдяки швидкому старту</div></div>
+        <div class="stat"><div class="v">0<small> store</small></div><div class="d">встановлення прямо з браузера</div></div>
+      </div>
+      <div class="benefits">
+        <div class="ben"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Швидкий запуск і плавна робота</div>
+        <div class="ben"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Краще SEO та індексація пошуковиками</div>
+        <div class="ben"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Економія на окремій нативній розробці</div>
+        <div class="ben"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Повторне залучення через push-сповіщення</div>
+        <div class="ben"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Легке оновлення — без перевидання у store</div>
+        <div class="ben"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Менший розмір, ніж нативний застосунок</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9 — Comparison -->
+  <section class="slide">
+    <div class="head"><h1 class="title">PWA vs Нативний vs Веб</h1></div>
+    <div class="body mt-m" style="align-items:center">
+      <table>
+        <thead><tr><th style="text-align:left">Критерій</th><th>PWA</th><th>Нативний</th><th>Веб-сайт</th></tr></thead>
+        <tbody>
+          <tr><th>Встановлення на пристрій</th><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+          <tr><th>Робота офлайн</th><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+          <tr><th>Публікація у store</th><td>Не обовʼязково</td><td>Обовʼязково</td><td class="no">✗</td></tr>
+          <tr><th>Вартість розробки</th><td class="hi">Низька</td><td class="warn">Висока</td><td class="hi">Низька</td></tr>
+          <tr><th>Оновлення</th><td class="hi">Миттєве</td><td class="warn">Через store</td><td class="hi">Миттєве</td></tr>
+          <tr><th>Доступ до апаратури</th><td>Частковий</td><td class="hi">Повний</td><td class="no">Обмежений</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SLIDE 10 — Use cases -->
+  <section class="slide">
+    <div class="head"><h1 class="title">Де застосовують PWA</h1>
+      <p class="lead mt-s">Великі продукти переходять на PWA заради швидкості та охоплення.</p>
+    </div>
+    <div class="body mt-m">
+      <div class="grid g3" style="align-content:center">
+        <div class="card" style="align-items:center;text-align:center">
+          <span class="ic-sq" style="width:72px;height:72px"><svg viewBox="0 0 576 512" fill="currentColor"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1196 0 48 48 0 11-96 0zm336-48a48 48 0 110 96 48 48 0 010-96z"/></svg></span>
+          <h3 class="ct">E-commerce</h3>
+          <p>Інтернет-магазини: швидкі покупки, кошик офлайн, push про знижки.</p>
+        </div>
+        <div class="card" style="align-items:center;text-align:center">
+          <span class="ic-sq" style="width:72px;height:72px"><svg viewBox="0 0 576 512" fill="currentColor"><path d="M552 64H88c-13.3 0-24 10.7-24 24v8H24c-13.3 0-24 10.7-24 24v272c0 30.9 25.1 56 56 56h472c26.5 0 48-21.5 48-48V88c0-13.3-10.7-24-24-24zM56 400a8 8 0 01-8-8V144h16v248a8 8 0 01-8 8zm236-16H140c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h152c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12zm208 0H348c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h152c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12zm-208-96H140c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h152c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12zm208 0H348c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h152c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12zm0-96H140c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12z"/></svg></span>
+          <h3 class="ct">Медіа та новини</h3>
+          <p>Читання статей офлайн і миттєве завантаження стрічки.</p>
+        </div>
+        <div class="card" style="align-items:center;text-align:center">
+          <span class="ic-sq" style="width:72px;height:72px"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M470.4 1.5l-304 96C153.1 101.7 144 114 144 128v240.4c-10.1-2.9-20.9-4.4-32-4.4-53 0-96 28.7-96 64s43 64 96 64 96-28.7 96-64V230l272-85.9v137.3c-10.1-2.9-20.9-4.4-32-4.4-53 0-96 28.7-96 64s43 64 96 64 96-28.7 96-64V32c0-21.7-21.1-37-41.6-30.5z"/></svg></span>
+          <h3 class="ct">Стрімінг та сервіси</h3>
+          <p>Музика, відео, соцмережі з нативним відчуттям у браузері.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 11 — Showcases / capability projects -->
+  <section class="slide">
+    <div class="head"><h1 class="title">Наскільки далеко зайшов PWA</h1>
+      <p class="lead mt-s">Сучасні Web API дають PWA доступ до можливостей, що раніше були лише в нативних
+        застосунків. Два проєкти показують це наживо.</p>
+    </div>
+    <div class="body mt-m">
+      <div class="grid g2" style="align-content:center; gap:2.6vw">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:16px">
+            <span class="ic-sq"><svg viewBox="0 0 448 512" fill="currentColor"><path d="M437.2 403.5L320 215V64h8c13.3 0 24-10.7 24-24V24c0-13.3-10.7-24-24-24H120c-13.3 0-24 10.7-24 24v16c0 13.3 10.7 24 24 24h8v151L10.8 403.5C-18.5 450.6 15.3 512 70.9 512h306.2c55.7 0 89.4-61.5 60.1-108.5zM137.9 320l48.2-77.6c3.7-5.2 5.8-11.6 5.8-18.4V64h64v160c0 6.9 2.2 13.2 5.8 18.4L320 320H137.9z"/></svg></span>
+            <h3 style="margin-top:0">What PWA Can Do Today</h3>
+          </div>
+          <p>Інтерактивний showcase можливостей PWA, який сам є встановлюваним PWA.
+            Відкрийте його на своєму пристрої — і побачите наживо, які API підтримує
+            саме ваш браузер.</p>
+          <p style="margin-top:.8vh"><b style="color:var(--slate)">Демонструє:</b> камеру й геолокацію,
+            Bluetooth і NFC, доступ до контактів і файлової системи, WebAuthn (відбиток / passkey),
+            push-сповіщення тощо.</p>
+          <a class="filename" style="margin-top:1.6vh;text-decoration:none" href="https://whatpwacando.today/" target="_blank" rel="noopener">whatpwacando.today ↗</a>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:16px">
+            <span class="ic-sq"><svg viewBox="0 0 576 512" fill="currentColor"><path d="M327.1 96c-89.97 0-168.54 54.77-212.27 101.63L27.5 131.58c-12.13-9.18-30.24.6-27.14 14.66L24.54 256 .35 365.77c-3.1 14.06 15.01 23.83 27.14 14.66l87.33-66.05C158.55 361.23 237.13 416 327.1 416 464.56 416 576 288 576 256S464.56 96 327.1 96zm87.43 184c-13.25 0-24-10.75-24-24 0-13.26 10.75-24 24-24 13.26 0 24 10.74 24 24 0 13.25-10.74 24-24 24z"/></svg></span>
+            <h3 style="margin-top:0">Project Fugu API Showcase</h3>
+          </div>
+          <p>Каталог від Chrome із реальними застосунками, що використовують API з ініціативи
+            Project Fugu — зусиль закрити розрив у можливостях між вебом і нативом.</p>
+          <p style="margin-top:.8vh"><b style="color:var(--slate)">Охоплює API:</b> File System Access,
+            Web Bluetooth, WebUSB, Web Serial, Web HID, Web NFC, Badging, Window Controls Overlay
+            та десятки інших.</p>
+          <a class="filename" style="margin-top:1.6vh;text-decoration:none" href="https://developer.chrome.com/docs/capabilities/fugu-showcase" target="_blank" rel="noopener">developer.chrome.com · fugu-showcase ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 12 — Conclusion -->
+  <section class="slide dark">
+    <div class="blob" style="width:30vw;height:30vw;left:-10vw;bottom:-12vw"></div>
+    <div class="blob" style="width:24vw;height:24vw;right:-6vw;top:-10vw"></div>
+    <div class="head"><h1 class="title">Висновок</h1></div>
+    <div class="body mt-m" style="flex-direction:column; gap:3vh">
+      <p class="lead">PWA поєднує охоплення вебу зі зручністю нативних застосунків. Це швидкий,
+        надійний і встановлюваний продукт з однією кодовою базою — оптимальний вибір
+        для сучасних веб-проєктів.</p>
+      <div class="takeaways">
+        <span class="tk"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Швидко</span>
+        <span class="tk"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Офлайн</span>
+        <span class="tk"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Встановлюється</span>
+        <span class="tk"><svg class="ck" viewBox="0 0 512 512" fill="currentColor"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-42 326l-96-96 27-27 69 69 137-137 27 27-164 164z"/></svg>Економно</span>
+      </div>
+    </div>
+    <div class="sign">
+      <span class="ic-circle" style="width:54px;height:54px"><svg viewBox="0 0 448 512" fill="currentColor"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3 0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg></span>
+      <div><div class="name">Олександр Блажейко</div><div class="role">Full Stack розробник · Vue.js / Node.js</div></div>
+    </div>
+    <div class="thanks">Дякую за увагу!</div>
+  </section>
+
+</div>
+
+<div class="counter" id="counter">1 / 12</div>
+<div class="dots" id="dots"></div>
+<div class="nav">
+  <button id="prev" aria-label="Попередній слайд">‹</button>
+  <button id="next" aria-label="Наступний слайд">›</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let i = 0;
+  const progress = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  const dotsWrap = document.getElementById('dots');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+
+  slides.forEach((_, idx) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (idx === 0 ? ' on' : '');
+    d.setAttribute('aria-label', 'Слайд ' + (idx + 1));
+    d.addEventListener('click', () => go(idx));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function go(n){
+    i = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    dots.forEach((d, idx) => d.classList.toggle('on', idx === i));
+    progress.style.width = ((i) / (total - 1) * 100) + '%';
+    counter.textContent = (i + 1) + ' / ' + total;
+    prev.disabled = i === 0;
+    next.disabled = i === total - 1;
+    // adapt chrome color on dark slides
+    const dark = slides[i].classList.contains('dark');
+    counter.style.color = dark ? '#C7D6DD' : '';
+    counter.style.background = dark ? 'rgba(255,255,255,.10)' : 'rgba(255,255,255,.85)';
+  }
+
+  prev.addEventListener('click', () => go(i - 1));
+  next.addEventListener('click', () => go(i + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')   { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End')  go(total - 1);
+  });
+  // touch swipe
+  let sx = 0;
+  document.addEventListener('touchstart', (e) => sx = e.touches[0].clientX, {passive:true});
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 50) go(i + (dx < 0 ? 1 : -1));
+  }, {passive:true});
+
+  go(0);
+</script>
+</body>
+</html>
