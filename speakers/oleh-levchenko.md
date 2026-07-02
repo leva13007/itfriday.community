@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · Кар'єра в IT ·
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#008](/streams/008) | Хост | React+Vite vs Next.js — коли обирати що | 03.07.2026 |
 | [#007](/streams/007) | Хост | React Fragment — розбір компонента і FragmentInstance | 26.06.2026 |
 | [#006](/streams/006) | Хост | React ViewTransition — плавні переходи без бібліотек | 19.06.2026 |
 | [#005](/streams/005) | Хост | Інтерв'ю з Олегом Талановим — CTO, метал і Laravel | 12.06.2026 |

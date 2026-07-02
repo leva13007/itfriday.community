@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [008](/streams/008) | 03.07.2026 | CSP + React+Vite vs Next.js | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/txdVcK2Sxno) |
 | [007](/streams/007) | 26.06.2026 | React Fragment + WebRTC | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/leT3mUEmIqA) |
 | [006](/streams/006) | 19.06.2026 | React ViewTransition + PWA у WEB | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/RJ9xqAfUl6M) |
 | [005](/streams/005) | 12.06.2026 | CTO, метал і Laravel + Inertia.js · інтерв'ю з Олегом Талановим | [Олег Левченко](/speakers/oleh-levchenko) · [Олег Таланов](/speakers/oleh-talanov) | [Дивитись](https://youtube.com/live/bEW6pQlMDBc) |

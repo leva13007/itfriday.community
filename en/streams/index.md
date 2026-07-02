@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [008](/en/streams/008) | 03.07.2026 | CSP + React+Vite vs Next.js | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/txdVcK2Sxno) |
 | [007](/en/streams/007) | 26.06.2026 | React Fragment + WebRTC | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/leT3mUEmIqA) |
 | [006](/en/streams/006) | 19.06.2026 | React ViewTransition + PWA in the Web | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/RJ9xqAfUl6M) |
 | [005](/en/streams/005) | 12.06.2026 | CTO, metal & Laravel + Inertia.js · interview with Oleh Talanov | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/bEW6pQlMDBc) |
