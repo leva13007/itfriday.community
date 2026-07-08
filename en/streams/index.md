@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [009](/en/streams/009) | 10.07.2026 | tmux + AI Agents | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/jbw4x3ENiJ0) |
 | [008](/en/streams/008) | 03.07.2026 | CSP + React+Vite vs Next.js | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/txdVcK2Sxno) |
 | [007](/en/streams/007) | 26.06.2026 | React Fragment + WebRTC | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/leT3mUEmIqA) |
 | [006](/en/streams/006) | 19.06.2026 | React ViewTransition + PWA in the Web | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/RJ9xqAfUl6M) |

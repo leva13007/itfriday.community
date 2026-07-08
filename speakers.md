@@ -32,6 +32,8 @@ const speakers = [
 
 Усі хто виходив в ефір на IT Friday.
 
+Хочеш бути наступним? → [Стати спікером](/speak)
+
 <div class="speakers-grid">
   <a v-for="s in speakers" :key="s.name" :href="s.profile" class="speaker-card">
     <img :src="s.avatar" :alt="s.name" class="speaker-avatar" />

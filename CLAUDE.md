@@ -40,6 +40,7 @@ site/
   speakers/
     oleh-levchenko.md          # Speaker profile (UA)
     oleksandr-blazheiko.md
+  speak.md          # Become a Speaker — CTA + application deadline (UA)
   wiki/             # Community wiki (UA)
     mission.md
     values.md
@@ -87,6 +88,12 @@ Add a new stream summary page:
 3. Copy thumbnail to `public/streams/NNN.png`
 4. Content: thumbnail, date, participants (with profile links), key theses, YouTube link, resources
 5. Resources section must include: LinkedIn, Telegram, Discord links (in that order after content-specific links)
+
+---
+
+## Become a Speaker (`/speak`)
+
+**`/speak.md`** and **`/en/speak.md`** — CTA page for people who want to apply to speak. States the application deadline (Tuesday inclusive for that week's Friday — canonical source: content repo's `docs/governance.md` → "Дедлайн подачі заявок на виступ"). Linked from nav and from the top of `/speakers`.
 
 ---
 

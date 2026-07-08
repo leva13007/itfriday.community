@@ -32,6 +32,8 @@ const speakers = [
 
 Everyone who has appeared on IT Friday.
 
+Want to be next? → [Become a Speaker](/en/speak)
+
 <div class="speakers-grid">
   <a v-for="s in speakers" :key="s.name" :href="s.profile" class="speaker-card">
     <img :src="s.avatar" :alt="s.name" class="speaker-avatar" />
