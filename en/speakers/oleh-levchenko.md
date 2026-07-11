@@ -23,14 +23,15 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
-| [#008](/en/streams/008) | Host | React+Vite vs Next.js — when to choose what | 03.07.2026 |
-| [#007](/en/streams/007) | Host | React Fragment — component deep dive and FragmentInstance | 26.06.2026 |
-| [#006](/en/streams/006) | Host | React ViewTransition — smooth transitions without libraries | 19.06.2026 |
-| [#005](/en/streams/005) | Host | Interview with Oleh Talanov — CTO, metal & Laravel | 12.06.2026 |
-| [#004](/en/streams/004) | Host | React Performance Tracks — new profiler in Chrome DevTools | 05.06.2026 |
-| [#003](/en/streams/003) | Host | useEffectEvent — React Conf 2025 | 29.05.2026 |
-| [#002](/en/streams/002) | Host | React 19.2: `<Activity />` — deep dive into the new component | 22.05.2026 |
-| [#001](/en/streams/001) | Host | Launching Ukrainian IT Community from scratch | 15.05.2026 |
+| [#009](/en/streams/009) | Speaker | tmux + AI Agents | 10.07.2026 |
+| [#008](/en/streams/008) | Speaker | React+Vite vs Next.js — when to choose what | 03.07.2026 |
+| [#007](/en/streams/007) | Speaker | React Fragment — component deep dive and FragmentInstance | 26.06.2026 |
+| [#006](/en/streams/006) | Speaker | React ViewTransition — smooth transitions without libraries | 19.06.2026 |
+| [#005](/en/streams/005) | Interviewer | Interview with Oleh Talanov — CTO, metal & Laravel | 12.06.2026 |
+| [#004](/en/streams/004) | Speaker | React Performance Tracks — new profiler in Chrome DevTools | 05.06.2026 |
+| [#003](/en/streams/003) | Speaker | useEffectEvent — React Conf 2025 | 29.05.2026 |
+| [#002](/en/streams/002) | Speaker | React 19.2: `<Activity />` — deep dive into the new component | 22.05.2026 |
+| [#001](/en/streams/001) | Speaker | Launching Ukrainian IT Community from scratch | 15.05.2026 |
 
 ---
 

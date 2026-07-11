@@ -23,14 +23,15 @@ React · Node.js · TypeScript · AWS · System Design · Кар'єра в IT ·
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
-| [#008](/streams/008) | Хост | React+Vite vs Next.js — коли обирати що | 03.07.2026 |
-| [#007](/streams/007) | Хост | React Fragment — розбір компонента і FragmentInstance | 26.06.2026 |
-| [#006](/streams/006) | Хост | React ViewTransition — плавні переходи без бібліотек | 19.06.2026 |
-| [#005](/streams/005) | Хост | Інтерв'ю з Олегом Талановим — CTO, метал і Laravel | 12.06.2026 |
-| [#004](/streams/004) | Хост | React Performance Tracks — новий профайлер у Chrome DevTools | 05.06.2026 |
-| [#003](/streams/003) | Хост | useEffectEvent — React Conf 2025 | 29.05.2026 |
-| [#002](/streams/002) | Хост | React 19.2: `<Activity />` — розбір нового компонента | 22.05.2026 |
-| [#001](/streams/001) | Хост | Запускаємо українське IT-ком'юніті з нуля | 15.05.2026 |
+| [#009](/streams/009) | Доповідач | tmux + AI-агенти | 10.07.2026 |
+| [#008](/streams/008) | Доповідач | React+Vite vs Next.js — коли обирати що | 03.07.2026 |
+| [#007](/streams/007) | Доповідач | React Fragment — розбір компонента і FragmentInstance | 26.06.2026 |
+| [#006](/streams/006) | Доповідач | React ViewTransition — плавні переходи без бібліотек | 19.06.2026 |
+| [#005](/streams/005) | Інтерв'юер | Інтерв'ю з Олегом Талановим — CTO, метал і Laravel | 12.06.2026 |
+| [#004](/streams/004) | Доповідач | React Performance Tracks — новий профайлер у Chrome DevTools | 05.06.2026 |
+| [#003](/streams/003) | Доповідач | useEffectEvent — React Conf 2025 | 29.05.2026 |
+| [#002](/streams/002) | Доповідач | React 19.2: `<Activity />` — розбір нового компонента | 22.05.2026 |
+| [#001](/streams/001) | Доповідач | Запускаємо українське IT-ком'юніті з нуля | 15.05.2026 |
 
 ---
 
