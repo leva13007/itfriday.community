@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#010](/en/streams/010) | Guest | Web Attacks Overview — Frontend, Backend, network/infrastructure | 17.07.2026 |
 | [#008](/en/streams/008) | Guest | Content Security Policy (CSP) — protecting against XSS with a resource allowlist | 03.07.2026 |
 | [#007](/en/streams/007) | Guest | WebRTC — video and data directly between browsers | 26.06.2026 |
 | [#006](/en/streams/006) | Guest | PWA in the Web — Service Worker, Manifest, offline mode | 19.06.2026 |

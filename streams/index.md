@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [010](/streams/010) | 17.07.2026 | Огляд атак у вебі | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/YDs0AGzYjoI) |
 | [009](/streams/009) | 10.07.2026 | tmux + AI-агенти | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/jbw4x3ENiJ0) |
 | [008](/streams/008) | 03.07.2026 | CSP + React+Vite vs Next.js | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/txdVcK2Sxno) |
 | [007](/streams/007) | 26.06.2026 | React Fragment + WebRTC | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/leT3mUEmIqA) |

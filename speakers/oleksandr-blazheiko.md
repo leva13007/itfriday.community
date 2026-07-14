@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#010](/streams/010) | Гість | Огляд атак у вебі — Frontend, Backend, мережа/інфраструктура | 17.07.2026 |
 | [#008](/streams/008) | Гість | Content Security Policy (CSP) — захист від XSS через білий список ресурсів | 03.07.2026 |
 | [#007](/streams/007) | Гість | WebRTC — відео та дані напряму між браузерами | 26.06.2026 |
 | [#006](/streams/006) | Гість | PWA у WEB — Service Worker, Manifest, офлайн-режим | 19.06.2026 |
