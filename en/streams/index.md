@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [011](/en/streams/011) | 24.07.2026 | OWASP Top 10:2025 | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/pUNYHsXrT6g) |
 | [010](/en/streams/010) | 17.07.2026 | Web Attacks Overview | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/YDs0AGzYjoI) |
 | [009](/en/streams/009) | 10.07.2026 | tmux + AI Agents | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/jbw4x3ENiJ0) |
 | [008](/en/streams/008) | 03.07.2026 | CSP + React+Vite vs Next.js | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/txdVcK2Sxno) |

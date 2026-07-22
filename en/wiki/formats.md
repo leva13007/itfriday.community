@@ -1,6 +1,6 @@
 # Stream Formats
 
-Every stream belongs to one of 10 directions.
+Every stream belongs to one of 11 directions.
 
 | # | Direction | Guest |
 |---|---|---|
