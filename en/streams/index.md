@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [012](/en/streams/012) | 31.07.2026 | InertiaJS: SPA Without a Separate API? | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/Aq1-dGnv4II) |
 | [011](/en/streams/011) | 24.07.2026 | OWASP Top 10:2025 | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/pUNYHsXrT6g) |
 | [010](/en/streams/010) | 17.07.2026 | Web Attacks Overview | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/YDs0AGzYjoI) |
 | [009](/en/streams/009) | 10.07.2026 | tmux + AI Agents | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/jbw4x3ENiJ0) |

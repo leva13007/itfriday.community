@@ -23,6 +23,7 @@ Laravel · Inertia.js · React · Vue.js · PHP · Software Architecture · Foun
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#012](/streams/012) | Гість | InertiaJS: SPA без окремого API? — дискусія | 31.07.2026 |
 | [#005](/streams/005) | Гість | CTO, метал і Laravel + Inertia.js — інтерв'ю | 12.06.2026 |
 
 ---
