@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [013](/en/streams/013) | 07.08.2026 | Structured Interviews & the STAR Method | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Ihor Kotov](/en/speakers/ihor-kotov) | [Watch](https://youtube.com/live/5HmD8FImE2k) |
 | [012](/en/streams/012) | 31.07.2026 | InertiaJS: SPA Without a Separate API? | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/Aq1-dGnv4II) |
 | [011](/en/streams/011) | 24.07.2026 | OWASP Top 10:2025 | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/pUNYHsXrT6g) |
 | [010](/en/streams/010) | 17.07.2026 | Web Attacks Overview | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/YDs0AGzYjoI) |

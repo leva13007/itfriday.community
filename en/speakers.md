@@ -25,6 +25,13 @@ const speakers = [
     org: 'itvibe.party',
     profile: '/en/speakers/oleksandr-blazheiko',
   },
+  {
+    avatar: '/speakers/ihor-kotov.jpg',
+    name: 'Ihor Kotov',
+    title: 'Aspiring Full Stack & Java Developer',
+    org: 'Petro Mohyla Black Sea National University',
+    profile: '/en/speakers/ihor-kotov',
+  },
 ]
 </script>
 

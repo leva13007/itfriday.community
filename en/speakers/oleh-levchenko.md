@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#013](/en/streams/013) | Participant | Structured Interviews & the STAR Method — live Q&A with Ihor Kotov | 07.08.2026 |
 | [#009](/en/streams/009) | Speaker | tmux + AI Agents | 10.07.2026 |
 | [#008](/en/streams/008) | Speaker | React+Vite vs Next.js — when to choose what | 03.07.2026 |
 | [#007](/en/streams/007) | Speaker | React Fragment — component deep dive and FragmentInstance | 26.06.2026 |

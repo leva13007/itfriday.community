@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [013](/streams/013) | 07.08.2026 | Структуроване інтерв'ю та метод STAR | [Олег Левченко](/speakers/oleh-levchenko) · [Ігор Котов](/speakers/ihor-kotov) | [Дивитись](https://youtube.com/live/5HmD8FImE2k) |
 | [012](/streams/012) | 31.07.2026 | InertiaJS: SPA без окремого API? | [Олег Левченко](/speakers/oleh-levchenko) · [Олег Таланов](/speakers/oleh-talanov) | [Дивитись](https://youtube.com/live/Aq1-dGnv4II) |
 | [011](/streams/011) | 24.07.2026 | OWASP Top 10:2025 | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/pUNYHsXrT6g) |
 | [010](/streams/010) | 17.07.2026 | Огляд атак у вебі | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/YDs0AGzYjoI) |
