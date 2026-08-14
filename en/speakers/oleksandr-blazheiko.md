@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#014](/en/streams/014) | Guest | Web authentication methods — passwords, MFA, WebAuthn/passkeys, OAuth/OIDC | 14.08.2026 |
 | [#011](/en/streams/011) | Guest | OWASP Top 10:2025 — all 10 vulnerability categories with code examples | 24.07.2026 |
 | [#010](/en/streams/010) | Guest | Web Attacks Overview — Frontend, Backend, network/infrastructure | 17.07.2026 |
 | [#008](/en/streams/008) | Guest | Content Security Policy (CSP) — protecting against XSS with a resource allowlist | 03.07.2026 |
