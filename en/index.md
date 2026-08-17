@@ -31,6 +31,12 @@ features:
     details: Relocation, burnout, job search, career — topics as important as the latest React API.
 ---
 
+::: info ❓ Questions for the HR stream
+We're preparing a Q&A stream with an HR guest. We want the questions that actually matter to us to be heard — so we set up an anonymous form.
+
+[Submit a question anonymously →](https://docs.google.com/forms/d/e/1FAIpQLScp5o4adXkbtprdNb0aKncT-pvnbZRIkBhtfj9KCuS2v1hRjg/viewform?usp=publish-editor)
+:::
+
 ::: tip 💡 We're looking for speakers
 Got a case, a bug you spent three days chasing, or a tool that surprised you? That's how most talks at IT Friday happen — you don't need to be a "recognized expert".
 
