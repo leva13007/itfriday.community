@@ -25,8 +25,14 @@ features:
     details: Every Friday — technical deep-dives, live coding, conference reviews, career stories, guest interviews.
   - icon: 🌍
     title: Wherever you are
-    details: Community for Ukrainian IT professionals worldwide — UK, Poland, Germany, Canada, and beyond.
+    details: Community for IT professionals worldwide — UK, Poland, Germany, Canada, and beyond.
   - icon: 💬
     title: More than code
     details: Relocation, burnout, job search, career — topics as important as the latest React API.
 ---
+
+::: tip 💡 We're looking for speakers
+Got a case, a bug you spent three days chasing, or a tool that surprised you? That's how most talks at IT Friday happen — you don't need to be a "recognized expert".
+
+[Become a Speaker →](/en/speak)
+:::
