@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: "ІТ П'ятниця"
-  text: "Живе українське IT онлайн"
+  text: "Живе IT онлайн"
   tagline: Щоп'ятниці, 19:00 London / 21:00 Kyiv · ~40 хвилин · Технічне і людське
   actions:
     - theme: brand

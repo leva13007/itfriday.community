@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: "IT Friday"
-  text: "Live Ukrainian IT online"
+  text: "Live IT online"
   tagline: Every Friday · 19:00 London / 21:00 Kyiv · ~40 min · Technical & Human
   actions:
     - theme: brand

@@ -1,6 +1,6 @@
 # Mission
 
-**Online community for Ukrainian IT professionals worldwide — live, technical, and human in equal measure.**
+**Online community for IT professionals worldwide — live, technical, and human in equal measure.**
 
 ## Origin
 

@@ -19,7 +19,7 @@ export default defineConfig({
       lang: 'uk-UA',
       label: 'Українська',
       title: 'ІТ П\'ятниця',
-      description: 'Онлайн-ком\'юніті для українських IT-спеціалістів по всьому світу',
+      description: 'Онлайн-ком\'юніті для IT-спеціалістів по всьому світу',
       themeConfig: {
         nav: [
           { text: 'Про нас', link: '/about' },
@@ -59,7 +59,7 @@ export default defineConfig({
       lang: 'en-US',
       label: 'English',
       title: 'IT Friday',
-      description: 'Online community for Ukrainian IT professionals worldwide',
+      description: 'Online community for IT professionals worldwide',
       themeConfig: {
         nav: [
           { text: 'About', link: '/en/about' },
