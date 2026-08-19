@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [015](/en/streams/015) | 21.08.2026 | OAuth 2.0 and OpenID Connect | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/ZcHi3dm9tZQ) |
 | [014](/en/streams/014) | 14.08.2026 | Web Authentication Methods | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/x2MGgT3qkN8) |
 | [013](/en/streams/013) | 07.08.2026 | Structured Interviews & the STAR Method | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Ihor Kotov](/en/speakers/ihor-kotov) | [Watch](https://youtube.com/live/5HmD8FImE2k) |
 | [012](/en/streams/012) | 31.07.2026 | InertiaJS: SPA Without a Separate API? | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/Aq1-dGnv4II) |

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>OAuth 2.0 та OpenID Connect — еволюція стандарту</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --room:#171320;
+  --room-2:#241d2f;
+  --screen:#F2EDE4;
+  --screen-edge:#DED5C6;
+  --ink:#1B1B22;
+  --ink-soft:#5B5A66;
+  --navy:#1E3A5F;
+  --teal:#0E7C6B;
+  --rust:#B4442E;
+  --amber:#B8860B;
+  --hair:#C9BFAE;
+  --disp:"Space Grotesk","Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono","Cascadia Mono",monospace;
+  --body:"Source Sans 3","Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--screen);
+  font-family:var(--body);color:var(--screen);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#deck{
+  position:relative;width:100vw;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--screen);
+}
+/* ── projected frame ─────────────────────────── */
+#stage{
+  position:relative;
+  width:100vw;height:100vh;
+  background:var(--screen);
+  color:var(--ink);
+  overflow:hidden;
+}
+#stage::after{ /* м'яка віньєтка проєкції */
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:radial-gradient(115% 105% at 50% 45%,rgba(255,255,255,0) 62%,rgba(60,45,20,.13) 100%);
+  mix-blend-mode:multiply;
+}
+.slide{
+  position:absolute;inset:0;padding:clamp(34px,4vh,54px) clamp(48px,4.4vw,80px) clamp(72px,9vh,96px);
+  display:none;flex-direction:column;background:var(--screen);
+}
+.slide.on{display:flex;z-index:2}
+.slide.out{display:flex;z-index:1}
+/* ── новий слайд наїжджає справа, старий іде вліво за екран ── */
+:root{--wipe:.66s}
+.slide.on.anim{animation:pushIn var(--wipe) cubic-bezier(.62,.02,.28,1)}
+.slide.out.anim{animation:pushOut var(--wipe) cubic-bezier(.62,.02,.28,1) forwards}
+@keyframes pushIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes pushOut{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+/* назад: слайд заходить зліва, попередній іде вправо */
+.slide.on.anim.rev{animation-name:pushInRev}
+.slide.out.anim.rev{animation-name:pushOutRev}
+@keyframes pushInRev{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@keyframes pushOutRev{from{transform:translateX(0)}to{transform:translateX(100%)}}
+#wipe{
+  position:absolute;top:0;bottom:0;width:16px;left:100%;z-index:3;display:none;
+  /* фаски кадрового вікна: тьмяна грань → темне ядро → підсвічена фаска */
+  background:linear-gradient(90deg,
+    rgba(120,110,135,.55) 0 1px,
+    #16111F 1px 4px,
+    #060409 4px 9px,
+    #1E1828 9px 12px,
+    #3E3650 12px 14.5px,
+    rgba(226,214,190,.85) 14.5px 16px);
+  box-shadow:-10px 0 26px -6px rgba(11,9,16,.42), 12px 0 34px -8px rgba(11,9,16,.34);
+}
+#wipe::before,#wipe::after{content:"";position:absolute;top:0;bottom:0;width:1px}
+#wipe::before{left:0;background:linear-gradient(180deg,rgba(232,184,75,.45),rgba(232,184,75,.08) 40%,rgba(232,184,75,.45))}
+#wipe::after{right:-2px;width:2px;background:rgba(255,247,228,.5);filter:blur(1.2px)}
+#wipe.go{display:block;animation:barSweep var(--wipe) cubic-bezier(.62,.02,.28,1)}
+#wipe.go.rev{animation-name:barSweepRev;transform:scaleX(-1)}
+@keyframes barSweep{from{left:100%}to{left:-16px}}
+@keyframes barSweepRev{from{left:-16px}to{left:100%}}
+@media (prefers-reduced-motion:reduce){
+  .slide.anim,#wipe.go{animation:none}
+  #wipe.go{display:none}
+}
+/* ── slide typography ────────────────────────── */
+.eyebrow{
+  font-family:var(--mono);font-size:clamp(11px,.85vw,14px);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--rust);display:flex;gap:14px;align-items:center;margin-bottom:10px;
+}
+.eyebrow span.rule{flex:1;height:1px;background:var(--hair)}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(54px,5.2vw,88px);line-height:1.02;letter-spacing:-.02em}
+h2{font-family:var(--disp);font-weight:700;font-size:clamp(32px,3vw,50px);line-height:1.08;letter-spacing:-.015em}
+.sub{font-size:clamp(16px,1.15vw,21px);color:var(--ink-soft);margin-top:10px;max-width:80ch}
+.cols{display:grid;grid-template-columns:1fr clamp(320px,23vw,440px);gap:clamp(30px,3vw,52px);flex:1;min-height:0;margin-top:18px}
+.diagram-wrap{min-height:0;display:flex;align-items:center;justify-content:center}
+.diagram-wrap svg{width:100%;height:100%;max-height:100%}
+.panel h3{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-soft);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--hair)
+}
+.panel+.panel{margin-top:22px}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.panel li{font-size:clamp(14px,1.02vw,18.5px);line-height:1.35;padding-left:20px;position:relative;color:var(--ink)}
+.panel li::before{content:"";position:absolute;left:2px;top:.55em;width:8px;height:1.5px;background:var(--teal)}
+.panel.bad li::before{background:var(--rust)}
+.panel.bad li{color:#4A3430}
+b{font-weight:600}
+code{font-family:var(--mono);font-size:.9em;background:#E5DDCE;padding:1px 5px;border-radius:3px}
+/* title slide */
+.title-slide{justify-content:center;align-items:flex-start;gap:0}
+.title-slide h1{max-width:20ch}
+.lede{margin-top:26px;font-size:clamp(18px,1.35vw,25px);line-height:1.5;max-width:62ch;color:var(--ink-soft)}
+.legend{display:flex;gap:26px;margin-top:38px;flex-wrap:wrap}
+.legend div{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:9px}
+.swatch{width:26px;height:3px;border-radius:2px;display:inline-block}
+/* table slide */
+table{width:100%;border-collapse:collapse;margin-top:26px;font-size:clamp(14px,1.02vw,18.5px)}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+   text-align:left;padding:0 14px 9px;border-bottom:1.5px solid var(--ink)}
+td{padding:13px 14px;border-bottom:1px solid var(--hair);vertical-align:top;line-height:1.35}
+td:first-child{font-family:var(--disp);font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.chk{display:grid;grid-template-columns:1fr 1fr;gap:18px 42px;margin-top:26px}
+.chk div{border-left:2px solid var(--teal);padding:4px 0 4px 16px}
+.chk h4{font-family:var(--disp);font-size:clamp(18px,1.35vw,24px);margin-bottom:5px}
+.chk p{font-size:clamp(14px,1.02vw,18px);color:var(--ink-soft);line-height:1.4}
+.chk div.warn{border-color:var(--rust)}
+/* ── позначка «не використовувати» ─────────── */
+.strike-btn{
+  position:absolute;left:clamp(48px,4.4vw,80px);bottom:clamp(66px,8vh,88px);
+  z-index:7;color:var(--rust);border-color:rgba(180,68,46,.45);
+  background:rgba(180,68,46,.06);
+}
+.strike-btn:hover{background:rgba(180,68,46,.14);border-color:var(--rust)}
+.strike-x{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.strike-x svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.strike-x svg line{
+  stroke:#B4442E;stroke-width:8;stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 2px 10px rgba(180,68,46,.4));
+  transform-box:fill-box;transform:scale(0);
+  transition:transform .46s cubic-bezier(.5,.05,.25,1);
+}
+.strike-x svg line:nth-child(1){transform-origin:0% 0%}
+.strike-x svg line:nth-child(2){transform-origin:0% 100%}
+.strike-x.on svg line{transform:scale(1)}
+.strike-x.on svg line:nth-child(2){transition-delay:.18s}
+.strike-x em{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-6deg) scale(.86);
+  font-family:var(--disp);font-style:normal;font-weight:700;letter-spacing:.06em;
+  font-size:clamp(28px,3.4vw,54px);color:var(--rust);
+  border:5px solid var(--rust);border-radius:10px;padding:10px 28px;
+  background:rgba(242,237,228,.9);opacity:0;transition:.3s .38s;white-space:nowrap;
+}
+.strike-x.on em{opacity:1;transform:translate(-50%,-50%) rotate(-6deg) scale(1)}
+/* ── слайд зі структурою токенів ─────────────── */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(26px,2.6vw,46px);flex:1;min-height:0;margin-top:16px}
+.code{
+  font-family:var(--mono);font-size:clamp(11px,.79vw,14.5px);line-height:1.62;
+  background:#E9E1D3;border-left:3px solid var(--hair);border-radius:0 4px 4px 0;
+  padding:12px 16px;white-space:pre;overflow:hidden;color:#3B3A44;
+}
+.code.hd{border-left-color:var(--rust)}
+.code.pl{border-left-color:var(--navy)}
+.code.sg{border-left-color:var(--teal)}
+.code b{font-weight:600;color:var(--ink)}
+.code .k{color:var(--navy)}
+.code .v{color:var(--teal)}
+.code .c{color:#A2988A}
+.jwt{font-family:var(--mono);font-size:clamp(12px,.92vw,17px);word-break:break-all;line-height:1.5;margin:4px 0 14px}
+.jwt .h{color:var(--rust)}.jwt .p{color:var(--navy)}.jwt .s{color:var(--teal)}.jwt .dot{color:var(--ink);font-weight:700}
+.lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:14px 0 6px}
+.lbl:first-child{margin-top:0}
+.url{
+  font-family:var(--mono);font-size:clamp(11.5px,.85vw,15px);color:var(--rust);
+  background:rgba(180,68,46,.07);border:1px dashed rgba(180,68,46,.35);border-radius:5px;
+  padding:8px 12px;margin:4px 0 2px;word-break:break-all;
+}
+.note{font-size:clamp(13px,.95vw,16.5px);color:var(--ink-soft);line-height:1.4;margin-top:10px}
+/* ── хребет еволюції ────────────────────────── */
+#spine{
+  position:absolute;left:clamp(48px,4.4vw,80px);right:clamp(340px,26vw,400px);
+  bottom:clamp(20px,2.6vh,32px);height:34px;
+  display:flex;align-items:center;gap:0;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:#A2988A;
+}
+#spine .node{flex:1;display:flex;align-items:center;gap:9px;position:relative}
+#spine .dot{width:8px;height:8px;border-radius:50%;background:var(--hair);flex:none}
+#spine .node.on{color:var(--rust);font-weight:600}
+#spine .node.on .dot{background:var(--rust);box-shadow:0 0 0 4px rgba(180,68,46,.16)}
+#spine .node.done .dot{background:var(--ink-soft)}
+#spine .node::after{content:"";position:absolute;left:0;right:0;top:3.5px;height:1px;background:var(--hair);z-index:-1}
+/* ── controls ───────────────────────────────── */
+#bar{
+  position:absolute;bottom:clamp(18px,2.4vh,30px);right:clamp(48px,4.4vw,80px);
+  display:flex;align-items:center;gap:8px;z-index:6;
+  background:rgba(27,27,34,.92);
+  border:1px solid rgba(27,27,34,.18);border-radius:999px;padding:6px 9px;
+  box-shadow:0 6px 22px -10px rgba(27,27,34,.5);
+  transition:opacity .35s;
+}
+#bar.idle{opacity:.3}
+#bar:hover{opacity:1}
+button{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+  background:transparent;color:var(--screen);border:1px solid rgba(242,237,228,.22);
+  border-radius:999px;padding:6px 13px;cursor:pointer;transition:.16s;
+}
+button:hover{background:rgba(242,237,228,.16);border-color:rgba(242,237,228,.5)}
+button:focus-visible{outline:2px solid #E8B84B;outline-offset:2px}
+button:disabled{opacity:.32;cursor:default}
+#count{font-family:var(--mono);font-size:12px;padding:0 8px;color:#CFC7BA;min-width:56px;text-align:center}
+#hint{display:none}
+</style>
+</head>
+<body>
+<div id="deck">
+  <div id="stage">
+    <!-- слайди рендеряться скриптом -->
+    <div id="wipe"></div>
+    <div id="bar">
+      <button id="prev" title="Попередній слайд (←)">←</button>
+      <span id="count"></span>
+      <button id="next" title="Наступний слайд (→ або пробіл)">→</button>
+      <button id="fs" title="Повний екран (F)">На весь екран</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ Дані схем ═══════════════════════════════════════════════
+   from/to: 0 = наш бекенд, 1 = браузер користувача, 2 = сервер авторизації
+   kind: req | back | bad | self | note                        */
+
+const A_DEFAULT = ["Наш бекенд","Браузер користувача","Сервер авторизації"];
+
+const slides = [
+{type:"title"},
+
+{type:"flow", stage:0,
+ eyebrow:"До OAuth · ~2006",
+ title:"Password anti-pattern",
+ strike:"НІКОЛИ",
+ sub:"Щоб дістати дані користувача в іншому сервісі, застосунок просив у нього логін і пароль від цього сервісу. І зберігав їх.",
+ actors:["Наш бекенд","Браузер користувача","Google / провайдер"],
+ steps:[
+  {from:0,to:1,kind:"back",text:"Форма: «Введіть пароль від Google»"},
+  {from:1,to:0,kind:"bad",text:"Логін і пароль від чужого сервісу"},
+  {from:0,to:0,kind:"self",text:"Зберігає пароль у своїй БД"},
+  {from:0,to:2,kind:"bad",text:"Вхід під користувачем"},
+  {from:2,to:0,kind:"bad",text:"Повний доступ до всього акаунта"}
+ ],
+ good:null,
+ bad:{title:"Чому так не можна",items:[
+  "Пароль від головного акаунта живе в чужій БД",
+  "Доступ неможливо обмежити: або все, або нічого",
+  "Відкликати доступ можна лише зміною пароля — одразу для всіх застосунків",
+  "Двофакторна автентифікація повністю ламає таку інтеграцію",
+  "Рудимент цього підходу дожив до OAuth 2.0 як Resource Owner Password Credentials grant і був прибраний лише в 2.1"
+ ]}},
+
+{type:"flow", stage:1,
+ eyebrow:"OAuth 1.0a · RFC 5849",
+ title:"Делегування замість пароля",
+ strike:"LEGACY",
+ sub:"Передумова: застосунок заздалегідь зареєстровано у провайдера й отримано пару consumer_key + consumer_secret — саме нею підписується кожен запит. Головна ідея потоку: користувач автентифікується безпосередньо у провайдера, а застосунок отримує окремий токен. Пароль до застосунку не потрапляє ніколи.",
+ steps:[
+  {from:1,to:0,kind:"req",text:"GET /connect — «Підключити акаунт Google»"},
+  {from:0,to:2,kind:"req",text:"POST /request_token, підпис HMAC-SHA1",label:"consumer_key + consumer_secret"},
+  {from:2,to:0,kind:"back",text:"oauth_token + token_secret"},
+  {from:0,to:1,kind:"back",text:"302 → /authorize?oauth_token=…"},
+  {from:1,to:2,kind:"req",text:"Логін і згода — на сайті провайдера"},
+  {from:2,to:1,kind:"back",text:"302 назад + oauth_verifier"},
+  {from:1,to:0,kind:"req",text:"GET /callback?oauth_token&oauth_verifier"},
+  {from:0,to:2,kind:"req",text:"POST /access_token, підпис + verifier"},
+  {from:2,to:0,kind:"back",text:"Постійний access token"}
+ ],
+ good:{title:"Що вирішено",items:[
+  "Пароль лишається у провайдера",
+  "Токен відкликається окремо для кожного застосунку",
+  "Підпис запиту захищає навіть без HTTPS",
+  "oauth_verifier у версії 1.0a закрив атаку session fixation"
+ ]},
+ bad:{title:"Що лишилось болючим",items:[
+  "Ручна нормалізація й підпис кожного запиту — головний біль розробників",
+  "Один сценарій на всі випадки: мобільні застосунки й SPA в нього не вкладались",
+  "Зайвий раунд по тимчасовий токен ще до редиректу — в OAuth 2.0 його прибрали",
+  "Немає розмежування прав (scopes) і строку життя токена"
+ ]}},
+
+{type:"flow", stage:2,
+ eyebrow:"OAuth 2.0 · Implicit flow",
+ title:"Спрощення, яке зайшло задалеко",
+ strike:"DEPRECATED",
+ sub:"Передумова: у консолі провайдера створюють клієнта і отримують client_id — публічний, без секрету. Там же вносять точний список redirect_uri, дозволений response_type, набір scopes і JavaScript-origins для CORS. OAuth 2.0 (RFC 6749) поклався на TLS замість підписів і розділив сценарії за типами клієнтів. Implicit flow віддавав токен просто в редиректі — бо тоді браузери ще не вміли крос-доменних запитів.",
+ steps:[
+  {from:0,to:1,kind:"back",text:"Посилання /authorize?response_type=token"},
+  {from:1,to:2,kind:"req",text:"Логін і згода"},
+  {from:2,to:1,kind:"bad",text:"302 → /callback#access_token=… (у фрагменті URL)"},
+  {from:1,to:1,kind:"self",text:"JS дістає токен з URL і кладе в localStorage"},
+  {from:1,to:0,kind:"bad",text:"Токен ходить через фронтенд"}
+ ],
+ good:{title:"Що вирішено",items:[
+  "Не треба підписувати запити — досить HTTPS і Bearer-токена",
+  "З'явились scopes, строк життя токена й окремі ролі клієнтів"
+ ]},
+ bad:{title:"Ціна спрощення",items:[
+  "Access token осідає в історії браузера, referer-заголовках і логах проксі",
+  "Немає refresh token — або короткі сесії, або довгий вразливий токен",
+  "Сервер не може перевірити, що токен віддано саме тому клієнту — єдиний захист це збіг redirect_uri",
+  "Сьогодні implicit flow вважається застарілим і заборонений в OAuth 2.1"
+ ]}},
+
+{type:"flow", stage:3,
+ eyebrow:"OAuth 2.0 · Authorization Code",
+ title:"Токен — тільки через back-channel",
+ sub:"У консолі провайдера клієнта створюють як confidential: до client_id додається client_secret, тип застосунку — «Web application», response_type обмежують кодом, а redirect_uri реєструють точним рядком (https://app.example.com/callback, без wildcard). Через браузер іде лише одноразовий код. На токен його обмінює бекенд напряму, підтверджуючи себе client_secret. Браузер токена не бачить.",
+ steps:[
+  {from:1,to:0,kind:"req",text:"GET /login"},
+  {from:0,to:1,kind:"back",text:"302 → /authorize?response_type=code&client_id&redirect_uri&scope&state"},
+  {from:1,to:2,kind:"req",text:"Логін і згода"},
+  {from:2,to:1,kind:"back",text:"302 → /callback?code=…&state=…"},
+  {from:1,to:0,kind:"req",text:"GET /callback?code&state"},
+  {from:0,to:0,kind:"self",text:"Звіряє state зі своєю сесією"},
+  {from:0,to:2,kind:"req",text:"POST /token: code + client_id + client_secret",label:"back-channel"},
+  {from:2,to:0,kind:"back",text:"access_token + refresh_token"},
+  {from:0,to:1,kind:"back",text:"Set-Cookie: session (HttpOnly)"}
+ ],
+ good:{title:"Що вирішено",items:[
+  "Access token ніколи не потрапляє в браузер, історію й логи",
+  "client_secret доводить, що код обмінює саме наш бекенд",
+  "state прив'язує відповідь до сесії — захист від CSRF на redirect",
+  "З'явився refresh token: короткий access + тихе оновлення"
+ ]},
+ bad:{title:"Де ще діра",items:[
+  "Публічні клієнти (SPA, мобільні) не можуть зберегти client_secret",
+  "Якщо перехопити код на redirect_uri — його обміняє чужий застосунок"
+ ]}},
+
+{type:"flow", stage:4,
+ eyebrow:"OAuth 2.0 + PKCE · RFC 7636",
+ title:"Код, який працює лише в того, хто його просив",
+ sub:"У консолі клієнта позначають як public (SPA або Native) — секрет не видається взагалі. Вмикають вимогу PKCE зі method=S256, а для мобільних реєструють redirect_uri у вигляді app scheme або https-посилання з підтвердженим доменом. Клієнт генерує випадковий code_verifier і надсилає лише його хеш. На обміні він доводить володіння оригіналом.",
+ steps:[
+  {from:0,to:0,kind:"self",text:"verifier = random(43+); challenge = S256(verifier)"},
+  {from:0,to:1,kind:"back",text:"302 → /authorize?…&code_challenge&method=S256"},
+  {from:1,to:2,kind:"req",text:"Логін і згода"},
+  {from:2,to:2,kind:"self",text:"Запам'ятовує code_challenge поруч із кодом"},
+  {from:2,to:1,kind:"back",text:"302 → /callback?code=…"},
+  {from:1,to:0,kind:"req",text:"GET /callback?code"},
+  {from:0,to:2,kind:"req",text:"POST /token: code + code_verifier"},
+  {from:2,to:2,kind:"self",text:"S256(verifier) == challenge ?"},
+  {from:2,to:0,kind:"back",text:"access_token + refresh_token"}
+ ],
+ good:{title:"Що вирішено",items:[
+  "Перехоплений код без verifier — марний",
+  "Безпечний потік для клієнтів без секрету: SPA й мобільні застосунки",
+  "Закриває підміну redirect_uri у мобільних (перехоплення custom scheme)",
+  "В OAuth 2.1 PKCE обов'язковий для всіх клієнтів, навіть конфіденційних"
+ ]},
+ bad:{title:"Чого досі бракує",items:[
+  "OAuth відповідає на питання «що можна робити», а не «хто це»",
+  "Формату даних про користувача в стандарті немає — у кожного провайдера свій"
+ ]}},
+
+{type:"flow", stage:5,
+ eyebrow:"OpenID Connect 1.0",
+ title:"Шар ідентичності поверх OAuth",
+ sub:"У консолі вмикають OIDC для клієнта: дозволяють scope openid, налаштовують claims у профілі (email, name, groups), обирають алгоритм підпису id_token (RS256), строк його життя та post_logout_redirect_uri. Той самий Authorization Code + PKCE, але зі scope openid. У відповідь приходить id_token — підписаний JWT про те, хто увійшов, коли й яким способом.",
+ steps:[
+  {from:1,to:0,kind:"req",text:"GET /login"},
+  {from:0,to:1,kind:"back",text:"302 → /authorize?scope=openid profile email&nonce&state&code_challenge"},
+  {from:1,to:2,kind:"req",text:"Логін, 2FA, згода"},
+  {from:2,to:1,kind:"back",text:"302 → /callback?code&state"},
+  {from:1,to:0,kind:"req",text:"GET /callback?code"},
+  {from:0,to:2,kind:"req",text:"POST /token: code + code_verifier"},
+  {from:2,to:0,kind:"back",text:"access_token + id_token (JWT) + refresh_token"},
+  {from:0,to:2,kind:"req",text:"GET /.well-known/openid-configuration → JWKS"},
+  {from:0,to:0,kind:"self",text:"Перевіряє підпис, iss, aud, exp, nonce"},
+  {from:0,to:1,kind:"back",text:"Set-Cookie: session"}
+ ],
+ good:{title:"Що вирішено",items:[
+  "Стандартна автентифікація: sub, email, name, auth_time, acr — однаково в усіх провайдерів",
+  "nonce прив'язує id_token до конкретного запиту входу",
+  "Discovery і JWKS: ключі підтягуються й ротуються автоматично",
+  "Єдиний профіль для SSO, logout і федерації між провайдерами"
+ ]},
+ bad:{title:"Часті помилки",items:[
+  "Використовувати access_token як доказ особи — він для API, не для входу",
+  "Не перевіряти aud та iss: чужий валідний токен пройде",
+  "Довіряти email без email_verified"
+ ]}},
+
+{type:"tokens"},
+
+{type:"flow", stage:6,
+ eyebrow:"Сьогодні · BFF та OAuth 2.1",
+ title:"Токени лишаються на бекенді",
+ sub:"У консолі вмикають refresh token rotation із виявленням повторного використання, скорочують час життя access-токена до хвилин, реєструють API як окремий audience зі своїми scopes і за потреби вмикають sender-constrained токени (mTLS або DPoP). Рекомендований підхід для веб-застосунків: бекенд тримає токени у себе, а браузер отримує звичайну HttpOnly-cookie. Третя доріжка тут — сервер ресурсів.",
+ actors:["Наш бекенд (BFF)","Браузер / SPA","API та сервер авторизації"],
+ steps:[
+  {from:1,to:0,kind:"req",phase:"Вхід",text:"GET /login — користувач тисне «Увійти»"},
+  {from:0,to:0,kind:"self",text:"Генерує state і code_verifier, кладе в сесію"},
+  {from:0,to:1,kind:"back",text:"302 → /authorize?client_id&redirect_uri&scope&state&code_challenge"},
+  {from:1,to:2,kind:"req",text:"Форма входу, 2FA, consent"},
+  {from:2,to:1,kind:"back",text:"302 → /callback?code=…&state=…",label:"front-channel"},
+  {from:1,to:0,kind:"req",text:"GET /callback?code&state"},
+  {from:0,to:2,kind:"req",text:"POST /token: code + code_verifier + client_secret",label:"back-channel"},
+  {from:2,to:0,kind:"back",text:"access_token + refresh_token + id_token"},
+  {from:0,to:0,kind:"self",text:"Токени в Redis, browser отримує лише session id"},
+  {from:0,to:1,kind:"back",text:"Set-Cookie: sid (HttpOnly, Secure, SameSite=Lax)"},
+  {from:1,to:0,kind:"req",phase:"Робота з API",text:"fetch('/api/data') — cookie їде автоматично"},
+  {from:0,to:0,kind:"self",text:"За sid дістає access_token із сесії"},
+  {from:0,to:2,kind:"req",text:"GET /data, Authorization: Bearer …"},
+  {from:2,to:0,kind:"back",text:"Дані ресурсу"},
+  {from:0,to:1,kind:"back",text:"JSON — без жодного токена"},
+  {from:0,to:2,kind:"req",phase:"Оновлення",text:"POST /token: grant_type=refresh_token"},
+  {from:2,to:0,kind:"back",text:"Новий access + новий refresh (rotation)"}
+ ],
+ good:{title:"Що це дає",items:[
+  "XSS не може вкрасти токен: у JS його просто немає",
+  "Ротація refresh-токенів виявляє викрадення й вбиває всю сім'ю токенів",
+  "Sender-constrained токени (mTLS, DPoP) роблять вкрадений токен непридатним",
+  "Вихід і відкликання доступу — миттєві, бо сесія серверна"
+ ]},
+ bad:{title:"Про що пам'ятати",items:[
+  "Потрібен CSRF-захист на власні ендпоїнти (SameSite + токен)",
+  "Бекенд стає stateful: сесії треба десь зберігати (Redis)"
+ ]}},
+
+{type:"table"},
+{type:"summary"}
+];
+
+/* ══ Рендер SVG-схеми ════════════════════════════════════════ */
+const LANE = [190,600,1010], W = 1200, TOP = 74;
+const COLORS = {req:"var(--navy)", back:"var(--teal)", bad:"var(--rust)", self:"var(--amber)"};
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+let svgSeq = 0;
+function drawFlow(s){
+  const steps = s.steps, actors = s.actors || A_DEFAULT;
+  const uid = "d" + (++svgSeq);
+  const mk = k => `${uid}-${k}`;
+  const GAP = steps.length > 12 ? 41 : (steps.length > 9 ? 46 : 52);
+  // попередній прохід: y для кожного кроку з урахуванням розділювачів фаз
+  const ys = []; let y = TOP + 18;
+  steps.forEach((st,i)=>{ if(st.phase && i>0) y += 22; ys.push(y); y += GAP; });
+  const H = y + 12;
+  let o = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" font-family="IBM Plex Mono, monospace">
+  <defs>` +
+  Object.keys(COLORS).map(k=>
+    `<marker id="${mk(k)}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="${COLORS[k]}"/></marker>`).join("") +
+  `</defs>`;
+
+  // доріжки
+  actors.forEach((a,i)=>{
+    const x = LANE[i];
+    o += `<rect x="${x-165}" y="6" width="330" height="44" rx="4" fill="#E7DFD1" stroke="#C9BFAE"/>
+    <text x="${x}" y="34" text-anchor="middle" font-size="17" font-weight="600" fill="#1B1B22" font-family="Space Grotesk, sans-serif">${esc(a)}</text>
+    <line x1="${x}" y1="50" x2="${x}" y2="${H-10}" stroke="#C9BFAE" stroke-width="1.5" stroke-dasharray="3 5"/>`;
+  });
+
+  steps.forEach((st,i)=>{
+    const y = ys[i];
+    const c = COLORS[st.kind] || COLORS.req;
+    const dash = st.kind==="bad" ? ' stroke-dasharray="7 4"' : "";
+    if(st.phase){
+      o += `<line x1="24" y1="${y-30}" x2="${W-24}" y2="${y-30}" stroke="#D7CDBC" stroke-width="1"/>
+      <text x="24" y="${y-36}" font-size="11.5" letter-spacing="2" fill="#A2988A">${esc(st.phase.toUpperCase())}</text>`;
+    }
+    o += `<text x="30" y="${y-13}" font-size="12" fill="#A2988A">${String(i+1).padStart(2,"0")}</text>`;
+    if(st.from===st.to){
+      const x = LANE[st.from];
+      o += `<path d="M${x} ${y-11} h64 a9 9 0 0 1 0 22 h-64" fill="none" stroke="${COLORS.self}" stroke-width="2" marker-end="url(#${mk("self")})"/>
+      <text x="${x+86}" y="${y+5}" font-size="14.5" fill="#6B5A24">${esc(st.text)}</text>`;
+    } else {
+      const x1 = LANE[st.from], x2 = LANE[st.to];
+      const dir = x2>x1 ? 1 : -1;
+      o += `<line x1="${x1+dir*8}" y1="${y}" x2="${x2-dir*10}" y2="${y}" stroke="${c}" stroke-width="2.2"${dash} marker-end="url(#${mk(st.kind in COLORS ? st.kind : "req")})"/>
+      <text x="${(x1+x2)/2}" y="${y-11}" text-anchor="middle" font-size="14.5" fill="${c}">${esc(st.text)}</text>`;
+      if(st.label) o += `<text x="${(x1+x2)/2}" y="${y+19}" text-anchor="middle" font-size="12" fill="#A2988A">${esc(st.label)}</text>`;
+    }
+  });
+  return o + "</svg>";
+}
+
+/* ══ Розмітка слайдів ════════════════════════════════════════ */
+const SPINE = ["Пароль","OAuth 1.0a","Implicit","Auth Code","PKCE","OIDC","BFF / 2.1"];
+
+function spine(stage){
+  return `<div id="spine">` + SPINE.map((n,i)=>
+    `<div class="node ${i===stage?"on":(i<stage?"done":"")}"><span class="dot"></span>${n}</div>`).join("") + `</div>`;
+}
+
+function panel(p,cls){
+  if(!p) return "";
+  return `<div class="panel ${cls}"><h3>${p.title}</h3><ul>${p.items.map(i=>`<li>${i}</li>`).join("")}</ul></div>`;
+}
+
+function render(s){
+  if(s.type==="title") return `<div class="slide title-slide">
+    <div class="eyebrow">Технічний огляд<span class="rule"></span>для команди</div>
+    <h1>OAuth 2.0 та OpenID Connect</h1>
+    <p class="lede">Сім схем однієї взаємодії: наш бекенд, браузер користувача, сервер авторизації. Кожна наступна виправляє те, що зламалось у попередній — від передачі чужого пароля до токенів, які взагалі не покидають сервер.</p>
+    <div class="legend">
+      <div><span class="swatch" style="background:var(--navy)"></span>запит клієнта</div>
+      <div><span class="swatch" style="background:var(--teal)"></span>відповідь / back-channel</div>
+      <div><span class="swatch" style="background:var(--rust)"></span>небезпечний крок</div>
+      <div><span class="swatch" style="background:var(--amber)"></span>локальна дія</div>
+    </div>${spine(-1)}</div>`;
+
+  if(s.type==="tokens") return `<div class="slide">
+    <div class="eyebrow">OpenID Connect · анатомія<span class="rule"></span>id_token &amp; discovery</div>
+    <h2>Що саме приходить у відповідь</h2>
+    <p class="sub">id_token — це JWS: три частини в base64url, розділені крапками. Перші дві читає будь-хто, третя доводить, що токен видав саме наш провайдер і його не змінювали.</p>
+    <div class="duo">
+      <div>
+        <div class="lbl">Один рядок, три частини</div>
+        <div class="jwt"><span class="h">eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzZjEi…</span><span class="dot">.</span><span class="p">eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb…</span><span class="dot">.</span><span class="s">NHVaYe26MbtOYhSKkoKYd FVomg4i8ZJd8_—</span></div>
+        <div class="lbl">Header — чим підписано</div>
+<div class="code hd">{
+  <span class="k">"alg"</span>: <span class="v">"RS256"</span>,   <span class="c">// ніколи не "none"</span>
+  <span class="k">"kid"</span>: <span class="v">"a3f1c9…"</span>, <span class="c">// який ключ із JWKS брати</span>
+  <span class="k">"typ"</span>: <span class="v">"JWT"</span>
+}</div>
+        <div class="lbl">Payload — claims про користувача</div>
+<div class="code pl">{
+  <span class="k">"iss"</span>: <span class="v">"https://accounts.google.com"</span>, <span class="c">// хто видав</span>
+  <span class="k">"aud"</span>: <span class="v">"1234….apps.googleusercontent.com"</span>, <span class="c">// кому</span>
+  <span class="k">"sub"</span>: <span class="v">"110169484474386276334"</span>, <span class="c">// стабільний id</span>
+  <span class="k">"email"</span>: <span class="v">"user@example.com"</span>,
+  <span class="k">"email_verified"</span>: <span class="v">true</span>,
+  <span class="k">"nonce"</span>: <span class="v">"n-0S6_WzA2Mj"</span>,  <span class="c">// з нашого /authorize</span>
+  <span class="k">"auth_time"</span>: <span class="v">1755499880</span>, <span class="c">// коли реально входив</span>
+  <span class="k">"iat"</span>: <span class="v">1755500000</span>, <span class="k">"exp"</span>: <span class="v">1755503600</span>
+}</div>
+        <div class="lbl">Signature — перевіряємо, не читаємо</div>
+<div class="code sg">RSASSA-PKCS1-v1_5( SHA256(
+    base64url(header) + "." + base64url(payload)
+), <b>приватний ключ провайдера</b> )</div>
+      </div>
+      <div>
+        <div class="lbl">Звідки беруться всі адреси</div>
+        <div class="url">GET https://accounts.google.com/.well-known/openid-configuration</div>
+        <p class="note">Шлях завжди однаковий, змінюється лише issuer. Документ тягнеться на старті застосунку й кешується — це не крок потоку логіну.</p>
+<div class="code">{
+  <span class="k">"issuer"</span>: <span class="v">"https://accounts.google.com"</span>,
+  <span class="k">"authorization_endpoint"</span>: <span class="v">"https://accounts.google.com/o/oauth2/v2/auth"</span>,
+  <span class="k">"token_endpoint"</span>: <span class="v">"https://oauth2.googleapis.com/token"</span>,
+  <span class="k">"userinfo_endpoint"</span>: <span class="v">"https://openidconnect.googleapis.com/v1/userinfo"</span>,
+  <span class="k">"revocation_endpoint"</span>: <span class="v">"https://oauth2.googleapis.com/revoke"</span>,
+  <span class="k">"jwks_uri"</span>: <span class="v">"https://www.googleapis.com/oauth2/v3/certs"</span>,
+  <span class="k">"scopes_supported"</span>: [<span class="v">"openid"</span>, <span class="v">"email"</span>, <span class="v">"profile"</span>],
+  <span class="k">"response_types_supported"</span>: [<span class="v">"code"</span>, <span class="v">"token"</span>, <span class="v">"id_token"</span>, …],
+  <span class="k">"id_token_signing_alg_values_supported"</span>: [<span class="v">"RS256"</span>],
+  <span class="k">"subject_types_supported"</span>: [<span class="v">"public"</span>],
+  <span class="k">"code_challenge_methods_supported"</span>: [<span class="v">"plain"</span>, <span class="v">"S256"</span>],
+  <span class="k">"claims_supported"</span>: [<span class="v">"aud"</span>, <span class="v">"email"</span>, <span class="v">"exp"</span>, <span class="v">"iss"</span>, <span class="v">"sub"</span>, …]
+}</div>
+        <div class="lbl">jwks_uri — публічні ключі, не сертифікати</div>
+<div class="code">{ <span class="k">"keys"</span>: [ {
+    <span class="k">"kid"</span>: <span class="v">"a3f1c9…"</span>, <span class="k">"kty"</span>: <span class="v">"RSA"</span>, <span class="k">"alg"</span>: <span class="v">"RS256"</span>, <span class="k">"use"</span>: <span class="v">"sig"</span>,
+    <span class="k">"n"</span>: <span class="v">"xGOr-H7A-Pooe…"</span>, <span class="k">"e"</span>: <span class="v">"AQAB"</span>
+} ] }</div>
+        <p class="note">Збіг за <b>kid</b> робить ротацію безшовною: провайдер публікує новий ключ поруч зі старим, і токени, підписані попереднім, лишаються валідними до свого exp.</p>
+      </div>
+    </div>${spine(5)}</div>`;
+
+  if(s.type==="table") return `<div class="slide">
+    <div class="eyebrow">Підсумок<span class="rule"></span>що змінювалось</div>
+    <h2>Сім ітерацій одного питання</h2>
+    <table>
+      <tr><th>Ітерація</th><th>Ключова ідея</th><th>Проблема, яку закрила</th><th>Що лишилось</th></tr>
+      <tr><td>Пароль</td><td>Застосунок логіниться за користувача</td><td>—</td><td>Все; дожив як ROPC grant до OAuth 2.1</td></tr>
+      <tr><td>OAuth 1.0a</td><td>Окремий токен + підпис запиту</td><td>Пароль у третьої сторони</td><td>Складність, немає scopes</td></tr>
+      <tr><td>Implicit</td><td>Токен прямо в redirect</td><td>Складність підписів, SPA без бекенда</td><td>Токен у браузері й логах</td></tr>
+      <tr><td>Auth&nbsp;Code</td><td>Код через браузер, токен через back-channel</td><td>Витік токена через фронтенд</td><td>Потрібен client_secret</td></tr>
+      <tr><td>PKCE</td><td>Доказ володіння code_verifier</td><td>Перехоплення коду, клієнти без секрету</td><td>Немає даних про особу</td></tr>
+      <tr><td>OIDC</td><td>id_token як стандартний JWT</td><td>Автентифікація й SSO</td><td>Токени все ще в клієнті</td></tr>
+      <tr><td>BFF / 2.1</td><td>Токени на сервері, cookie в браузері</td><td>XSS, крадіжка refresh-токенів</td><td>CSRF і stateful-сесії</td></tr>
+    </table>${spine(6)}</div>`;
+
+  if(s.type==="summary") return `<div class="slide">
+    <div class="eyebrow">Як робити зараз<span class="rule"></span>чек-ліст</div>
+    <h2>Що брати в новий проєкт</h2>
+    <div class="chk">
+      <div><h4>Authorization Code + PKCE</h4><p>Єдиний потік для всіх типів клієнтів. Implicit і ROPC (password grant) не використовуємо навіть для внутрішніх застосунків.</p></div>
+      <div><h4>OIDC для входу, OAuth для доступу</h4><p>Хто це — з id_token. Що можна робити — з access_token і scopes.</p></div>
+      <div><h4>Токени тримає бекенд</h4><p>Браузер отримує HttpOnly · Secure · SameSite cookie, а не Bearer у localStorage.</p></div>
+      <div><h4>Перевіряти все в JWT</h4><p>Підпис через JWKS, а також iss, aud, exp, nonce. Бібліотекою, не вручну.</p></div>
+      <div><h4>Точні redirect_uri</h4><p>Тільки повний збіг зі списком. Жодних wildcard і відкритих редиректів.</p></div>
+      <div class="warn"><h4>Ротація і короткий строк життя</h4><p>Access — хвилини, refresh — з ротацією й виявленням повторного використання.</p></div>
+    </div>${spine(6)}</div>`;
+
+  const x = s.strike ? `<button class="strike-btn" data-strike>Позначити як застарілу</button>
+      <div class="strike-x" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none">
+        <line x1="0" y1="0" x2="100" y2="100"/>
+        <line x1="0" y1="100" x2="100" y2="0"/>
+      </svg><em>${s.strike}</em></div>` : "";
+  return `<div class="slide">
+    <div class="eyebrow">${s.eyebrow}<span class="rule"></span>${String(s.stage+1).padStart(2,"0")} / 07</div>
+    <h2>${s.title}</h2>
+    <p class="sub">${s.sub}</p>
+    <div class="cols">
+      <div class="diagram-wrap">${drawFlow(s)}</div>
+      <div>${panel(s.good,"good")}${panel(s.bad,"bad")}</div>
+    </div>${x}${spine(s.stage)}</div>`;
+}
+
+/* ══ Керування ═══════════════════════════════════════════════ */
+const stage = document.getElementById("stage");
+const wipe = document.getElementById("wipe");
+stage.insertAdjacentHTML("beforeend", slides.map(render).join(""));
+const els = [...document.querySelectorAll(".slide")];
+let cur = 0, wipeTimer = null;
+
+function show(n,silent){
+  n = Math.max(0, Math.min(slides.length-1, n));
+  if(n===cur && !silent) return;
+  const prev = cur;
+  const back = n < cur;
+  clearTimeout(wipeTimer);
+  els.forEach(el=>el.classList.remove("out","anim","rev"));
+  wipe.classList.remove("rev");
+  cur = n;
+  if(!silent){
+    els[prev].classList.remove("on");
+    els[prev].classList.add("out","anim");
+    if(back) els[prev].classList.add("rev");
+  }
+  els[cur].classList.remove("on");
+  void els[cur].offsetWidth;                 // перезапуск анімації
+  els[cur].classList.add("on");
+  if(!silent){
+    els[cur].classList.add("anim");
+    if(back) els[cur].classList.add("rev");
+    wipe.classList.remove("go"); void wipe.offsetWidth;
+    if(back) wipe.classList.add("rev");
+    wipe.classList.add("go");
+    wipeTimer = setTimeout(()=>{
+      els[prev].classList.remove("out","anim","rev");
+      els[cur].classList.remove("anim","rev");
+      wipe.classList.remove("go","rev");
+    }, 680);
+  }
+  els[prev].querySelectorAll(".strike-x.on").forEach(x=>{
+    x.classList.remove("on");
+    const b = x.parentElement.querySelector("[data-strike]");
+    if(b) b.textContent = "Позначити як застарілу";
+  });
+  document.getElementById("count").textContent = (cur+1)+" / "+slides.length;
+  document.getElementById("prev").disabled = cur===0;
+  document.getElementById("next").disabled = cur===slides.length-1;
+}
+show(0,true);
+
+document.addEventListener("click",e=>{
+  const b = e.target.closest("[data-strike]");
+  if(!b) return;
+  const x = b.parentElement.querySelector(".strike-x");
+  const on = x.classList.toggle("on");
+  b.textContent = on ? "Прибрати перекреслення" : "Позначити як застарілу";
+});
+
+document.getElementById("next").onclick = ()=>show(cur+1);
+document.getElementById("prev").onclick = ()=>show(cur-1);
+document.getElementById("fs").onclick = ()=>{
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.getElementById("deck").requestFullscreen();
+};
+document.addEventListener("fullscreenchange",()=>{
+  document.getElementById("fs").textContent = document.fullscreenElement ? "Вийти з екрана" : "На весь екран";
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();show(cur+1)}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1)}
+  else if(e.key==="Home"){show(0)} else if(e.key==="End"){show(slides.length-1)}
+  else if(e.key.toLowerCase()==="f"){document.getElementById("fs").click()}
+});
+let t; const bar = document.getElementById("bar");
+function idle(){clearTimeout(t); bar.classList.remove("idle"); t=setTimeout(()=>bar.classList.add("idle"),2600)}
+document.addEventListener("mousemove",idle); idle();
+</script>
+</body>
+</html>
