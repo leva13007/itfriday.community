@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OWASP Top 10:2025 — Доповідь</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;
+    --bg-2:#0d1117;
+    --panel:#131820;
+    --panel-2:#171e28;
+    --border:#242c38;
+    --text:#eceff3;
+    --text-dim:#8891a0;
+    --text-faint:#5b6472;
+    --amber:#e8a33d;
+    --amber-dim:#8a662a;
+    --red:#e5484d;
+    --red-dim:#6e2b2d;
+    --teal:#49c7b8;
+    --teal-dim:#296059;
+    --display:'Space Grotesk',sans-serif;
+    --body:'IBM Plex Sans',sans-serif;
+    --mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    overflow:hidden;
+  }
+  body{
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(232,163,61,0.05), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(73,199,184,0.05), transparent 40%);
+  }
+  ::selection{ background:var(--amber); color:#0a0d12; }
+
+  /* ---------- deck shell ---------- */
+  #deck{
+    position:relative;
+    width:100vw;
+    height:100vh;
+  }
+  .slide{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    padding:5.2vh 6.5vw 8vh 6.5vw;
+    opacity:0;
+    visibility:hidden;
+    transform:translateX(24px);
+    transition:opacity .45s ease, transform .45s ease;
+    pointer-events:none;
+  }
+  .slide.active{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(0);
+    pointer-events:auto;
+  }
+  .slide.prev{ transform:translateX(-24px); }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.92rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--amber);
+    display:flex;
+    align-items:center;
+    gap:.6em;
+    margin-bottom:1.3rem;
+  }
+  .eyebrow::before{
+    content:'';
+    width:22px; height:1px;
+    background:var(--amber);
+    display:inline-block;
+  }
+  h1.slide-title{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:3.3rem;
+    line-height:1.08;
+    letter-spacing:-.01em;
+    max-width:20ch;
+  }
+  .slide-sub{
+    font-size:1.3rem;
+    color:var(--text-dim);
+    max-width:66ch;
+    margin-top:1.1rem;
+    line-height:1.55;
+  }
+
+  /* ---------- TITLE SLIDE ---------- */
+  .s-title{ justify-content:center; align-items:flex-start; }
+  .s-title .kicker{
+    font-family:var(--mono);
+    font-size:1rem;
+    color:var(--text-faint);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    margin-bottom:2.4rem;
+  }
+  .terminal-title{
+    font-family:var(--mono);
+    font-weight:600;
+    font-size:clamp(3.2rem, 7.4vw, 6.8rem);
+    line-height:1.02;
+    letter-spacing:-.01em;
+    color:var(--text);
+  }
+  .terminal-title .accent{ color:var(--amber); }
+  .cursor{
+    display:inline-block;
+    width:.52em; height:.85em;
+    background:var(--amber);
+    margin-left:.15em;
+    animation:blink 1.1s steps(1) infinite;
+    transform:translateY(.08em);
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .title-desc{
+    font-size:1.5rem;
+    color:var(--text-dim);
+    max-width:48ch;
+    margin-top:1.8rem;
+    line-height:1.6;
+  }
+  .title-meta{
+    margin-top:3.4rem;
+    display:flex;
+    gap:2.6rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    color:var(--text-faint);
+  }
+  .title-meta b{ color:var(--teal); font-weight:600; }
+  .scanline{
+    position:absolute; inset:0;
+    pointer-events:none;
+    background:linear-gradient(180deg, transparent 0%, rgba(232,163,61,0.035) 50%, transparent 100%);
+    background-size:100% 6px;
+    opacity:.5;
+    mix-blend-mode:overlay;
+  }
+
+  /* ---------- generic content blocks ---------- */
+  .content-body{ flex:1; display:flex; flex-direction:column; justify-content:center; margin-top:1.4rem; }
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:3.2rem; align-items:start; }
+  .three-col{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
+
+  ul.bullet-list{ list-style:none; display:flex; flex-direction:column; gap:1.05rem; }
+  ul.bullet-list li{
+    position:relative;
+    padding-left:1.4rem;
+    font-size:1.18rem;
+    line-height:1.5;
+    color:var(--text);
+  }
+  ul.bullet-list li::before{
+    content:'';
+    position:absolute; left:0; top:.6em;
+    width:7px; height:7px;
+    background:var(--amber);
+    border-radius:1px;
+  }
+  ul.bullet-list.teal li::before{ background:var(--teal); }
+  ul.bullet-list.red li::before{ background:var(--red); }
+
+  .block-label{
+    font-family:var(--mono);
+    font-size:.88rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin-bottom:1.1rem;
+    display:flex; align-items:center; gap:.5rem;
+  }
+  .block-label.amber{ color:var(--amber); }
+  .block-label.teal{ color:var(--teal); }
+  .block-label.red{ color:var(--red); }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:1.5rem 1.7rem;
+  }
+
+  /* ---------- INTRO / GENERIC STAT slides ---------- */
+  .stat-row{ display:flex; gap:1.2rem; margin-top:1.6rem; }
+  .stat-card{
+    flex:1;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:1.4rem 1.5rem;
+  }
+  .stat-card .num{
+    font-family:var(--mono);
+    font-size:2.7rem;
+    font-weight:600;
+    color:var(--amber);
+    line-height:1;
+  }
+  .stat-card .lbl{
+    font-size:1.02rem;
+    color:var(--text-dim);
+    margin-top:.7rem;
+    line-height:1.4;
+  }
+
+  /* ---------- OVERVIEW LIST (leaderboard) ---------- */
+  .ov-legend{
+    display:grid;
+    grid-template-columns:100px 130px 1fr 340px 100px;
+    gap:1.6rem;
+    padding:0 1.5rem;
+    margin-top:1.6rem;
+    margin-bottom:.6rem;
+  }
+  .ov-legend span{
+    font-family:var(--mono);
+    font-size:.76rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+  }
+  .ov-legend span.right{ text-align:right; }
+  .ov-list{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    min-height:0;
+  }
+  .ov-row{
+    display:grid;
+    grid-template-columns:100px 130px 1fr 340px 100px;
+    align-items:center;
+    gap:1.6rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:.95rem 1.5rem;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .ov-row:hover{ border-color:var(--amber-dim); transform:translateX(5px); }
+  .ov-code{ font-family:var(--mono); font-weight:700; font-size:1.5rem; color:var(--amber); }
+  .ov-trend{
+    font-family:var(--mono); font-size:.85rem; font-weight:600;
+    padding:.28rem .65rem; border-radius:20px; letter-spacing:.03em;
+    justify-self:start; white-space:nowrap;
+  }
+  .ov-trend.up{ color:var(--teal); background:rgba(73,199,184,.12); }
+  .ov-trend.down{ color:var(--text-faint); background:rgba(255,255,255,.05); }
+  .ov-trend.same{ color:var(--amber); background:rgba(232,163,61,.12); }
+  .ov-trend.new{ color:var(--red); background:rgba(229,72,77,.14); }
+  .ov-name{ font-size:1.22rem; font-weight:500; line-height:1.25; }
+  .ov-bar-wrap{ display:flex; align-items:center; }
+  .ov-bar{
+    width:100%; height:9px;
+    background:var(--panel-2);
+    border-radius:5px;
+    overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .ov-bar-fill{ height:100%; border-radius:5px; background:var(--amber); }
+  .ov-pct{
+    font-family:var(--mono); font-size:1.05rem; font-weight:600;
+    color:var(--text-dim); text-align:right;
+  }
+
+  /* ---------- CHANGE slide ---------- */
+  .change-list{ display:flex; flex-direction:column; gap:1.1rem; margin-top:1.6rem; }
+  .change-item{
+    display:grid;
+    grid-template-columns:130px 1fr;
+    gap:1.4rem;
+    align-items:baseline;
+    border-bottom:1px solid var(--border);
+    padding-bottom:1.1rem;
+  }
+  .change-tag{
+    font-family:var(--mono);
+    font-size:.92rem;
+    font-weight:600;
+    padding:.32rem .6rem;
+    border-radius:4px;
+    text-align:center;
+    letter-spacing:.05em;
+  }
+  .change-tag.new{ background:rgba(229,72,77,.14); color:var(--red); }
+  .change-tag.merge{ background:rgba(232,163,61,.14); color:var(--amber); }
+  .change-tag.rename{ background:rgba(73,199,184,.14); color:var(--teal); }
+  .change-text b{ color:var(--text); }
+  .change-text{ color:var(--text-dim); font-size:1.18rem; line-height:1.5; }
+
+  /* ---------- CATEGORY SLIDE ---------- */
+  .cat-slide{ padding-top:3.6vh; }
+  .cat-head{ display:flex; align-items:flex-end; gap:1.8rem; justify-content:space-between; }
+  .cat-code{
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:6.6rem;
+    line-height:.88;
+    color:var(--amber);
+    letter-spacing:-.02em;
+  }
+  .cat-headtext{ flex:1; padding-bottom:.5rem; }
+  .cat-title{ font-family:var(--display); font-weight:600; font-size:2.75rem; line-height:1.15; }
+  .cat-rank{
+    font-family:var(--mono);
+    font-size:1.1rem;
+    color:var(--text-dim);
+    margin-top:.8rem;
+    display:flex; align-items:center; gap:.6rem;
+  }
+  .rank-pill{
+    font-size:.95rem;
+    padding:.22rem .65rem;
+    border-radius:20px;
+    font-weight:600;
+  }
+  .rank-pill.up{ background:rgba(73,199,184,.14); color:var(--teal); }
+  .rank-pill.down{ background:rgba(255,255,255,.05); color:var(--text-faint); }
+  .rank-pill.same{ background:rgba(232,163,61,.14); color:var(--amber); }
+  .rank-pill.new{ background:rgba(229,72,77,.14); color:var(--red); }
+
+  .gauges{ display:flex; gap:2.8rem; padding-bottom:.5rem; }
+  .gauge{ width:200px; }
+  .gauge-top{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:.95rem; color:var(--text-faint); margin-bottom:.5rem; text-transform:uppercase; letter-spacing:.04em;}
+  .gauge-val{ color:var(--text); font-weight:600; }
+  .gauge-bar{ height:7px; background:var(--panel-2); border-radius:4px; overflow:hidden; border:1px solid var(--border); }
+  .gauge-fill{ height:100%; border-radius:3px; }
+  .gauge-fill.inc{ background:var(--amber); }
+  .gauge-fill.exp{ background:var(--red); }
+  .gauge-fill.imp{ background:var(--teal); }
+
+  .cat-body{
+    flex:1;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:3.4rem;
+    margin-top:3rem;
+    min-height:0;
+  }
+  .cat-col{ display:flex; flex-direction:column; justify-content:center; gap:2.4rem; min-height:0; }
+  .cat-col .block-label{ font-size:.95rem; margin-bottom:.2rem; }
+  .cat-col ul.bullet-list{ gap:1.4rem; }
+  .cat-col ul.bullet-list li{ font-size:1.38rem; line-height:1.5; padding-left:1.6rem; }
+  .cat-col ul.bullet-list li::before{ width:8px; height:8px; top:.62em; }
+  .example-box{
+    background:var(--panel-2);
+    border-left:3px solid var(--amber);
+    border-radius:0 6px 6px 0;
+    padding:1.6rem 1.9rem;
+    font-family:var(--mono);
+    font-size:1.12rem;
+    line-height:1.6;
+    color:var(--text-dim);
+  }
+  .cwe-row{ display:flex; flex-wrap:wrap; gap:.65rem; margin-top:.3rem; }
+  .cwe-chip{
+    font-family:var(--mono);
+    font-size:.95rem;
+    color:var(--text-faint);
+    border:1px solid var(--border);
+    padding:.34rem .8rem;
+    border-radius:20px;
+  }
+
+  /* ---------- CODE / ANTI-PATTERN SLIDE ---------- */
+  .code-body{
+    flex:1;
+    display:grid;
+    grid-template-columns:1.35fr 1fr;
+    gap:3rem;
+    margin-top:2.6rem;
+    min-height:0;
+    align-items:center;
+  }
+  .code-panel{
+    background:var(--panel);
+    border:1px solid var(--red-dim);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .code-panel-label{
+    font-family:var(--mono);
+    font-size:.85rem;
+    font-weight:600;
+    letter-spacing:.1em;
+    color:var(--red);
+    background:rgba(229,72,77,.1);
+    border-bottom:1px solid var(--red-dim);
+    padding:.7rem 1.4rem;
+  }
+  .code-block{
+    font-family:var(--mono);
+    font-size:1.18rem;
+    line-height:1.75;
+    color:var(--text);
+    padding:1.6rem 1.7rem;
+    white-space:pre;
+    overflow-x:auto;
+  }
+  .code-why{ display:flex; flex-direction:column; gap:1.4rem; justify-content:center; }
+  .code-why ul.bullet-list li{ font-size:1.28rem; line-height:1.5; }
+
+  /* ---------- JWT COMPARISON SLIDE ---------- */
+  .jwt-body{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:1.8rem; min-height:0; }
+  .jwt-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1.8rem; }
+  .jwt-card{ border-radius:10px; overflow:hidden; border:1px solid var(--border); background:var(--panel); }
+  .jwt-card.good{ border-color:var(--teal-dim); }
+  .jwt-card.evil{ border-color:var(--red-dim); }
+  .jwt-card-label{ font-family:var(--mono); font-size:.82rem; font-weight:600; letter-spacing:.08em; padding:.65rem 1.2rem; }
+  .jwt-card.good .jwt-card-label{ color:var(--teal); background:rgba(73,199,184,.1); border-bottom:1px solid var(--teal-dim); }
+  .jwt-card.evil .jwt-card-label{ color:var(--red); background:rgba(229,72,77,.1); border-bottom:1px solid var(--red-dim); }
+  .jwt-token{ font-family:var(--mono); font-size:.74rem; line-height:1.6; padding:.9rem 1.2rem; word-break:break-all; border-bottom:1px solid var(--border); }
+  .jwt-token .seg-h{ color:var(--amber); }
+  .jwt-token .seg-p{ color:var(--teal); }
+  .jwt-token .seg-s{ color:var(--text-faint); }
+  .jwt-token .seg-dot{ color:var(--text-faint); }
+  .jwt-decoded{ padding:1rem 1.2rem; font-family:var(--mono); font-size:.98rem; line-height:1.65; color:var(--text-dim); }
+  .jwt-decoded .jwt-line-2{ margin-top:.6rem; }
+  .jwt-explain{ display:grid; grid-template-columns:1fr 1fr; gap:2.6rem; }
+  .jwt-explain ul.bullet-list li{ font-size:1.05rem; line-height:1.5; }
+
+  /* ---------- METHOD slide ---------- */
+  .method-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:2.6rem; margin-top:1.6rem; align-items:start; }
+  .donor-wrap{ display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.8rem; }
+  .donor-chip{
+    font-family:var(--mono); font-size:.88rem; color:var(--text-dim);
+    border:1px solid var(--border); padding:.36rem .7rem; border-radius:4px;
+  }
+  .authors-list{ display:flex; flex-direction:column; gap:.6rem; margin-top:.9rem; }
+  .authors-list li{ font-size:1.05rem; color:var(--text-dim); list-style:none; }
+  .authors-list li b{ color:var(--text); font-weight:500; }
+
+  /* ---------- NEXT STEPS slide ---------- */
+  .steps-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1.3rem; margin-top:1.8rem; }
+  .step-card{ background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:1.3rem 1.4rem; }
+  .step-card .step-idx{ font-family:var(--mono); color:var(--teal); font-size:.92rem; margin-bottom:.6rem; }
+  .step-card h3{ font-family:var(--display); font-size:1.3rem; font-weight:600; margin-bottom:.6rem; }
+  .step-card p{ font-size:1.04rem; color:var(--text-dim); line-height:1.5; }
+  .source-line{
+    margin-top:2.2rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    color:var(--text-faint);
+  }
+  .source-line a{ color:var(--teal); text-decoration:none; }
+  .source-line a:hover{ text-decoration:underline; }
+
+  /* ---------- NAV UI ---------- */
+  #progress{
+    position:fixed; top:0; left:0; height:2px;
+    background:linear-gradient(90deg, var(--amber), var(--teal));
+    z-index:50;
+    transition:width .35s ease;
+  }
+  #nav-ui{
+    position:fixed; bottom:0; left:0; right:0;
+    height:6.5vh;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 2.4vw;
+    z-index:50;
+    background:linear-gradient(0deg, rgba(10,13,18,.92), transparent);
+  }
+  #counter{
+    font-family:var(--mono); font-size:.95rem; color:var(--text-faint);
+    letter-spacing:.05em;
+  }
+  #counter b{ color:var(--text); }
+  .nav-controls{ display:flex; align-items:center; gap:.6rem; }
+  .nav-btn{
+    width:42px; height:42px;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:var(--panel);
+    color:var(--text-dim);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:border-color .2s ease, color .2s ease, background .2s ease;
+  }
+  .nav-btn:hover{ border-color:var(--amber); color:var(--amber); }
+  .nav-btn svg{ width:16px; height:16px; }
+  #fs-btn{ margin-left:1rem; }
+  #fs-btn.on{ color:var(--teal); border-color:var(--teal-dim); }
+
+  .slide-name{
+    font-family:var(--mono); font-size:.9rem; color:var(--text-faint);
+    letter-spacing:.06em;
+  }
+
+  @media (max-width:1000px){
+    .ov-row, .ov-legend{ grid-template-columns:70px 100px 1fr; }
+    .ov-bar-wrap, .ov-pct, .ov-legend span:nth-child(4), .ov-legend span:nth-child(5){ display:none; }
+    .two-col, .cat-body, .method-grid, .steps-grid{ grid-template-columns:1fr; }
+    .gauges{ flex-wrap:wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress" style="width:0%"></div>
+<div id="deck"></div>
+
+<div id="nav-ui">
+  <div id="counter"><b id="cur">01</b> / <span id="total">00</span> &nbsp;·&nbsp; <span class="slide-name" id="slide-name"></span></div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prev-btn" title="Попередній (←)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="nav-btn" id="next-btn" title="Наступний (→)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <button class="nav-btn" id="fs-btn" title="На весь екран (F)">
+      <svg id="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DATA — OWASP Top 10:2025 (owasp.org/Top10/2025)
+   ========================================================= */
+const CATS = [
+  {
+    code:'A01', name:'Порушення контролю доступу', en:'Broken Access Control',
+    rank:'#1', trend:'same', trendLabel:'Утримує 1-ше місце',
+    inc:3.74, exp:7.04, imp:3.84,
+    issues:[
+      'Порушення принципу «заборонено за замовчуванням» — доступ дозволено там, де мав бути обмежений',
+      'IDOR: підміна ідентифікатора запису в URL чи API відкриває доступ до чужих даних',
+      'Відсутній контроль доступу на рівні POST/PUT/DELETE у API',
+      'Підробка JWT/cookie, CORS-помилки, «force browsing» до адмін-сторінок'
+    ],
+    prevention:[
+      'Заборона за замовчуванням, окрім явно публічних ресурсів',
+      'Єдиний, перевикористовуваний серверний механізм контролю доступу',
+      'Модель доступу прив’язана до власника запису, а не до довільного ID',
+      'Логування відмов доступу, rate limiting, короткоживучі токени'
+    ],
+    example:'$ curl https://example.com/app/admin_getAppInfo — якщо контроль доступу реалізовано лише в JS на клієнті, прямий запит до API обходить його повністю.',
+    cwes:['CWE-284 Access Control','CWE-862 Missing Authorization','CWE-352 CSRF','CWE-918 SSRF'],
+    badCode:[
+      "app.get('/api/orders', (req, res) => {",
+      "  const userId = req.query.userId; // ID береться з параметра запиту клієнта",
+      "  const orders = db.getOrdersByUser(userId);",
+      "  res.json(orders);",
+      "  // сервер сліпо довіряє userId від клієнта замість req.user.id з токена",
+      "});"
+    ],
+    badWhy:[
+      'userId береться напряму з параметра запиту клієнта (req.query.userId), а не з перевіреного токена автентифікації (req.user.id)',
+      'Достатньо змінити ?userId=1 на ?userId=2 в URL, щоб отримати чужі замовлення — сервер жодного разу не звіряє це значення з тим, хто справді автентифікований',
+      'Правильний підхід: ідентичність користувача завжди береться з даних, перевірених на сервері (сесія/токен), а не з будь-якого параметра, який може підставити клієнт'
+    ]
+  },
+  {
+    code:'A02', name:'Неправильна конфігурація безпеки', en:'Security Misconfiguration',
+    rank:'#2', trend:'up', trendLabel:'Було #5 у 2021',
+    inc:3.00, exp:7.96, imp:3.97,
+    issues:[
+      'Облікові записи й паролі за замовчуванням лишаються активними',
+      'Увімкнені зайві функції, порти, тестові сторінки чи фреймворки',
+      'Детальні повідомлення про помилки розкривають стек викликів і версії компонентів',
+      'Відсутні security-заголовки; занадто відкриті дозволи хмарних сховищ (S3 тощо)'
+    ],
+    prevention:[
+      'Автоматизований, повторюваний процес хардненінгу — однаковий для dev/QA/prod',
+      'Мінімальна платформа без зайвих компонентів і зразків коду',
+      'Регулярний перегляд конфігурацій разом із патч-менеджментом',
+      'Ідентифікаційна федерація й короткоживучі креденшели замість статичних секретів'
+    ],
+    example:'Directory listing не вимкнено на сервері — зловмисник переглядає каталог, завантажує скомпільовані класи, реверсить їх і знаходить критичну ваду доступу.',
+    cwes:['CWE-16 Configuration','CWE-611 XXE','CWE-1004 Cookie HttpOnly','CWE-942 CORS Policy'],
+    badCode:[
+      "# settings.py — production",
+      "DEBUG = True",
+      "ALLOWED_HOSTS = ['*']",
+      "SECRET_KEY = 'django-insecure-changeme123'"
+    ],
+    badWhy:[
+      'DEBUG=True в проді показує повний stack trace та фрагменти вихідного коду при кожній помилці',
+      "ALLOWED_HOSTS=['*'] дозволяє довільний Host header і відкриває шлях до Host header injection",
+      'Дефолтний/слабкий SECRET_KEY легко знайти в публічних репозиторіях — з ним можна підробити сесії'
+    ]
+  },
+  {
+    code:'A03', name:'Збої в ланцюжку постачання ПЗ', en:'Software Supply Chain Failures',
+    rank:'#3', trend:'new', trendLabel:'Розширено з «Vulnerable Components» — топ community survey',
+    inc:5.72, exp:8.17, imp:5.23,
+    issues:[
+      'Транзитивні залежності не відстежуються, SBOM відсутній',
+      'Компоненти застарілі, непідтримувані або отримані з ненадійних джерел',
+      'CI/CD-конвеєр захищений слабше, ніж системи, які він розгортає',
+      'Немає поділу обов’язків: код можна довести до продакшена без перевірки іншою людиною'
+    ],
+    prevention:[
+      'Централізований SBOM і відстеження всіх, у т.ч. транзитивних, залежностей',
+      'Моніторинг CVE / NVD / OSV; лише підписані пакети з довірених джерел',
+      'Хардненінг репозиторію, CI/CD та артефактів: MFA, підписані build, immutable-артефакти',
+      'Поетапні (canary) розгортання оновлень замість одночасного викочування'
+    ],
+    example:'Черв’як Shai-Hulud (2025) саморозповсюджувався через npm: викрадав токени й автоматично публікував заражені версії понад 500 пакетів, перш ніж його зупинили.',
+    cwes:['CWE-1104 Unmaintained Component','CWE-1395 Vulnerable Dependency','CWE-1357'],
+    badCode:[
+      "# install.sh",
+      "curl -sSL https://get.some-tool.dev | bash",
+      "npm install --save some-package@latest"
+    ],
+    badWhy:[
+      'curl | bash виконує довільний код зі стороннього сервера без жодної перевірки цілісності чи підпису',
+      "@latest без lock-файлу й фіксації версії — можна отримати вже скомпрометовану версію одразу після її публікації",
+      'Немає перевірки хешу чи цифрового підпису пакета перед встановленням'
+    ]
+  },
+  {
+    code:'A04', name:'Криптографічні збої', en:'Cryptographic Failures',
+    rank:'#4', trend:'down', trendLabel:'Було #2 у 2021',
+    inc:3.80, exp:7.23, imp:3.90,
+    issues:[
+      'Дані передаються чи зберігаються без шифрування або зі слабкими алгоритмами',
+      'Застарілі хеш-функції (MD5, SHA-1) або хешування без солі',
+      'Слабкий/передбачуваний генератор випадкових чисел (PRNG) для ключів',
+      'Жорстко закодовані або повторно використані криптографічні ключі'
+    ],
+    prevention:[
+      'Класифікація чутливих даних, шифрування at rest та in transit (TLS ≥ 1.2, HSTS)',
+      'Адаптивне солоне хешування паролів: Argon2, scrypt, PBKDF2',
+      'Належне управління ключами; апаратні/хмарні HSM для найкритичніших ключів',
+      'Підготовка систем до постквантової криптографії — до кінця 2030 року'
+    ],
+    example:'Сайт не примушує HTTPS для всіх сторінок — в публічному Wi-Fi зловмисник знижує з’єднання до HTTP і перехоплює сесійну cookie користувача.',
+    cwes:['CWE-327 Broken Algorithm','CWE-338 Weak PRNG','CWE-916 Weak Hash','CWE-321 Hard-coded Key'],
+    badCode:[
+      "const hash = crypto.createHash('md5').update(password).digest('hex');",
+      "const apiKey = 'sk_live_51Hf8x7....'; // хардкод прямо в коді"
+    ],
+    badWhy:[
+      'MD5 давно зламаний і зворотньо підбирається за rainbow-таблицями — крім того, тут немає солі',
+      'API-ключ, захардкоджений прямо в коді, потрапляє у git-історію й видно всім, хто має доступ до репозиторію'
+    ]
+  },
+  {
+    code:'A05', name:'Ін’єкції', en:'Injection',
+    rank:'#5', trend:'down', trendLabel:'Було #3 у 2021',
+    inc:3.08, exp:7.15, imp:4.32,
+    issues:[
+      'Введені користувачем дані потрапляють в інтерпретатор без валідації чи санітизації',
+      'Динамічні SQL/NoSQL/OS-команди конкатенуються з недовіреними даними',
+      'XSS — найчастіша вада (30 000+ CVE), SQL-ін’єкція — рідша, але критичніша',
+      'ORM не рятує автоматично: HQL/JPQL теж вразливі при конкатенації рядків'
+    ],
+    prevention:[
+      'Параметризовані запити, безпечні API або ORM замість ручної побудови команд',
+      'Позитивна серверна валідація вхідних даних',
+      'Контекстно-залежне екранування виводу там, де параметризація неможлива',
+      'SAST / DAST / IAST-інструменти, вбудовані в CI/CD-конвеєр'
+    ],
+    example:"http://example.com/app/accountView?id=' OR '1'='1 — класична SQL-ін’єкція перетворює запит одного акаунта на вибірку всієї таблиці.",
+    cwes:['CWE-89 SQL Injection','CWE-79 XSS','CWE-78 OS Command Injection'],
+    badCode:[
+      "const query = 'SELECT * FROM users WHERE id = ' + req.query.id;",
+      "db.query(query);"
+    ],
+    badWhy:[
+      "Вхідні дані користувача напряму конкатенуються в SQL-запит без параметризації",
+      "Запит виду ?id=1 OR 1=1 поверне всіх користувачів замість одного — класична SQL-ін'єкція",
+      'Параметризовані запити чи ORM тут навіть не розглядались як варіант'
+    ]
+  },
+  {
+    code:'A06', name:'Небезпечний дизайн', en:'Insecure Design',
+    rank:'#6', trend:'down', trendLabel:'Було #4 у 2021',
+    inc:1.86, exp:6.96, imp:4.05,
+    issues:[
+      'Захисні механізми відсутні на рівні архітектури, а не лише реалізації',
+      'Немає моделювання загроз (threat modeling) для критичних потоків',
+      'Бізнес-логіка не має обмежень: лімітів, антифроду, антибот-захисту',
+      'Небезпечні механізми відновлення пароля («секретні запитання» тощо)'
+    ],
+    prevention:[
+      'Безпечний життєвий цикл розробки (SSDLC) із залученням AppSec на етапі вимог',
+      'Бібліотека перевірених патернів дизайну — «paved road»',
+      'Моделювання загроз для автентифікації, доступу й ключових бізнес-потоків',
+      'Тести на use-case і misuse-case; сегментація рівнів і орендарів системи'
+    ],
+    example:'Мережа кінотеатрів не обмежує групове бронювання — зловмисник резервує 600 місць одночасно в усіх залах кількома запитами, спричиняючи масову втрату доходу.',
+    cwes:['CWE-501 Trust Boundary','CWE-434 Unrestricted Upload','CWE-841 Workflow'],
+    badCode:[
+      "app.post('/api/book-seat', (req, res) => {",
+      "  bookSeat(req.body.seatId, req.user.id);",
+      "  res.json({ ok: true });",
+      "  // немає ліміту місць на користувача, немає захисту від паралельних запитів",
+      "});"
+    ],
+    badWhy:[
+      'Немає бізнес-ліміту — один користувач може забронювати сотні місць поспіль в одній серії запитів',
+      "Немає захисту від паралельних (race condition) запитів — одне й те саме місце можна забронювати двічі одночасно"
+    ]
+  },
+  {
+    code:'A07', name:'Збої автентифікації', en:'Authentication Failures',
+    rank:'#7', trend:'same', trendLabel:'Без змін (уточнено назву)',
+    inc:2.92, exp:7.69, imp:4.44,
+    issues:[
+      'Credential stuffing і «гібридний» password-spray (Winter2025 → Winter2026)',
+      'Слабкі, стандартні або вже скомпрометовані паролі допускаються без перевірки',
+      'Відсутня або необов’язкова багатофакторна автентифікація (MFA)',
+      'Сесійні ID не оновлюються при вході й не інвалідуються при виході'
+    ],
+    prevention:[
+      'Обов’язкова MFA всюди, де це технічно можливо',
+      'Перевірка нових паролів за базами скомпрометованих облікових даних',
+      'Політика паролів за NIST 800-63b — без примусової ротації без підозри на злам',
+      'Безпечне серверне управління сесіями: новий ID після входу, інвалідація при виході'
+    ],
+    example:'Атакуючий підбирає варіації відомого витоку паролів (ILoveMyDog6 → ILoveMyDog7), обходячи прості блокування за кількістю спроб.',
+    cwes:['CWE-287 Improper Authentication','CWE-307 Brute Force','CWE-798 Hard-coded Credentials'],
+    badCode:[
+      "app.post('/login', (req, res) => {",
+      "  const user = db.findByUsername(req.body.username);",
+      "  if (user && user.password === req.body.password) {",
+      "    createSession(user); // пароль порівнюється у відкритому вигляді",
+      "  }",
+      "  // немає ліміту спроб входу, MFA відсутня",
+      "});"
+    ],
+    badWhy:[
+      'Пароль порівнюється у відкритому, нехешованому вигляді — при витоку бази всі паролі одразу скомпрометовані',
+      'Немає обмеження кількості спроб входу — credential stuffing і brute-force нічим не стримуються',
+      'MFA відсутня навіть як опція для користувача'
+    ]
+  },
+  {
+    code:'A08', name:'Порушення цілісності ПЗ й даних', en:'Software or Data Integrity Failures',
+    rank:'#8', trend:'same', trendLabel:'Без змін (уточнено назву)',
+    inc:2.75, exp:7.11, imp:4.79,
+    issues:[
+      'Плагіни, бібліотеки чи CDN з недовірених джерел підключаються без перевірки',
+      'Автооновлення застосовуються без перевірки цифрового підпису',
+      'CI/CD не перевіряє цілісність коду та артефактів на кожному кроці',
+      'Небезпечна десеріалізація даних, підконтрольних клієнту'
+    ],
+    prevention:[
+      'Цифрові підписи для коду, оновлень та артефактів збірки',
+      'Залежності — лише з довірених і провалідованих репозиторіїв',
+      'Рев’ю змін коду та конфігурації перед потраплянням у конвеєр',
+      'Перевірка цілісності серіалізованих даних, отриманих від клієнта'
+    ],
+    example:'Прошивка домашнього роутера оновлюється без перевірки підпису — зловмисник поширює власну шкідливу версію прошивки на всі пристрої.',
+    cwes:['CWE-502 Deserialization','CWE-829 Untrusted Functionality','CWE-494 No Integrity Check'],
+    badCode:[
+      "const res = await fetch(updateUrl);",
+      "const update = JSON.parse(await res.text());",
+      "eval(update.patchCode); // виконання коду без перевірки підпису"
+    ],
+    badWhy:[
+      'Оновлення завантажується й одразу виконується без перевірки цифрового підпису чи контрольної суми',
+      "eval() довільного коду зі стороннього джерела — це пряме виконання чужого, неперевіреного коду на сервері"
+    ]
+  },
+  {
+    code:'A09', name:'Збої логування й сповіщення', en:'Security Logging & Alerting Failures',
+    rank:'#9', trend:'same', trendLabel:'Без змін (community survey, знову)',
+    inc:3.91, exp:7.19, imp:2.65,
+    issues:[
+      'Події входу, відмови авторизації чи важливі транзакції не логуються послідовно',
+      'Цілісність логів не захищена — їх можна підробити або видалити',
+      'Пороги сповіщень і плейбуки реагування відсутні або застарілі',
+      'Чутливі дані (PII/PHI) потрапляють у логи; моніторинг у реальному часі відсутній'
+    ],
+    prevention:[
+      'Логування всіх подій автентифікації й доступу з контекстом користувача',
+      'Незмінні (append-only) логи із захистом цілісності',
+      'Плейбуки реагування, SOC-моніторинг, «honeytoken»-пастки для ранньої детекції',
+      'План реагування на інциденти за NIST 800-61'
+    ],
+    example:'Витік медичних записів 3,5 млн дітей залишався непоміченим понад 7 років — моніторинг і логування були відсутні повністю; про злам повідомила третя сторона.',
+    cwes:['CWE-778 Insufficient Logging','CWE-532 Sensitive Data in Log','CWE-117 Log Injection'],
+    badCode:[
+      "app.post('/login', (req, res) => {",
+      "  console.log('Login attempt: ' + req.body.username + ' / ' + req.body.password);",
+      "  // пароль потрапляє у відкритий лог; невдалі спроби взагалі не логуються",
+      "});"
+    ],
+    badWhy:[
+      'Пароль користувача у відкритому вигляді потрапляє в лог-файл — це вже саме по собі витік даних',
+      'Невдалі спроби входу взагалі не логуються — brute-force атаку неможливо виявити навіть постфактум'
+    ]
+  },
+  {
+    code:'A10', name:'Неправильна обробка виняткових ситуацій', en:'Mishandling of Exceptional Conditions',
+    rank:'#10', trend:'new', trendLabel:'Нова категорія 2025',
+    inc:2.95, exp:7.11, imp:3.81,
+    issues:[
+      'Винятки не перехоплюються там, де виникають, або не обробляються взагалі',
+      'Детальні повідомлення про помилки розкривають внутрішню структуру системи',
+      'Система «падає у відкритий» стан (fail open) замість безпечного закриття',
+      'Перервана транзакція не відкочується повністю — стан лишається неузгодженим'
+    ],
+    prevention:[
+      'Перехоплення й обробка помилок безпосередньо в місці виникнення',
+      'Єдиний централізований глобальний обробник винятків',
+      'Завжди fail closed: повний відкат незавершених транзакцій',
+      'Rate limiting, квоти ресурсів і сувора валідація вхідних даних'
+    ],
+    example:'Перервана багатоетапна транзакція (списання → зарахування → лог) без коректного відкату дозволяє зловмиснику спустошити рахунок або задвоїти зарахування через race condition.',
+    cwes:['CWE-703 Exceptional Conditions','CWE-476 NULL Pointer','CWE-636 Fail Open'],
+    badCode:[
+      "try {",
+      "  debitAccount(from, amount);",
+      "  creditAccount(to, amount);",
+      "} catch (e) {",
+      "  console.log('error, continuing anyway');",
+      "  // транзакція не відкочена — стан лишається неузгодженим",
+      "}"
+    ],
+    badWhy:[
+      'Помилка всередині транзакції лише виводиться в консоль — виконання коду продовжується, ніби нічого не сталося',
+      'Немає відкату (rollback): гроші можуть списатися з одного рахунку без зарахування на інший',
+      "«Fail silently» замість «fail closed» — система залишає дані в неузгодженому стані"
+    ]
+  }
+];
+
+/* =========================================================
+   STATIC SLIDES (title, intro, changes, overview, method, next)
+   ========================================================= */
+function slideWhyItMatters(){
+  return `
+  <section class="slide" data-name="Чому це стосується кожного розробника">
+    <div class="eyebrow">Перш ніж почати</div>
+    <h1 class="slide-title">Безпека — не чиясь робота. Твоя теж</h1>
+    <p class="slide-sub">AppSec-команда встановлює стандарти й дає інструменти. Але код щодня пишеш ти — і саме тому рішення, ухвалені в моменти написання коду, вирішують більше, ніж будь-який сканер після факту.</p>
+    <div class="content-body">
+      <div class="two-col">
+        <div>
+          <div class="block-label amber">Чому безпеку не можна делегувати</div>
+          <ul class="bullet-list">
+            <li>Безпечний застосунок неможливо побудувати, якщо про безпеку подумали лише в кінці — вада, закладена в архітектуру на етапі дизайну, не виправляється патчем; переробляти доводиться все</li>
+            <li>Безпека — не плагін і не крок у CI/CD, який просто «додають» — сканер знайде відому вразливість у бібліотеці, але не побачить, що ти забув перевірити власника запису в новому ендпоінті</li>
+            <li>Виправити вразливість на етапі вимог чи дизайну завжди в рази дешевше, ніж ту саму вразливість, знайдену вже в продакшн</li>
+            <li>AppSec-команда фізично не може вручну перевірити кожен рядок коду — на десятки й сотні розробників часто припадає лише кілька фахівців з безпеки</li>
+          </ul>
+        </div>
+        <div>
+          <div class="block-label teal">Чому це особливо актуально зараз</div>
+          <ul class="bullet-list teal">
+            <li>З ШІ-інструментами (copilot, генерація коду) одна людина сьогодні виконує роботу, яку раніше ділили кілька спеціалізованих ролей — менше «чужих очей», які випадково помітили б проблему</li>
+            <li>Швидкість релізів (CI/CD, кілька деплоїв на день) робить неможливим окремий security-gate «в кінці» — безпека має бути вбудована в сам процес розробки, а не додана до нього</li>
+            <li>Розробник щодня ухвалює рішення з наслідками для безпеки, навіть не усвідомлюючи це: вибір бібліотеки, структура запиту до бази, спосіб обробки помилки</li>
+            <li>Код, згенерований ШІ, виглядає правильним, але може приховувати вразливості, яких не видно без критичного розуміння — сліпа довіра інструменту тут не працює</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:1.8rem; text-align:center;">
+        <p style="font-family:var(--display); font-size:1.35rem; font-weight:500; line-height:1.5; color:var(--text);">Безпечний застосунок — це не той, що пройшов сканер.<br>Це той, де про безпеку думали на <span style="color:var(--amber);">кожному</span> кроці: від вимог до продакшн.</p>
+      </div>
+    </div>
+  </section>`;
+}
+
+function slideTitle(){
+  return `
+  <section class="slide s-title" data-name="Вступ">
+    <div class="scanline"></div>
+    <div class="kicker">Доповідь · Application Security</div>
+    <div class="terminal-title">&gt; OWASP <span class="accent">TOP 10</span>:2025<span class="cursor"></span></div>
+    <p class="title-desc">Десять найкритичніших ризиків безпеки вебзастосунків — консенсус спільноти AppSec на основі даних тестування понад 2,8 млн застосунків.</p>
+    <div class="title-meta">
+      <span>Джерело: <b>owasp.org/Top10/2025</b></span>
+      <span>Видання: <b>8-ме</b></span>
+      <span>CWE проаналізовано: <b>589</b></span>
+    </div>
+  </section>`;
+}
+
+function slideOWASP(){
+  return `
+  <section class="slide" data-name="Що таке OWASP">
+    <div class="eyebrow">Про організацію</div>
+    <h1 class="slide-title">Що таке OWASP</h1>
+    <p class="slide-sub">Open Worldwide Application Security Project — некомерційна організація, що вже понад 20 років працює над тим, щоб зробити безпеку програмного забезпечення видимою та зрозумілою для розробників і бізнесу.</p>
+    <div class="content-body">
+      <div class="two-col">
+        <div>
+          <div class="block-label amber">Хто вони</div>
+          <ul class="bullet-list">
+            <li>Заснована у 2001 році як відкрита спільнота; у 2004-му оформлена як <b>OWASP Foundation Inc.</b> — некомерційна організація 501(c)(3) у США</li>
+            <li>Повністю vendor-neutral: не належить жодному вендору й не рекламує комерційні продукти</li>
+            <li>Понад <b>250 локальних розділів (chapters)</b> по всьому світу, майже 8 000 членів і понад 100 000 постійних учасників спільноти щороку</li>
+            <li>Щорічні конференції AppSec Global/USA/EU, тренінги та локальні мітапи</li>
+          </ul>
+        </div>
+        <div>
+          <div class="block-label teal">Що вони роблять</div>
+          <ul class="bullet-list teal">
+            <li>Публікують безкоштовні відкриті стандарти й документи: <b>OWASP Top 10, ASVS, SAMM</b>, Testing Guide, Cheat Sheet Series</li>
+            <li>Розробляють відкриті інструменти — зокрема <b>ZAP (Zed Attack Proxy)</b>, один з найпопулярніших безкоштовних сканерів вразливостей</li>
+            <li>Увесь контент видається під відкритою ліцензією — вільно доступний, зокрема для комерційного використання</li>
+            <li>Місія: зробити безпеку застосунків «видимою», щоб компанії та розробники могли приймати усвідомлені рішення щодо ризиків</li>
+          </ul>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="num">2001</div><div class="lbl">рік заснування спільноти OWASP</div></div>
+        <div class="stat-card"><div class="num">250+</div><div class="lbl">локальних розділів (chapters) у світі</div></div>
+        <div class="stat-card"><div class="num">100k+</div><div class="lbl">учасників спільноти щороку</div></div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function slideIntro(){
+  return `
+  <section class="slide" data-name="Що таке OWASP Top 10">
+    <div class="eyebrow">Контекст</div>
+    <h1 class="slide-title">Що таке OWASP Top 10</h1>
+    <p class="slide-sub">Стандартний, засадничий документ обізнаності для розробників і фахівців з безпеки вебзастосунків — широкий консенсус щодо найкритичніших ризиків, актуальний з 2003 року.</p>
+    <div class="content-body">
+      <div class="two-col">
+        <div>
+          <div class="block-label amber">Звідки дані</div>
+          <ul class="bullet-list">
+            <li>Дані з тестування понад <b>2,8 млн застосунків</b>, надані Accenture, Bugcrowd, Contrast Security, Semgrep, Sonar, Veracode, Wallarm та іншими донорами</li>
+            <li>Проаналізовано <b>589 CWE</b> (було ≈400 у 2021, ≈30 у 2017 виданні)</li>
+            <li>Ранг категорії складається з двох чисел: <b>як часто</b> трапляється вада в застосунках і <b>наскільки вона небезпечна</b> — тобто наскільки легко нею скористатися й яку шкоду вона завдає, судячи з реальних задокументованих випадків зламу (бази даних CVE та NVD)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="block-label teal">Принцип відбору</div>
+          <ul class="bullet-list teal">
+            <li><b>8 з 10</b> категорій обрані за даними тестування — але це «погляд у минуле»</li>
+            <li><b>2 з 10</b> категорії обрані голосуванням спільноти AppSec-практиків (community survey)</li>
+            <li>Пріоритет кореневих причин (root cause) над симптомами вразливостей</li>
+          </ul>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="num">40</div><div class="lbl">максимум CWE на категорію (капування)</div></div>
+        <div class="stat-card"><div class="num">248</div><div class="lbl">CWE увійшли до 10 категорій цього видання</div></div>
+        <div class="stat-card"><div class="num">175k+</div><div class="lbl">записів CVE↔CWE проаналізовано з NVD</div></div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function slideChanges(){
+  return `
+  <section class="slide" data-name="Що змінилось у 2025">
+    <div class="eyebrow">Порівняно з 2021</div>
+    <h1 class="slide-title">Що змінилось у Top 10:2025</h1>
+    <p class="slide-sub">Дві нові категорії, одне поглинання та два уточнення назв — решта категорій змістилися в рейтингу.</p>
+    <div class="content-body">
+      <div class="change-list">
+        <div class="change-item">
+          <span class="change-tag new">NEW</span>
+          <div class="change-text"><b>A03 Software Supply Chain Failures</b> — розширення колишньої «Vulnerable and Outdated Components»: тепер охоплює весь ланцюжок постачання ПЗ. Найбільш пріоритетна категорія за опитуванням спільноти (50% голосів за #1).</div>
+        </div>
+        <div class="change-item">
+          <span class="change-tag new">NEW</span>
+          <div class="change-text"><b>A10 Mishandling of Exceptional Conditions</b> — цілком нова категорія: неправильна обробка помилок, логічні вади, «fail open» та інші наслідки нештатних станів системи.</div>
+        </div>
+        <div class="change-item">
+          <span class="change-tag merge">MERGE</span>
+          <div class="change-text"><b>SSRF влито в A01</b> — Server-Side Request Forgery тепер частина «Broken Access Control» замість окремої категорії 2021 року.</div>
+        </div>
+        <div class="change-item">
+          <span class="change-tag rename">RENAME</span>
+          <div class="change-text"><b>A07</b>: «Identification and Authentication Failures» → <b>«Authentication Failures»</b>; <b>A09</b>: «Logging and Monitoring» → <b>«Logging &amp; Alerting Failures»</b> — уточнення фокусу без зміни позиції.</div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function slideOverview(){
+  const trendMap = {up:'▲ up', down:'▼ down', same:'● same', new:'✦ new'};
+  const maxInc = 6; /* same scale as the "Поширеність" gauge on category slides */
+  const rows = CATS.map(c => `
+    <div class="ov-row">
+      <span class="ov-code">${c.code}</span>
+      <span class="ov-trend ${c.trend}">${trendMap[c.trend]}</span>
+      <span class="ov-name">${c.name}</span>
+      <div class="ov-bar-wrap">
+        <div class="ov-bar"><div class="ov-bar-fill" style="width:${Math.min(c.inc/maxInc*100,100)}%"></div></div>
+      </div>
+      <span class="ov-pct">${c.inc.toFixed(2)}%</span>
+    </div>`).join('');
+  return `
+  <section class="slide" data-name="Огляд Top 10">
+    <div class="eyebrow">Повний список</div>
+    <h1 class="slide-title">Огляд: 10 категорій ризику</h1>
+    <div class="ov-legend">
+      <span>Ранг</span>
+      <span>Зміна з 2021</span>
+      <span>Категорія</span>
+      <span class="right">Середня поширеність (Incidence Rate)</span>
+      <span class="right"></span>
+    </div>
+    <div class="ov-list">${rows}</div>
+  </section>`;
+}
+
+function slideCategory(c, idx){
+  const rankLabels = {up:'▲', down:'▼', same:'●', new:'✦'};
+  return `
+  <section class="slide cat-slide" data-name="${c.code} — ${c.name}">
+    <div class="cat-head">
+      <div class="cat-code">${c.code}</div>
+      <div class="cat-headtext">
+        <div class="cat-title">${c.name}</div>
+        <div class="cat-rank">
+          <span class="rank-pill ${c.trend}">${rankLabels[c.trend]} ${c.rank}</span>
+          <span>${c.trendLabel}</span>
+        </div>
+      </div>
+      <div class="gauges">
+        <div class="gauge">
+          <div class="gauge-top"><span>Поширеність</span><span class="gauge-val">${c.inc.toFixed(2)}%</span></div>
+          <div class="gauge-bar"><div class="gauge-fill inc" style="width:${Math.min(c.inc/6*100,100)}%"></div></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-top"><span>Експлуатованість</span><span class="gauge-val">${c.exp.toFixed(2)}/10</span></div>
+          <div class="gauge-bar"><div class="gauge-fill exp" style="width:${c.exp/10*100}%"></div></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-top"><span>Вплив</span><span class="gauge-val">${c.imp.toFixed(2)}/10</span></div>
+          <div class="gauge-bar"><div class="gauge-fill imp" style="width:${c.imp/10*100}%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-body">
+      <div class="cat-col">
+        <div class="block-label amber">Типові прояви</div>
+        <ul class="bullet-list">${c.issues.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+      <div class="cat-col">
+        <div class="block-label teal">Як запобігти</div>
+        <ul class="bullet-list teal">${c.prevention.map(p=>`<li>${p}</li>`).join('')}</ul>
+        <div class="example-box">${c.example}</div>
+        <div class="cwe-row">${c.cwes.map(w=>`<span class="cwe-chip">${w}</span>`).join('')}</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function slideBadExample(c){
+  const code = c.badCode.map(escHtml).join('\n');
+  return `
+  <section class="slide code-slide" data-name="${c.code} — приклад: як НЕ треба">
+    <div class="cat-head" style="justify-content:flex-start; align-items:flex-start; gap:1.6rem;">
+      <div class="cat-code" style="font-size:3.1rem; line-height:1; color:var(--red);">${c.code}</div>
+      <div class="cat-headtext">
+        <div class="eyebrow" style="margin-bottom:.6rem; color:var(--red);">Антипатерн · Так робити не можна</div>
+        <div class="cat-title" style="font-size:2.15rem;">${c.name}: приклад вразливого коду</div>
+      </div>
+    </div>
+
+    <div class="code-body">
+      <div class="code-panel">
+        <div class="code-panel-label">✗ ВРАЗЛИВИЙ КОД — НЕ ВИКОРИСТОВУВАТИ</div>
+        <pre class="code-block">${code}</pre>
+      </div>
+      <div class="code-why">
+        <div class="block-label red">Чому це небезпечно</div>
+        <ul class="bullet-list red">${c.badWhy.map(w=>`<li>${w}</li>`).join('')}</ul>
+      </div>
+    </div>
+  </section>`;
+}
+
+
+function jwtColored(token){
+  const parts = token.split('.');
+  const classes = ['seg-h','seg-p','seg-s'];
+  return parts.map((p,i)=>`<span class="${classes[i]}">${p}</span>`).join('<span class="seg-dot">.</span>');
+}
+
+function slideJWTAttack(){
+  const legitToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikl2YW4gUGV0cmVua28iLCJyb2xlIjoidXNlciIsImlhdCI6MTcyMTAwMDAwMH0.KKYkJT6I4J-B56r5s6Dgb0RTY20u81zjjdE_jEQfzUk';
+  const evilToken = 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikl2YW4gUGV0cmVua28iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjEwMDAwMDB9.';
+  return `
+  <section class="slide cat-slide" data-name="A01 — JWT alg:none attack">
+    <div class="cat-head" style="justify-content:flex-start; align-items:flex-start; gap:1.6rem;">
+      <div class="cat-code" style="font-size:3.1rem; line-height:1; color:var(--red);">A01</div>
+      <div class="cat-headtext">
+        <div class="eyebrow" style="margin-bottom:.6rem; color:var(--red);">Антипатерн · Підробка JWT</div>
+        <div class="cat-title" style="font-size:2.15rem;">Атака alg:none — зміна ролі в токені</div>
+      </div>
+    </div>
+
+    <div class="jwt-body">
+      <div class="jwt-grid">
+        <div class="jwt-card good">
+          <div class="jwt-card-label">✓ ЛЕГІТИМНИЙ ТОКЕН З БЕКЕНДУ</div>
+          <div class="jwt-token">${jwtColored(legitToken)}</div>
+          <div class="jwt-decoded">
+            <div>{ "alg": "HS256", "typ": "JWT" }</div>
+            <div class="jwt-line-2">{ "sub": "1234567890", "name": "Ivan Petrenko",<br>&nbsp;&nbsp;"role": "<span style="color:var(--teal); font-weight:700;">user</span>", "iat": 1721000000 }</div>
+          </div>
+        </div>
+        <div class="jwt-card evil">
+          <div class="jwt-card-label">✗ ТОКЕН, ПІДРОБЛЕНИЙ ЗЛОВМИСНИКОМ</div>
+          <div class="jwt-token">${jwtColored(evilToken)}</div>
+          <div class="jwt-decoded">
+            <div>{ "alg": "<span style="color:var(--red); font-weight:700;">none</span>", "typ": "JWT" }</div>
+            <div class="jwt-line-2">{ "sub": "1234567890", "name": "Ivan Petrenko",<br>&nbsp;&nbsp;"role": "<span style="color:var(--red); font-weight:700;">admin</span>", "iat": 1721000000 }</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jwt-explain">
+        <div>
+          <div class="block-label red">Чому це спрацьовує</div>
+          <ul class="bullet-list red">
+            <li>Алгоритм підпису вказаний у самому токені (полі "alg") — і саме йому сервер може сліпо довіряти при перевірці</li>
+            <li>Якщо бібліотека на бекенді дозволяє "alg":"none", вона просто пропускає перевірку підпису — підпис лишається порожнім</li>
+            <li>Зловмиснику не потрібен секретний ключ: досить перекодувати header і payload у Base64URL, змінивши role на "admin"</li>
+          </ul>
+        </div>
+        <div>
+          <div class="block-label teal">Як запобігти</div>
+          <ul class="bullet-list teal">
+            <li>На сервері явно задавати очікуваний алгоритм (наприклад лише HS256) і відхиляти будь-який токен з іншим "alg", включно з "none"</li>
+            <li>Ніколи не брати алгоритм перевірки з самого токена — він має бути жорстко заданий у конфігурації сервера</li>
+            <li>Використовувати перевірені, підтримувані JWT-бібліотеки з безпечними налаштуваннями за замовчуванням</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+
+function slideGraphQL(){
+  return `
+  <section class="slide cat-slide" data-name="A01 · GraphQL і контроль доступу">
+    <div class="cat-head" style="justify-content:flex-start; align-items:flex-start; gap:1.6rem;">
+      <div class="cat-code" style="font-size:3.1rem; line-height:1;">A01</div>
+      <div class="cat-headtext">
+        <div class="eyebrow" style="margin-bottom:.6rem;">Поглиблено · Сучасний API-стек</div>
+        <div class="cat-title" style="font-size:2.3rem;">GraphQL і контроль доступу</div>
+        <div class="cat-rank" style="margin-top:.7rem;">
+          <span class="rank-pill same">GraphQL</span>
+          <span>Один ендпоінт /graphql — але авторизація потрібна окремо для кожного resolver'а</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-body">
+      <div class="cat-col">
+        <div class="block-label amber">Чому GraphQL особливо вразливий</div>
+        <ul class="bullet-list">
+          <li>Один ендпоінт замість багатьох URL — REST перевіряє права per-маршрут, а в GraphQL усі запити йдуть через <span style="font-family:var(--mono);">/graphql</span>, тож авторизацію треба явно реалізувати в кожному resolver’і окремо</li>
+          <li>Вкладені зв’язки в графі не успадковують перевірку з кореня: <span style="font-family:var(--mono); font-size:.92em;">user → orders → payment</span> може пропустити authorization на будь-якому рівні вкладеності</li>
+          <li>Introspection увімкнено в продакшені — уся схема (типи, поля, «приховані» адмін-мутації) видима будь-кому без розвідки</li>
+          <li>Aliasing/batching: десятки IDOR-спроб пакуються в один HTTP-запит і обходять rate-limit, розрахований на кількість запитів, а не полів усередині</li>
+        </ul>
+      </div>
+      <div class="cat-col">
+        <div class="block-label teal">Як захищатись</div>
+        <ul class="bullet-list teal">
+          <li>Авторизація на рівні кожного resolver’а (field-level authorization), а не лише вхідної точки запиту</li>
+          <li>Вимкнути introspection і GraphiQL/Playground у продакшн-середовищі</li>
+          <li>Обмеження глибини запиту (depth limiting) і аналіз «вартості» запиту (query cost analysis)</li>
+          <li>Rate-limiting за вартістю запиту з урахуванням aliases, а не за кількістю HTTP-викликів</li>
+        </ul>
+        <div class="example-box">query { a: user(id:1){email} b: user(id:2){email} c: user(id:3){email} … } — десятки IDOR-спроб в одному HTTP-запиті обходять rate-limit, який рахує кількість запитів, а не полів усередині.</div>
+        <div class="cwe-row">
+          <span class="cwe-chip">Field-level Authorization</span>
+          <span class="cwe-chip">Introspection Exposure</span>
+          <span class="cwe-chip">Query Batching Abuse</span>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+
+function slideMethod(){
+  const donors = ['Accenture','Bugcrowd','Contrast Security','CryptoNet Labs','Orca Security','Probely','Semgrep','Sonar','usd AG','Veracode','Wallarm'];
+  const authors = ['Andrew van der Stock','Brian Glas','Neil Smithline','Tanya Janca','Torsten Gigler'];
+  return `
+  <section class="slide" data-name="Методологія">
+    <div class="eyebrow">Як формується рейтинг</div>
+    <h1 class="slide-title">Методологія ранжування</h1>
+    <div class="content-body">
+      <div class="method-grid">
+        <div>
+          <div class="block-label amber">Розрахунок</div>
+          <ul class="bullet-list">
+            <li><b>Incidence Rate</b> — частка застосунків, у яких знайдено хоча б один CWE з категорії</li>
+            <li><b>Exploit / Impact</b> — усереднені, зважені оцінки CVSS v2/v3 для CVE, пов’язаних із CWE категорії</li>
+            <li>Категорії обмежені <b>40 CWE</b> кожна; фокус на кореневих причинах, а не симптомах</li>
+            <li><b>8 категорій</b> — за даними тестування, <b>2 категорії</b> — за голосуванням спільноти, бо дані завжди «дивляться в минуле»</li>
+          </ul>
+          <div class="block-label teal" style="margin-top:1.6rem;">Провідні автори</div>
+          <ul class="authors-list">${authors.map(a=>`<li><b>${a}</b></li>`).join('')}</ul>
+        </div>
+        <div>
+          <div class="block-label red">Донори даних (2,8 млн+ застосунків)</div>
+          <div class="donor-wrap">${donors.map(d=>`<span class="donor-chip">${d}</span>`).join('')}</div>
+          <div class="panel" style="margin-top:1.6rem;">
+            <div class="block-label amber">Чому не CVSS v4?</div>
+            <p style="font-size:1.05rem; color:var(--text-dim); line-height:1.55;">Алгоритм оцінювання в CVSS v4 змінено настільки, що він більше не дає прямих оцінок Exploit/Impact, як v2 та v3 — тому для 2025 видання команда лишилася на комбінації v2/v3.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function slideNext(){
+  return `
+  <section class="slide" data-name="Підсумок">
+    <div class="eyebrow">Підсумок</div>
+    <h1 class="slide-title">Що робити далі</h1>
+    <p class="slide-sub">Top 10 — це не чекліст для закриття задач, а карта пріоритетів для програми безпеки застосунків.</p>
+    <div class="content-body">
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-idx">01 — Верифікація</div>
+          <h3>OWASP ASVS</h3>
+          <p>Application Security Verification Standard — конкретні перевірювані вимоги для кожної категорії ризику, від доступу до криптографії.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-idx">02 — Зрілість процесу</div>
+          <h3>OWASP SAMM</h3>
+          <p>Software Assurance Maturity Model допомагає оцінити та побудувати secure-by-design процес розробки поетапно.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-idx">03 — Практичні техніки</div>
+          <h3>Cheat Sheet Series &amp; Testing Guide</h3>
+          <p>Готові рецепти захисту (авторизація, криптографія, логування) та методики тестування для кожної категорії Top 10.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-idx">04 — Зсув «лівіше коду»</div>
+          <h3>Secure by Design</h3>
+          <p>Моделювання загроз і безпечні вимоги ще до написання коду — там, де найдешевше запобігти вразливості.</p>
+        </div>
+      </div>
+      <div class="source-line">Джерело доповіді: <a href="https://owasp.org/Top10/2025/" target="_blank">owasp.org/Top10/2025</a> · Ліцензія CC BY 3.0 — OWASP Top 10 Team</div>
+    </div>
+  </section>`;
+}
+
+/* =========================================================
+   BUILD DECK
+   ========================================================= */
+const catSlides = [];
+CATS.forEach((c, i) => {
+  catSlides.push(slideCategory(c, i));
+  catSlides.push(slideBadExample(c));
+  if (c.code === 'A01') { catSlides.push(slideJWTAttack()); catSlides.push(slideGraphQL()); }
+});
+
+const slidesHTML = [
+  slideWhyItMatters(),
+  slideTitle(),
+  slideOWASP(),
+  slideIntro(),
+  slideOverview(),
+  ...catSlides,
+  slideNext()
+];
+
+const deck = document.getElementById('deck');
+deck.innerHTML = slidesHTML.join('\n');
+const slides = Array.from(document.querySelectorAll('.slide'));
+document.getElementById('total').textContent = String(slides.length).padStart(2,'0');
+
+let current = 0;
+
+function render(){
+  slides.forEach((s, i)=>{
+    s.classList.remove('active','prev');
+    if(i === current) s.classList.add('active');
+    else if(i < current) s.classList.add('prev');
+  });
+  document.getElementById('cur').textContent = String(current+1).padStart(2,'0');
+  document.getElementById('slide-name').textContent = slides[current].dataset.name || '';
+  document.getElementById('progress').style.width = ((current+1)/slides.length*100) + '%';
+  document.getElementById('prev-btn').style.opacity = current===0 ? .35 : 1;
+  document.getElementById('next-btn').style.opacity = current===slides.length-1 ? .35 : 1;
+}
+
+function goTo(i){
+  current = Math.max(0, Math.min(slides.length-1, i));
+  render();
+}
+function next(){ goTo(current+1); }
+function prev(){ goTo(current-1); }
+
+document.getElementById('next-btn').addEventListener('click', next);
+document.getElementById('prev-btn').addEventListener('click', prev);
+
+window.addEventListener('keydown', (e)=>{
+  if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); next(); }
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); prev(); }
+  else if(e.key === 'Home'){ e.preventDefault(); goTo(0); }
+  else if(e.key === 'End'){ e.preventDefault(); goTo(slides.length-1); }
+  else if(e.key.toLowerCase() === 'f'){ e.preventDefault(); toggleFullscreen(); }
+});
+
+/* swipe / wheel navigation for desktop trackpads */
+let wheelLock = false;
+window.addEventListener('wheel', (e)=>{
+  if(wheelLock) return;
+  if(Math.abs(e.deltaY) < 30) return;
+  wheelLock = true;
+  if(e.deltaY > 0) next(); else prev();
+  setTimeout(()=>{ wheelLock = false; }, 550);
+}, {passive:true});
+
+/* ---------- fullscreen ---------- */
+const fsBtn = document.getElementById('fs-btn');
+const fsIcon = document.getElementById('fs-icon');
+const ICON_EXPAND = `<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/>`;
+const ICON_COMPRESS = `<path d="M9 3v3a2 2 0 0 1-2 2H4M20 8h-3a2 2 0 0 1-2-2V3M4 16h3a2 2 0 0 1 2 2v3M15 21v-3a2 2 0 0 1 2-2h3"/>`;
+
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen().catch(()=>{});
+  }
+}
+fsBtn.addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange', ()=>{
+  const on = !!document.fullscreenElement;
+  fsBtn.classList.toggle('on', on);
+  fsIcon.innerHTML = on ? ICON_COMPRESS : ICON_EXPAND;
+  fsBtn.title = on ? 'Вийти з повноекранного режиму (F)' : 'На весь екран (F)';
+});
+
+render();
+</script>
+</body>
+</html>
