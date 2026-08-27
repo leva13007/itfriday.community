@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#016](/en/streams/016) | Guest | Specification as the new source code — a document set for working with an AI agent | 28.08.2026 |
 | [#015](/en/streams/015) | Guest | OAuth 2.0 and OpenID Connect — seven iterations of one question, from passwords to BFF | 21.08.2026 |
 | [#014](/en/streams/014) | Guest | Web authentication methods — passwords, MFA, WebAuthn/passkeys, OAuth/OIDC | 14.08.2026 |
 | [#011](/en/streams/011) | Guest | OWASP Top 10:2025 — all 10 vulnerability categories with code examples | 24.07.2026 |

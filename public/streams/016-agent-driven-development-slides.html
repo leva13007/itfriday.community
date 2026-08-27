@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Специфікація для агента — розробка ПЗ з AI-агентами</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --screen:#F5F2EB;
+  --screen-edge:#E4DED2;
+  --ink:#2B2A33;
+  --ink-soft:#6E6C78;
+  --navy:#5A7C9E;
+  --teal:#4F9385;
+  --rust:#C4796A;
+  --amber:#C9A96A;
+  --hair:#DCD5C8;
+  --disp:"Space Grotesk","Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono","Cascadia Mono",monospace;
+  --body:"Source Sans 3","Segoe UI",sans-serif;
+  --wipe:.66s;
+  /* міліметрівка: дрібна клітинка 8px, груба — 40px */
+  --mm-fine:rgba(110,108,120,.022);
+  --mm-bold:rgba(110,108,120,.042);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--screen);color:var(--ink);
+  font-family:var(--body);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#deck{position:relative;width:100vw;height:100vh;background:var(--screen)}
+#stage{
+  position:relative;width:100vw;height:100vh;
+  background:var(--screen);color:var(--ink);overflow:hidden;
+}
+#stage::after{ /* м'яка віньєтка проєкції */
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:radial-gradient(115% 105% at 50% 45%,rgba(255,255,255,0) 62%,rgba(70,62,45,.07) 100%);
+  mix-blend-mode:multiply;
+}
+
+/* ── аркуш міліметрівки ─────────────────────── */
+.slide{
+  position:absolute;inset:0;
+  padding:clamp(28px,4vh,52px) clamp(30px,4.4vw,80px) clamp(78px,10vh,104px);
+  display:none;flex-direction:column;overflow:auto;
+  background-color:var(--screen);
+  background-image:
+    linear-gradient(var(--mm-bold) 1px,transparent 1px),
+    linear-gradient(90deg,var(--mm-bold) 1px,transparent 1px),
+    linear-gradient(var(--mm-fine) 1px,transparent 1px),
+    linear-gradient(90deg,var(--mm-fine) 1px,transparent 1px);
+  background-size:40px 40px,40px 40px,8px 8px,8px 8px;
+  background-position:0 0;
+}
+.slide.on{display:flex;z-index:2}
+.slide.out{display:flex;z-index:1}
+/* новий слайд наїжджає справа, старий іде вліво за екран */
+.slide.on.anim{animation:pushIn var(--wipe) cubic-bezier(.62,.02,.28,1)}
+.slide.out.anim{animation:pushOut var(--wipe) cubic-bezier(.62,.02,.28,1) forwards}
+@keyframes pushIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes pushOut{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+/* назад: слайд заходить зліва, попередній іде вправо */
+.slide.on.anim.rev{animation-name:pushInRev}
+.slide.out.anim.rev{animation-name:pushOutRev}
+@keyframes pushInRev{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@keyframes pushOutRev{from{transform:translateX(0)}to{transform:translateX(100%)}}
+#wipe{
+  position:absolute;top:0;bottom:0;width:16px;left:100%;z-index:3;display:none;
+  background:linear-gradient(90deg,
+    rgba(120,110,135,.55) 0 1px,
+    #16111F 1px 4px,
+    #060409 4px 9px,
+    #1E1828 9px 12px,
+    #3E3650 12px 14.5px,
+    rgba(226,214,190,.85) 14.5px 16px);
+  box-shadow:-10px 0 26px -6px rgba(11,9,16,.42), 12px 0 34px -8px rgba(11,9,16,.34);
+}
+#wipe::before,#wipe::after{content:"";position:absolute;top:0;bottom:0;width:1px}
+#wipe::before{left:0;background:linear-gradient(180deg,rgba(232,184,75,.45),rgba(232,184,75,.08) 40%,rgba(232,184,75,.45))}
+#wipe::after{right:-2px;width:2px;background:rgba(255,247,228,.5);filter:blur(1.2px)}
+#wipe.go{display:block;animation:barSweep var(--wipe) cubic-bezier(.62,.02,.28,1)}
+#wipe.go.rev{animation-name:barSweepRev;transform:scaleX(-1)}
+@keyframes barSweep{from{left:100%}to{left:-16px}}
+@keyframes barSweepRev{from{left:-16px}to{left:100%}}
+@media (prefers-reduced-motion:reduce){
+  .slide.anim,#wipe.go,.stack div{animation:none}
+  #wipe.go{display:none}
+}
+
+/* ── типографіка ────────────────────────────── */
+.eyebrow{
+  font-family:var(--mono);font-size:clamp(11px,.85vw,14px);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--rust);display:flex;gap:14px;align-items:center;margin-bottom:10px;
+}
+.eyebrow .rule{flex:1;height:1px;background:var(--hair)}
+.eyebrow .id{color:var(--ink-soft);white-space:nowrap}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(38px,5.2vw,88px);line-height:1.02;letter-spacing:-.02em}
+h2{font-family:var(--disp);font-weight:700;font-size:clamp(26px,3vw,50px);line-height:1.08;letter-spacing:-.015em}
+.sub{font-size:clamp(15px,1.15vw,21px);color:var(--ink-soft);margin-top:10px;max-width:86ch;line-height:1.45}
+.en{
+  font-family:var(--mono);font-size:clamp(10.5px,.82vw,14px);letter-spacing:.1em;
+  color:var(--navy);margin-top:9px;line-height:1.5;max-width:92ch;
+  padding-left:11px;border-left:2px solid var(--navy);
+}
+.lede{margin-top:24px;font-size:clamp(17px,1.35vw,25px);line-height:1.5;max-width:62ch;color:var(--ink-soft)}
+b{font-weight:600}
+.hair{height:1px;background:var(--hair);margin:20px 0}
+
+/* сітки */
+.cols{display:grid;gap:clamp(20px,2.4vw,44px);margin-top:20px}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.c5{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+
+/* панелі-списки, як у прикладі */
+.panel h3{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-soft);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--hair);
+}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.panel li{font-size:clamp(13.5px,1.02vw,18.5px);line-height:1.35;padding-left:20px;position:relative;color:var(--ink)}
+.panel li::before{content:"";position:absolute;left:2px;top:.55em;width:8px;height:1.5px;background:var(--teal)}
+.panel.bad li::before{background:var(--rust)}
+.panel.bad li{color:#6A4F49}
+.panel.n li::before{background:var(--navy)}
+
+/* картки-тези */
+.chk{display:grid;grid-template-columns:1fr 1fr;gap:18px 42px;margin-top:24px}
+.chk div{border-left:2px solid var(--teal);padding:4px 0 4px 16px;background:rgba(255,253,249,.66)}
+.chk h4{font-family:var(--disp);font-size:clamp(16px,1.35vw,24px);margin-bottom:5px;line-height:1.2}
+.chk p{font-size:clamp(13px,1.02vw,18px);color:var(--ink-soft);line-height:1.4}
+.chk div.warn{border-color:var(--rust)}
+.chk div.amb{border-color:var(--amber)}
+.chk.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* код / специфікації */
+.code{
+  font-family:var(--mono);font-size:clamp(10.5px,.79vw,14.5px);line-height:1.62;
+  background:#EEEAE1;border-left:3px solid var(--hair);border-radius:0 4px 4px 0;
+  padding:12px 16px;white-space:pre-wrap;overflow:auto;color:#4A4854;
+}
+.code.hd{border-left-color:var(--rust)}
+.code.pl{border-left-color:var(--navy)}
+.code.sg{border-left-color:var(--teal)}
+.code b{font-weight:600;color:var(--ink)}
+.code .k{color:var(--navy);font-weight:600}
+.code .v{color:var(--teal)}
+.code .c{color:#A6A0AC}
+.code .r{color:var(--rust)}
+.lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px}
+
+/* таблиці */
+table{width:100%;border-collapse:collapse;margin-top:22px;font-size:clamp(13px,1.02vw,18.5px);background:rgba(255,253,249,.66)}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+   text-align:left;padding:0 14px 9px;border-bottom:1.5px solid var(--ink-soft)}
+td{padding:11px 14px;border-bottom:1px solid var(--hair);vertical-align:top;line-height:1.35}
+td:first-child{font-family:var(--disp);font-weight:700}
+tr:last-child td{border-bottom:none}
+table.tight td{padding:8px 14px}
+td.own{font-family:var(--disp);font-weight:700;white-space:nowrap}
+td.own span{display:block;font-family:var(--mono);font-size:.68em;font-weight:400;
+  letter-spacing:.02em;color:var(--ink-soft);white-space:normal;margin-top:3px;line-height:1.3}
+
+/* титульний слайд: стос артефактів */
+.title-slide{justify-content:center}
+.title-slide h1{max-width:20ch}
+.stack{display:grid;gap:6px;margin-top:30px;max-width:660px}
+.stack div{
+  font-family:var(--mono);font-size:clamp(10.5px,.85vw,13.5px);
+  letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--hair);background:rgba(255,253,249,.72);
+  padding:8px 14px;display:flex;justify-content:space-between;gap:12px;
+  animation:slot .5s cubic-bezier(.62,.02,.28,1) both;
+}
+.stack div span{color:var(--rust);font-weight:600}
+.stack div:nth-child(1){animation-delay:.20s}
+.stack div:nth-child(2){animation-delay:.30s}
+.stack div:nth-child(3){animation-delay:.40s}
+.stack div:nth-child(4){animation-delay:.50s}
+.stack div:nth-child(5){animation-delay:.60s}
+.stack div:nth-child(6){animation-delay:.70s}
+@keyframes slot{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.legend{display:flex;gap:26px;margin-top:32px;flex-wrap:wrap}
+.legend div{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:9px}
+.swatch{width:26px;height:3px;border-radius:2px;display:inline-block}
+
+/* потік шарів */
+.step{border:1px solid var(--hair);background:rgba(255,253,249,.7);padding:13px 14px;position:relative}
+.step .lbl{margin-bottom:4px}
+.step p{font-size:clamp(12.5px,.95vw,16px);line-height:1.35}
+.step b{font-family:var(--disp)}
+
+.note{font-size:clamp(12.5px,.95vw,16.5px);color:var(--ink-soft);line-height:1.45;margin-top:14px;font-family:var(--mono)}
+
+/* ланцюг ролей: бізнес → кінцевий користувач */
+.chain{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:5px;margin-top:20px;align-items:stretch}
+.chain .role{
+  border:1px solid var(--hair);background:rgba(255,253,249,.72);
+  border-top:3px solid var(--navy);padding:10px 9px 11px;position:relative;
+}
+.chain .role.t{border-top-color:var(--teal)}
+.chain .role.a{border-top-color:var(--amber)}
+.chain .role.r{border-top-color:var(--rust)}
+.chain .role .n{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-soft);display:block;margin-bottom:5px}
+.chain .role h4{font-family:var(--disp);font-size:clamp(11.5px,.92vw,16px);line-height:1.18;margin-bottom:4px}
+.chain .role .en2{font-family:var(--mono);font-size:clamp(8.5px,.63vw,11px);color:var(--navy);line-height:1.3;display:block;margin-bottom:6px}
+.chain .role p{font-size:clamp(10px,.76vw,13px);color:var(--ink-soft);line-height:1.3}
+.chain .role::after{
+  content:"›";position:absolute;right:-6px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);color:var(--hair);font-size:16px;z-index:1;
+}
+.chain .role:last-child::after{content:""}
+.chain.compact{grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;margin-top:12px}
+.chain.compact .role{padding:8px 7px 9px}
+.chain.compact .role h4{font-size:clamp(10px,.73vw,13px);line-height:1.15}
+.chain.compact .role .en2{font-size:clamp(8px,.56vw,10px);margin-bottom:0}
+.chain.compact .role .n{font-size:9px;margin-bottom:4px}
+.chain.solo{grid-template-columns:1.15fr 5.4fr 1.15fr;gap:7px;margin-top:12px}
+.chain.solo .role.wide{border-top-width:4px;background:rgba(79,147,133,.09)}
+.chain.solo .role.wide h4{font-size:clamp(15px,1.35vw,23px);margin-bottom:5px}
+.chain.solo .role.wide .en2{font-size:clamp(9.5px,.72vw,12.5px);margin-bottom:8px}
+.chain.solo .role.wide p{font-size:clamp(10.5px,.8vw,14px);line-height:1.45;color:var(--ink)}
+.chain.solo .role.wide p b{font-weight:600}
+/* ущільнений слайд ролей: три ряди мають уміститися в один екран */
+.slide.dense h2{font-size:clamp(20px,2.3vw,36px)}
+.slide.dense .en{margin-top:6px;font-size:clamp(9.5px,.72vw,12px)}
+.slide.dense .rowlbl{margin-top:11px}
+.slide.dense .chain,.slide.dense .chain.compact,.slide.dense .chain.solo{margin-top:9px}
+.slide.dense .loop{margin-top:8px;font-size:clamp(9.5px,.73vw,12.5px);line-height:1.45}
+.slide.dense .hair{margin:11px 0 2px!important}
+.slide.dense .chain .role{padding:8px 8px 9px}
+.chain.solo .role.wide p.warn2{
+  margin-top:8px;padding-left:10px;border-left:2px solid var(--rust);
+  color:var(--ink-soft);font-size:clamp(10px,.74vw,13px);line-height:1.4;
+}
+.rowlbl{
+  display:flex;align-items:center;gap:12px;margin-top:18px;
+  font-family:var(--mono);font-size:clamp(10px,.78vw,13px);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--rust);
+}
+.rowlbl .rl{flex:none;width:26px;height:1px;background:var(--hair)}
+.rowlbl i{font-style:normal;text-transform:none;letter-spacing:.04em;color:var(--ink-soft);
+  font-size:.92em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.loop{
+  margin-top:14px;border-left:2px solid var(--rust);padding-left:12px;
+  font-family:var(--mono);font-size:clamp(10.5px,.82vw,14px);color:var(--ink-soft);line-height:1.55;
+}
+.note strong{color:var(--rust);font-weight:600}
+
+/* ── хребет: сім документів ─────────────────── */
+#spine{
+  position:absolute;left:clamp(30px,4.4vw,80px);right:clamp(300px,24vw,380px);
+  bottom:clamp(20px,2.6vh,32px);height:34px;z-index:6;
+  display:flex;align-items:center;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:#A6A0AC;
+}
+#spine .node{flex:1;display:flex;align-items:center;gap:8px;position:relative;
+  background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit}
+#spine .dot{width:8px;height:8px;border-radius:50%;background:var(--hair);flex:none}
+#spine .node.on{color:var(--rust);font-weight:600}
+#spine .node.on .dot{background:var(--rust);box-shadow:0 0 0 4px rgba(196,121,106,.20)}
+#spine .node.done .dot{background:var(--ink-soft)}
+#spine .node::after{content:"";position:absolute;left:0;right:0;top:3.5px;height:1px;background:var(--hair);z-index:-1}
+#spine .node:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+/* ── керування ──────────────────────────────── */
+#bar{
+  position:absolute;bottom:clamp(18px,2.4vh,30px);right:clamp(30px,4.4vw,80px);
+  display:flex;align-items:center;gap:8px;z-index:7;
+  background:rgba(72,69,82,.90);
+  border:1px solid rgba(72,69,82,.16);border-radius:999px;padding:6px 9px;
+  box-shadow:0 6px 22px -10px rgba(72,69,82,.38);
+  transition:opacity .35s;
+}
+#bar.idle{opacity:.3}
+#bar:hover{opacity:1}
+button{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+  background:transparent;color:var(--screen);border:1px solid rgba(242,237,228,.22);
+  border-radius:999px;padding:6px 13px;cursor:pointer;transition:.16s;
+}
+button:hover{background:rgba(242,237,228,.16);border-color:rgba(242,237,228,.5)}
+button:focus-visible{outline:2px solid #E8B84B;outline-offset:2px}
+button:disabled{opacity:.32;cursor:default}
+#count{font-family:var(--mono);font-size:12px;padding:0 8px;color:#CFC7BA;min-width:56px;text-align:center}
+
+@media (max-width:900px){
+  .c2,.c3,.c5,.chk,.chk.c3{grid-template-columns:1fr}
+  .chain,.chain.compact{grid-template-columns:1fr 1fr}
+  .chain.solo{grid-template-columns:1fr}
+  .rowlbl i{display:none}
+  .chain .role::after{content:""}
+  #spine{display:none}
+  .slide{padding-bottom:86px}
+  table{font-size:13px}
+  th,td{padding:8px 9px}
+}
+@media print{
+  body,#deck,#stage{overflow:visible;height:auto}
+  #stage::after,#bar,#wipe{display:none}
+  .slide{display:flex!important;position:relative;page-break-after:always;height:100vh}
+}
+</style>
+</head>
+<body>
+<div id="deck">
+<div id="stage">
+
+<!-- 01 ───────────────────────────────────────── -->
+<div class="slide title-slide" data-stage="-1" data-title="Вступ">
+  <div class="eyebrow">Розробка ПЗ з AI-агентами<span class="rule"></span><span class="id">Доповідь</span></div>
+  <h1>Специфікація — це новий вихідний код</h1>
+  <p class="lede">Агент пише код швидше за команду, але все, що ви не описали, він добудує на власний розсуд. Питання доповіді: який комплект документів покласти перед агентом, щоб на виході була робоча система, а не гарний прототип із неправильною логікою.</p>
+  <div class="stack">
+    <div><span>ДОК-01</span> Product Brief — навіщо і для кого</div>
+    <div><span>ДОК-02</span> Функціональні вимоги</div>
+    <div><span>ДОК-03</span> Нефункціональні вимоги</div>
+    <div><span>ДОК-04</span> Критерії приймання</div>
+    <div><span>ДОК-05</span> Контракти даних та API</div>
+    <div><span>ДОК-06</span> Технічний контекст і правила агента</div>
+  </div>
+  <div class="legend">
+    <div><i class="swatch" style="background:var(--teal)"></i>що робити</div>
+    <div><i class="swatch" style="background:var(--navy)"></i>у яких межах</div>
+    <div><i class="swatch" style="background:var(--rust)"></i>чого не робити</div>
+    <div><i class="swatch" style="background:var(--amber)"></i>як перевірити</div>
+  </div>
+</div>
+
+<!-- 02 -->
+<div class="slide" data-stage="-1" data-title="Проблема">
+  <div class="eyebrow">Контекст<span class="rule"></span><span class="id">Проблема</span></div>
+  <h2>Агент не завжди питає. Часто він здогадується.</h2>
+  <p class="sub">Людина-розробник, отримавши неповне ТЗ, найчастіше прийде з питаннями. Агент теж уміє уточнювати й зупинятися, але за відсутності явної інструкції може заповнити прогалину найімовірнішим припущенням і продовжити роботу.</p>
+  <div class="chk c3">
+    <div class="warn"><h4>Прогалина в вимогах</h4><p>«Користувач може скасувати замовлення» — за скільки годин? Хто платить комісію? Що зі складом? Агент вигадає три відповіді з трьох.</p></div>
+    <div class="warn"><h4>Немає межі «готово»</h4><p>Без критеріїв приймання неможливо сказати, чи задача завершена. Приймання перетворюється на нескінченне «ще трохи не так».</p></div>
+    <div class="warn"><h4>Немає технічних меж</h4><p>Агент додасть бібліотеку, зламає стиль коду, змінить схему БД — бо ніхто не написав, що так не можна.</p></div>
+  </div>
+  <div class="hair"></div>
+  <p class="sub" style="margin-top:0"><b>Наслідок:</b> вузьким місцем стає не швидкість написання коду, а точність опису задачі й швидкість перевірки результату.</p>
+</div>
+
+<!-- 03 -->
+<div class="slide" data-stage="-1" data-title="Модель роботи">
+  <div class="eyebrow">Що змінюється<span class="rule"></span><span class="id">Модель роботи</span></div>
+  <h2>Команда пише наміри, агент пише реалізацію</h2>
+  <table class="tight">
+    <tr><th>Етап</th><th>Класичний процес</th><th>Процес з агентом</th></tr>
+    <tr><td>Вимоги</td><td>Текст «для людини», багато неявного контексту</td><td>Явний, структурований, однозначний документ</td></tr>
+    <tr><td>Оцінка</td><td>Людино-дні</td><td>Кількість ітерацій і обсяг контексту</td></tr>
+    <tr><td>Код</td><td>Основні витрати часу</td><td>Генерація значно швидша й дешевша; витрати зміщуються в постановку та перевірку</td></tr>
+    <tr><td>Перевірка</td><td>Code review колеги</td><td>Автотести + критерії приймання + review</td></tr>
+    <tr><td>Ризик</td><td>Не встигли зробити</td><td>Зробили швидко, але не те</td></tr>
+  </table>
+  <p class="note">Головна теза: <strong>агент однаково швидко масштабує і правильну вимогу, і помилкову</strong> — зросла швидкість поширення помилки в коді.</p>
+</div>
+
+<!-- 04 -->
+<div class="slide" data-stage="0" data-title="Карта артефактів">
+  <div class="eyebrow">Комплект документів<span class="rule"></span><span class="id">Карта</span></div>
+  <h2>П'ять шарів контексту</h2>
+  <p class="en">Product Brief → Functional Requirements → Non-Functional Requirements → Acceptance Criteria → API &amp; Data Contracts</p>
+  <p class="sub">Кожен шар відповідає на своє питання. Пропущений шар агент добудує сам — і зазвичай не так, як ви очікували.</p>
+  <div class="cols c5">
+    <div class="step"><p class="lbl">Шар 1</p><p><b>Brief / Vision</b><br>Навіщо і для кого</p></div>
+    <div class="step"><p class="lbl">Шар 2</p><p><b>Функціональні вимоги</b><br>Що система робить</p></div>
+    <div class="step"><p class="lbl">Шар 3</p><p><b>Нефункціональні</b><br>Наскільки добре робить</p></div>
+    <div class="step"><p class="lbl">Шар 4</p><p><b>Критерії приймання</b><br>Як довести, що працює</p></div>
+    <div class="step"><p class="lbl">Шар 5</p><p><b>Контракти й тех. контекст</b><br>У яких межах будувати</p></div>
+  </div>
+  <div class="hair"></div>
+  <div class="chk">
+    <div class="amb"><h4>Правило обсягу</h4><p>Документ достатній, якщо новий розробник без доступу до вашого чату зробить за ним ту саму фічу. Це ж і є вимога до агента.</p></div>
+    <div class="amb"><h4>Правило формату</h4><p>Markdown у репозиторії поруч із кодом, а не PDF у пошті. Вимоги версіонуються разом із кодом і змінюються в тому ж pull request.</p></div>
+  </div>
+</div>
+
+<!-- 05 -->
+<div class="slide" data-stage="1" data-title="ДОК-01 Brief">
+  <div class="eyebrow">Документ 01<span class="rule"></span><span class="id">01 / 06</span></div>
+  <h2>Product Brief: мета, користувачі, межі</h2>
+  <p class="en">Product Brief · Vision &amp; Scope · PRD — Product Requirements Document</p>
+  <p class="sub">Найкоротший документ і найбільший вплив: він дозволяє агенту приймати десятки дрібних рішень у правильний бік.</p>
+  <div class="cols c2">
+    <div class="panel">
+      <h3>Що входить</h3>
+      <ul>
+        <li><b>Проблема</b> — що болить сьогодні, з цифрами</li>
+        <li><b>Користувачі та ролі</b> — хто, з якою метою, як часто</li>
+        <li><b>Ціль і метрики успіху</b> — що маємо побачити після запуску</li>
+        <li><b>Межі (out of scope)</b> — чого система свідомо не робить</li>
+        <li><b>Доменний глосарій</b> — «замовлення», «резерв» у ваших термінах</li>
+        <li><b>Обмеження</b> — бюджет, дедлайн, законодавство, інтеграції</li>
+      </ul>
+    </div>
+    <div class="code sg"><span class="c"># brief.md — Онлайн-запис до майстра</span>
+
+<span class="k">Проблема:</span> адміністратор витрачає ~3 год/день на
+телефонні записи; 18% слотів простоюють.
+
+<span class="k">Ролі:</span> Клієнт, Майстер, Адміністратор.
+<span class="k">Ціль:</span> 60% записів — самообслуговування за 3 міс.
+<span class="k">Метрики:</span> частка онлайн-записів, % простою слотів.
+
+<span class="k">Поза межами (v1):</span> онлайн-оплата, програма
+лояльності, мобільний застосунок.
+
+<span class="k">Глосарій:</span>
+  <span class="v">Слот</span> — інтервал 30 хв у графіку майстра.
+  <span class="v">Резерв</span> — слот, утримуваний 10 хв до підтвердження.</div>
+  </div>
+  <p class="note">Розділ <strong>«Поза межами»</strong> економить найбільше часу: без нього агент регулярно робить більше, ніж треба.</p>
+</div>
+
+<!-- 06 -->
+<div class="slide" data-stage="2" data-title="ДОК-02 Функціональні">
+  <div class="eyebrow">Документ 02<span class="rule"></span><span class="id">02 / 06</span></div>
+  <h2>Функціональні вимоги: що система робить</h2>
+  <p class="en">Functional Requirements (FR) — розділ SRS, Software Requirements Specification (ISO/IEC/IEEE 29148:2018) · User Stories &amp; Use Cases</p>
+  <div class="cols c2">
+    <div class="panel n">
+      <h3>Структура одного пункту</h3>
+      <ul>
+        <li><b>Ідентифікатор</b> — FR-014, щоб посилатися з тестів і задач</li>
+        <li><b>Актор і дія</b> — хто ініціює, що відбувається</li>
+        <li><b>Передумови</b> — стан системи до дії</li>
+        <li><b>Основний сценарій</b> — крок за кроком</li>
+        <li><b>Альтернативи й помилки</b> — що робити, коли пішло не так</li>
+        <li><b>Правила даних</b> — валідації, формати, межі значень</li>
+        <li><b>Пріоритет</b> — MUST / SHOULD / COULD / WON'T (MoSCoW)</li>
+        <li><b>Рівень обов'язковості</b> у тексті вимоги — MUST / SHOULD / MAY (BCP 14: RFC 2119 + RFC 8174)</li>
+      </ul>
+    </div>
+    <div class="code pl"><span class="k">FR-014 · Скасування запису клієнтом</span>   <span class="v">[MUST]</span>
+
+<span class="c">Передумова:</span> запис у статусі «підтверджено»,
+до початку більше ніж 2 години.
+
+<span class="c">Основний сценарій:</span>
+ 1. Клієнт відкриває запис і тисне «Скасувати».
+ 2. Система запитує підтвердження.
+ 3. Статус → «скасовано», слот звільняється.
+ 4. Майстру йде сповіщення протягом 1 хв.
+
+<span class="c">Альтернативи:</span>
+ <span class="r">A1.</span> Менше 2 год до початку → кнопка неактивна,
+     показати телефон адміністратора.
+ <span class="r">A2.</span> Запис уже скасовано → повторна дія
+     ігнорується (ідемпотентність), помилки немає.
+
+<span class="c">Правила:</span> скасування необоротне; історія
+статусів зберігається 24 міс.</div>
+  </div>
+  <p class="note">Перевірка якості пункту: чи можна з нього написати тест, не ставлячи жодного питання? Якщо ні — <strong>пункт недописаний</strong>.</p>
+</div>
+
+<!-- 07 -->
+<div class="slide" data-stage="3" data-title="ДОК-03 Нефункціональні">
+  <div class="eyebrow">Документ 03<span class="rule"></span><span class="id">03 / 06</span></div>
+  <h2>Нефункціональні вимоги: наскільки добре</h2>
+  <p class="en">Non-Functional Requirements (NFR) · Quality Attributes · SLO — Service Level Objective · SLA — Service Level Agreement</p>
+  <p class="sub">Це те, що агент ніколи не вгадає правильно. Формулювання має містити число й спосіб вимірювання.</p>
+  <table class="tight">
+    <tr><th>Категорія</th><th>Погано</th><th>Придатно для агента</th></tr>
+    <tr><td>Продуктивність</td><td>Швидко працює</td><td>95-й перцентиль (p95) відповіді API ≤ 300 мс при 200 запитах/с (rps)</td></tr>
+    <tr><td>Масштаб</td><td>Багато користувачів</td><td>50 тис. записів/міс, пік ×5 у понеділок зранку</td></tr>
+    <tr><td>Доступність</td><td>Надійна система</td><td>99,5% на місяць; деградація без втрати даних</td></tr>
+    <tr><td>Безпека</td><td>Захищені дані</td><td>Автентифікація через OpenID Connect (OIDC); персональні дані шифруються; журнал доступу 12 міс</td></tr>
+    <tr><td>Доступність<br><span style="font-family:var(--mono);font-size:.72em;font-weight:400;color:var(--ink-soft)">accessibility, a11y</span></td><td>Зручний інтерфейс</td><td>WCAG 2.2 рівень AA (Web Content Accessibility Guidelines); повна робота з клавіатури</td></tr>
+    <tr><td>Сумісність</td><td>Працює скрізь</td><td>Chrome / Safari / Firefox −2 версії; мобільний від 360 px</td></tr>
+    <tr><td>Супровід</td><td>Чистий код</td><td>Покриття тестами ≥ 70%; структуровані логи; трасування запиту</td></tr>
+  </table>
+  <p class="note">Кожну НФВ треба вміти перевірити командою або скриптом. <strong>Невимірювана вимога — це побажання</strong>, і агент може зробити не те, що очікували.</p>
+</div>
+
+<!-- 08 -->
+<div class="slide" data-stage="4" data-title="ДОК-04 Критерії приймання">
+  <div class="eyebrow">Документ 04<span class="rule"></span><span class="id">04 / 06</span></div>
+  <h2>Критерії приймання: контракт «готово»</h2>
+  <p class="en">Acceptance Criteria (AC) · Gherkin: Given / When / Then · BDD — Behaviour-Driven Development</p>
+  <p class="sub">Найцінніший документ у роботі з агентом: він одночасно є завданням, тестом і актом приймання.</p>
+  <div class="cols c2">
+    <div class="code sg"><span class="k">AC-014.1</span> Успішне скасування
+  <span class="v">Дано</span>  запис на 15:00 завтра, статус «підтверджено»
+  <span class="v">Коли</span>  клієнт натискає «Скасувати» й підтверджує
+  <span class="v">Тоді</span>  статус стає «скасовано»
+   <span class="v">І</span>    слот 15:00 знову доступний для запису
+   <span class="v">І</span>    майстер отримує сповіщення ≤ 60 с
+
+<span class="k">AC-014.2</span> Пізнє скасування
+  <span class="v">Дано</span>  запис починається через 40 хвилин
+  <span class="v">Коли</span>  клієнт відкриває запис
+  <span class="v">Тоді</span>  кнопка «Скасувати» неактивна
+   <span class="v">І</span>    показано телефон адміністратора
+
+<span class="k">AC-014.3</span> Повторний запит
+  <span class="v">Дано</span>  запис уже скасовано
+  <span class="v">Коли</span>  надходить повторний DELETE того ж запису
+  <span class="v">Тоді</span>  відповідь 204, стан не змінюється</div>
+    <div>
+      <div class="panel">
+        <h3>Що робить критерій робочим</h3>
+        <ul>
+          <li>Формат <b>Дано / Коли / Тоді</b> прямо перекладається в автотест</li>
+          <li>Конкретні дані замість «коректних значень»</li>
+          <li>Окремий критерій на <b>помилку, межу й повтор</b>, не лише на успіх</li>
+          <li>Прив'язка до FR за ідентифікатором</li>
+          <li>Спостережуваний результат: статус, екран, подія, код відповіді</li>
+        </ul>
+      </div>
+      <div class="chk" style="grid-template-columns:1fr;margin-top:20px">
+        <div class="amb"><h4>Практика</h4><p>Дайте агенту критерії <b>до</b> написання коду й попросіть спершу перетворити їх на тести, що падають. Далі — реалізація до зеленого стану. Значна частина технічного приймання зводиться до запуску відтворюваних тестів; ризикові зміни все одно дивиться людина.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 09 -->
+<div class="slide" data-stage="5" data-title="ДОК-05 Контракти">
+  <div class="eyebrow">Документ 05<span class="rule"></span><span class="id">05 / 06</span></div>
+  <h2>Контракти даних та API</h2>
+  <p class="en">API — Application Programming Interface Contract · OpenAPI Specification · Data Model &amp; State Machine · ADR — Architecture Decision Record</p>
+  <p class="sub">Схема — одна з найточніших форм вимоги: вона різко зменшує двозначність у структурі даних та інтерфейсах і дозволяє генерувати код, тести й документацію. Семантику — права доступу, побічні ефекти, гроші — все одно описують окремо.</p>
+  <div class="cols c2">
+    <div class="panel n">
+      <h3>Що описати</h3>
+      <ul>
+        <li><b>Модель домену</b> — сутності, поля, типи, обов'язковість, зв'язки. Це <b>майбутня схема бази даних</b>: саме тут рішення коштують найдорожче</li>
+        <li><b>Життєвий цикл станів</b> — які переходи дозволені, які заборонені</li>
+        <li><b>API-специфікація</b> — OpenAPI / GraphQL: шляхи, коди відповідей, помилки</li>
+        <li><b>Формат помилок</b> — єдина структура для всієї системи</li>
+        <li><b>Зовнішні інтеграції</b> — SMS, пошта, платежі: ліміти й поведінка при збої</li>
+        <li><b>Міграції даних</b> — що робити з наявними записами при зміні схеми</li>
+        <li><b>Вибір стеку й архітектури</b> — фреймворк, бібліотеки, спосіб розділення системи; фіксується в ADR разом із причиною вибору</li>
+      </ul>
+    </div>
+    <div class="code pl"><span class="c"># states.md — переходи статусів запису</span>
+
+чернетка → підтверджено → завершено
+                ↓
+            скасовано  <span class="c">(кінцевий)</span>
+
+<span class="r">Заборонено:</span> скасовано → підтверджено
+<span class="r">Заборонено:</span> завершено → будь-що
+
+<span class="c"># openapi.yaml (фрагмент)</span>
+<span class="k">DELETE</span> /bookings/{id}
+  <span class="v">204</span> — скасовано або вже було скасовано
+  <span class="v">403</span> — до початку менше 2 годин
+  <span class="v">404</span> — запис не знайдено
+  <span class="c">помилка:</span> { code, message, details[] }</div>
+  </div>
+  <div class="chk" style="grid-template-columns:1fr 1fr;margin-top:16px">
+    <div class="warn"><h4>Дані переживають код</h4><p>Код агент перепише за хвилини. Базу з реальними записами — ні: зміна схеми означає міграцію, сумісність зі старими даними, простій і ризик втрати. <b>Вимоги бізнесу змінюються постійно, тому модель даних проєктують під зміну</b>: додавати поле й статус має бути дешево, а перейменовувати сутність і переносити зв'язки не має бути потрібно щоспринту.</p></div>
+    <div class="amb"><h4>Вибір стеку — теж контракт</h4><p>Фреймворк, бібліотеки й спосіб розділення системи розробник обирає під очікувану зміну вимог, а не під сьогоднішній список фіч. Рішення й альтернативи фіксують в ADR, інакше агент через місяць приведе паралельне рішення тієї ж задачі.</p></div>
+  </div>
+  <p class="note">Схема в репозиторії — <strong>єдине джерело правди</strong>. Якщо код і документ розійшлися, виправляють обидва в одному pull request.</p>
+</div>
+
+<!-- 10 -->
+<div class="slide" data-stage="6" data-title="ДОК-06 Тех. контекст">
+  <div class="eyebrow">Документ 06<span class="rule"></span><span class="id">06 / 06</span></div>
+  <h2>Технічний контекст і правила агента</h2>
+  <p class="en">AGENTS.md / CLAUDE.md · Contributing &amp; Coding Guidelines · Constraints</p>
+  <p class="sub">Файли інструкцій агента (наприклад, AGENTS.md або CLAUDE.md) і пов'язані проєктні правила, які агент отримує в контексті роботи. Конкретний механізм завантаження залежить від інструмента.</p>
+  <div class="cols c2">
+    <div class="panel">
+      <h3>Що входить</h3>
+      <ul>
+        <li><b>Стек і версії</b> — мова, фреймворк, БД, менеджер пакетів</li>
+        <li><b>Структура проєкту</b> — де що лежить і чому</li>
+        <li><b>Команди</b> — як зібрати, запустити, прогнати тести й лінтер</li>
+        <li><b>Стиль коду</b> — іменування, обробка помилок, логування</li>
+        <li><b>Заборони</b> — не додавати залежності, не чіпати міграції, не змінювати публічний API</li>
+        <li><b>Правила git</b> — гілки, формат коміту, розмір pull request (PR)</li>
+        <li><b>Секрети</b> — де беруться змінні оточення; у код не потрапляють ніколи</li>
+      </ul>
+    </div>
+    <div class="code hd"><span class="c"># AGENTS.md</span>
+
+<span class="k">## Стек</span>
+Node 22, TypeScript strict, Fastify, PostgreSQL 16,
+Prisma, Vitest. Пакети — pnpm.
+
+<span class="k">## Команди</span>
+pnpm install · pnpm dev · pnpm test · pnpm lint
+Перед комітом обов'язково: pnpm test && pnpm lint
+
+<span class="k">## Правила</span>
+- Бізнес-логіка в src/domain, без імпорту Fastify.
+- Помилки — через AppError, ніяких throw string.
+- <span class="r">Нові залежності — тільки з дозволу в задачі.</span>
+- <span class="r">Схему БД змінювати лише міграцією, не вручну.</span>
+- Тест на кожен критерій приймання.
+
+<span class="k">## Definition of Done (DoD)</span>
+тести зелені · лінтер чистий · README оновлено
+· критерії приймання із задачі відмічені</div>
+  </div>
+</div>
+
+<!-- 11 -->
+<div class="slide" data-stage="6" data-title="Перевірка">
+  <div class="eyebrow">Додатковий шар<span class="rule"></span><span class="id">Перевірка</span></div>
+  <h2>Як ви дізнаєтесь, що агент зробив правильно</h2>
+  <p class="en">Test Plan · Test Strategy · Verification &amp; Validation</p>
+  <div class="chk c3">
+    <div><h4>Автоматична перевірка</h4><p>Тести, типізація, лінтер, збірка. Агент має змогу запускати їх сам і виправлятися без вас — це головний цикл зворотного зв'язку.</p></div>
+    <div class="amb"><h4>Перевірка за критеріями</h4><p>Проходимо критерії приймання (Acceptance Criteria, AC) із задачі по одному. Кожен має або тест, або відтворюваний ручний сценарій із конкретними даними.</p></div>
+    <div class="warn"><h4>Людське рев'ю</h4><p>Дивимось на межі та ризики: доступ до даних, гроші, необоротні дії, продуктивність запитів. Саме тут людське рішення найцінніше.</p></div>
+  </div>
+  <div class="hair"></div>
+  <div class="panel">
+    <h3>Що покласти в документ</h3>
+    <ul>
+      <li><b>Тестові дані</b> — фікстури, набір типових і граничних значень</li>
+      <li><b>Сценарії помилок</b> — недоступна зовнішня служба, таймаут, конфлікт паралельних змін</li>
+      <li><b>Ризикові зони</b> — де помилка коштує найдорожче; там перевірка ретельніша</li>
+      <li><b>Стан «не зроблено»</b> — що свідомо залишено на наступну ітерацію</li>
+    </ul>
+  </div>
+  <p class="note">Правило: <strong>агент не може бути єдиним, хто підтверджує власну роботу</strong>. Перевірку робить незалежний механізм — тести й людина.</p>
+</div>
+
+<!-- 12 -->
+<div class="slide" data-stage="6" data-title="Розмір задачі">
+  <div class="eyebrow">Практика<span class="rule"></span><span class="id">Процес</span></div>
+  <h2>Розмір задачі під агента</h2>
+  <p class="en">Task Specification · Work Item · Ticket &amp; Scope Boundaries</p>
+  <p class="sub">Великий документ добре описує систему, але задача для одного запуску має бути вузькою: один зрозумілий результат, який можна перевірити швидко. Нижче — практичні орієнтири, а не галузевий стандарт.</p>
+  <div class="cols c2">
+    <div class="panel">
+      <h3>Орієнтири для задачі</h3>
+      <ul>
+        <li>Практичний орієнтир: 1–5 файлів або один модуль</li>
+        <li>Зазвичай 2–5 критеріїв приймання</li>
+        <li>Має явну точку входу: «почни з src/domain/booking.ts»</li>
+        <li>Містить посилання на функціональну вимогу (FR), критерії приймання (AC) і схему</li>
+        <li>Результат — pull request, який можна прочитати за раз</li>
+      </ul>
+    </div>
+    <div class="panel bad">
+      <h3>Ознаки задачі, що піде не так</h3>
+      <ul>
+        <li>«Зроби модуль записів» — без меж і критеріїв</li>
+        <li>Кілька непов'язаних змін в одному запуску</li>
+        <li>Рефакторинг разом із новою функціональністю</li>
+        <li>Вимоги живуть у чаті, а не в репозиторії</li>
+        <li>Немає способу запустити тести локально</li>
+      </ul>
+    </div>
+  </div>
+  <div class="chk" style="grid-template-columns:1fr">
+    <div class="amb"><h4>Шаблон постановки</h4><p><b>Мета</b> (одне речення) → <b>Контекст</b> (посилання на функціональну вимогу, критерії приймання і схему) → <b>Межі</b> (що не чіпати) → <b>Критерії приймання</b> → <b>Як перевірити</b> (команда запуску тестів).</p></div>
+  </div>
+</div>
+
+<!-- 13 -->
+<div class="slide" data-stage="6" data-title="Пакет на фічу">
+  <div class="eyebrow">Складаємо разом<span class="rule"></span><span class="id">Приклад</span></div>
+  <h2>Пакет документів на одну фічу</h2>
+  <div class="code sg" style="margin-top:20px">repo/
+├── <span class="k">AGENTS.md</span>              <span class="c">стек, команди, стиль, заборони, Definition of Done</span>
+├── docs/
+│   ├── <span class="k">brief.md</span>            <span class="c">проблема, ролі, метрики, межі, глосарій</span>
+│   ├── <span class="k">requirements/</span>
+│   │   ├── functional.md   <span class="c">FR-001 … FR-042, з пріоритетами</span>
+│   │   └── nfr.md          <span class="c">числа: p95, rps, доступність, безпека</span>
+│   ├── <span class="k">acceptance/</span>
+│   │   └── FR-014.md       <span class="c">AC-014.1 … AC-014.3 — Дано / Коли / Тоді</span>
+│   ├── <span class="k">api/openapi.yaml</span>    <span class="c">контракт: шляхи, коди, формат помилок</span>
+│   ├── <span class="k">data/model.md</span>       <span class="c">сутності, поля, переходи станів</span>
+│   └── <span class="k">decisions/</span>          <span class="c">ADR — Architecture Decision Record</span>
+└── tasks/
+    └── <span class="k">TASK-118.md</span>         <span class="c">мета · контекст · межі · критерії приймання · перевірка</span>
+
+<span class="v">Запуск агента:</span> «Прочитай AGENTS.md і tasks/TASK-118.md.
+Спочатку напиши тести за критеріями приймання, потім реалізацію.
+Не змінюй openapi.yaml без окремої згадки в описі змін.»</div>
+  <p class="note">Усе — <strong>текст у репозиторії</strong>: версіонується, рев'ювиться, читається і людиною, і агентом.</p>
+</div>
+
+<!-- 14 -->
+<div class="slide" data-stage="6" data-title="Антипатерни">
+  <div class="eyebrow">Чого не робити<span class="rule"></span><span class="id">Ризики</span></div>
+  <h2>Сім типових помилок</h2>
+  <div class="cols c2">
+    <div class="panel bad">
+      <h3>Вимоги та постановка</h3>
+      <ul>
+        <li><b>Вимоги в чаті.</b> Наступного дня контекст втрачено, агент починає з нуля.</li>
+        <li><b>Прикметники замість чисел.</b> «Швидко», «безпечно», «зручно» не перевіряються.</li>
+        <li><b>Один гігантський запит.</b> «Зроби мені систему» дає демо, а не продукт.</li>
+        <li><b>Немає заборон.</b> Агент може вважати допустимими зміни, які ви явно не обмежили.</li>
+      </ul>
+    </div>
+    <div class="panel bad">
+      <h3>Приймання та супровід</h3>
+      <ul>
+        <li><b>Приймання «на око».</b> Без критеріїв приймання перевірка залежить від настрою рев'ювера.</li>
+        <li><b>Документи розходяться з кодом.</b> Застарілий документ гірший за відсутній: агент йому довіряє.</li>
+        <li><b>Агент перевіряє сам себе.</b> «Тести пройшли» без незалежного запуску — не доказ.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hair"></div>
+  <p class="sub" style="margin-top:0">Рекомендоване правило команди: зміни, що стосуються <b>персональних даних, платежів та необоротних операцій</b>, завжди проходять людське рев'ю — незалежно від того, наскільки добре написана специфікація.</p>
+</div>
+
+<!-- 15 -->
+<div class="slide" data-stage="6" data-title="Чекліст">
+  <div class="eyebrow">Definition of Ready<span class="rule"></span><span class="id">Чек-ліст</span></div>
+  <h2>Чекліст перед запуском агента</h2>
+  <p class="en">DoR — Definition of Ready · DoD — Definition of Done</p>
+  <table class="tight">
+    <tr><th>Документ</th><th>Питання, на яке відповідає</th><th>Ознака готовності</th><th>Хто власник</th></tr>
+    <tr><td>Brief</td><td>Навіщо і для кого</td><td>Є метрика успіху й розділ «поза межами»</td><td class="own">Product Owner<span>за участі бізнес-аналітика</span></td></tr>
+    <tr><td>Функціональні</td><td>Що система робить</td><td>Кожен FR має id, сценарій помилки й пріоритет</td><td class="own">Бізнес-аналітик<span>пріоритети ставить Product Owner</span></td></tr>
+    <tr><td>Нефункціональні</td><td>Наскільки добре</td><td>Кожна вимога має число й спосіб виміру</td><td class="own">Архітектор<span>бізнес-обмеження — від аналітика</span></td></tr>
+    <tr><td>Критерії приймання</td><td>Як довести, що працює</td><td>Дано / Коли / Тоді, включно з межами й помилками</td><td class="own">Бізнес-аналітик + QA<span>погоджує Product Owner</span></td></tr>
+    <tr><td>Контракти</td><td>Яка форма даних і API</td><td>Схема в репозиторії, формат помилок єдиний</td><td class="own">Архітектор, розробник<span>модель домену — від аналітика</span></td></tr>
+    <tr><td>Тех. контекст</td><td>У яких межах будувати</td><td>Команди запуску, стиль, заборони, Definition of Done</td><td class="own">Команда розробки<span>tech lead як редактор</span></td></tr>
+    <tr><td>Задача</td><td>Що робимо зараз</td><td>Один результат, 2–5 критеріїв приймання, точка входу в код</td><td class="own">Розробник<span>черга й пріоритет — Product Owner</span></td></tr>
+  </table>
+  <p class="note">Власник відповідає за актуальність документа, а не пише його сам-один. Суміщати ролі можна, пропускати документи — ні: кожен документ має мати того, хто відповідає за його актуальність.<br>
+  Якщо на будь-який рядок відповідь «ще ні» — <strong>дешевше дописати документ, ніж переробляти код</strong>.</p>
+</div>
+
+<!-- 16 -->
+<div class="slide dense" data-stage="6" data-title="Ролі в ланцюжку">
+  <div class="eyebrow">Хто робить документи<span class="rule"></span><span class="id">Ролі</span></div>
+  <h2>Від ідеї бізнесу до кінцевого користувача</h2>
+
+  <p class="rowlbl">А · Класичний процес — без агентів ШІ<span class="rl"></span><i>Business Owner → Project Management → Product &amp; Analysis → Architecture → Design → Team / Tech Lead → Development → QA → Operations → Support → End User</i></p>
+  <div class="chain compact">
+    <div class="role"><span class="n">01</span><h4>Замовник, власник бізнесу</h4><span class="en2">Business Owner · Sponsor</span></div>
+    <div class="role"><span class="n">02</span><h4>Проджект-менеджер</h4><span class="en2">Project Manager · Delivery Manager</span></div>
+    <div class="role"><span class="n">03</span><h4>Product Owner</h4><span class="en2">Product Owner · Product Manager</span></div>
+    <div class="role"><span class="n">04</span><h4>Бізнес-аналітик</h4><span class="en2">Business / System Analyst</span></div>
+    <div class="role t"><span class="n">05</span><h4>Архітектор</h4><span class="en2">Solution Architect</span></div>
+    <div class="role t"><span class="n">06</span><h4>Дизайнер</h4><span class="en2">UX / UI Designer</span></div>
+    <div class="role t"><span class="n">07</span><h4>Тім лід</h4><span class="en2">Team Lead</span></div>
+    <div class="role t"><span class="n">08</span><h4>Тех лід</h4><span class="en2">Tech Lead</span></div>
+    <div class="role t"><span class="n">09</span><h4>Розробники</h4><span class="en2">Software Engineers</span></div>
+    <div class="role a"><span class="n">10</span><h4>Тест-інженер</h4><span class="en2">QA Engineer</span></div>
+    <div class="role a"><span class="n">11</span><h4>Експлуатація</h4><span class="en2">DevOps · SRE</span></div>
+    <div class="role r"><span class="n">12</span><h4>Підтримка й користувач</h4><span class="en2">Support · End User</span></div>
+  </div>
+  <p class="loop" style="margin-top:10px">Тім лід відповідає за людей і потік роботи, тех лід — за технічні рішення й якість коду, проджект-менеджер — за строки, бюджет і комунікацію із замовником. У великих командах це три різні люди, у малих — одна.</p>
+
+  <div class="hair" style="margin:18px 0 4px"></div>
+
+  <p class="rowlbl">Б · Той самий ланцюг із агентом ШІ<span class="rl"></span><i>ті ж ролі; агент прискорює ділянку розробки</i></p>
+  <div class="chain">
+    <div class="role"><span class="n">01</span><h4>Замовник, власник бізнесу</h4><span class="en2">Business Owner · Sponsor · Stakeholder</span><p>Ідея, гроші, пріоритети, рішення про запуск</p></div>
+    <div class="role"><span class="n">02</span><h4>Product Owner, менеджер продукту</h4><span class="en2">Product Owner · Product Manager</span><p>Мета, метрики, межі релізу, черга задач</p></div>
+    <div class="role"><span class="n">03</span><h4>Бізнес-аналітик</h4><span class="en2">Business Analyst · System Analyst</span><p>Brief, функціональні вимоги, критерії приймання</p></div>
+    <div class="role t"><span class="n">04</span><h4>Архітектор</h4><span class="en2">Solution / Software Architect</span><p>Нефункціональні вимоги, контракти, технічні межі</p></div>
+    <div class="role t"><span class="n">05</span><h4>Дизайнер</h4><span class="en2">UX / UI Designer</span><p>Сценарії, макети, стани помилок, доступність</p></div>
+    <div class="role t"><span class="n">06</span><h4>Розробник з агентом</h4><span class="en2">Developer · Agent Operator</span><p>Постановка задачі агенту, реалізація, code review</p></div>
+    <div class="role a"><span class="n">07</span><h4>Тест-інженер</h4><span class="en2">QA Engineer · Test Automation</span><p>Тест-план, автотести за критеріями, приймання</p></div>
+    <div class="role a"><span class="n">08</span><h4>Інженер експлуатації</h4><span class="en2">DevOps · SRE · Security</span><p>Реліз, середовища, моніторинг, інциденти</p></div>
+    <div class="role r"><span class="n">09</span><h4>Підтримка й користувач</h4><span class="en2">Support · Customer Success · End User</span><p>Робота з системою, звернення, зворотний зв'язок</p></div>
+  </div>
+  <p class="loop">Зворотний зв'язок замикає ланцюг: користувач → підтримка → продукт → нові вимоги.<br>
+  Агент прискорює ділянку 06, але не замінює жодну з ролей: він не формулює мету, не домовляється про компроміси й не приймає роботу. Ролі тім ліда й тех ліда тут не зникають — вони переходять у постановку задач агенту та рев'ю згенерованого коду.</p>
+
+  <div class="hair" style="margin:18px 0 4px"></div>
+
+  <p class="rowlbl">В · Гранична форма суміщення<span class="rl"></span><i>усі проміжні ролі — на одній людині, що працює агентами</i></p>
+  <div class="chain solo">
+    <div class="role"><span class="n">01</span><h4>Замовник, власник бізнесу</h4><span class="en2">Business Owner · Sponsor · Stakeholder</span><p>Ідея, гроші, пріоритети, рішення про запуск</p></div>
+    <div class="role t wide">
+      <span class="n">02 — 08</span>
+      <h4>Продуктовий інженер з агентами</h4>
+      <span class="en2">AI-Native Product Engineer · Full-Cycle Product Engineer · Agent Orchestrator</span>
+      <p>Одна людина веде весь шлях від розмови із замовником до релізу, тримаючи агентів як виконавчу потужність: <b>формулює мету й метрики</b> (Product Owner) · <b>пише brief, функціональні вимоги та критерії приймання</b> (Business Analyst) · <b>задає нефункціональні вимоги й контракти</b> (Architect) · <b>проєктує сценарії та інтерфейс</b> (UX / UI) · <b>ставить задачі агенту й рев'ювить код</b> (Developer · Agent Operator) · <b>складає тест-план і приймає роботу</b> (QA) · <b>випускає та супроводжує</b> (DevOps · SRE).</p>
+      <p class="warn2">Ціна такої компактності — зникає незалежна перевірка: той, хто написав вимогу, сам її й приймає. Робоче для MVP, внутрішніх інструментів і невеликих продуктів; для платежів, персональних даних і необоротних операцій рев'ю все одно виносять назовні.</p>
+    </div>
+    <div class="role r"><span class="n">09</span><h4>Підтримка й користувач</h4><span class="en2">Support · Customer Success · End User</span><p>Робота з системою, звернення, зворотний зв'язок</p></div>
+  </div>
+
+</div>
+
+<!-- 17 -->
+<div class="slide title-slide" data-stage="6" data-title="Висновок">
+  <div class="eyebrow">Головна думка<span class="rule"></span><span class="id">Фінал</span></div>
+  <h1 style="max-width:16ch">Пишіть вимоги так, ніби це код</h1>
+  <p class="lede">Однозначно, версійно, з тестами й межами. Агент дає швидкість; точність опису лишається за командою — і саме вона визначає, що ви отримаєте на виході.</p>
+  <div class="chk c3" style="margin-top:30px">
+    <div><h4>Що забрати з собою</h4><p>Комплект із шести документів плюс постановка задачі. Почніть із критеріїв приймання — найбільший ефект за найменших витрат.</p></div>
+    <div class="amb"><h4>З чого почати завтра</h4><p>Візьміть одну наступну фічу й опишіть за шаблоном. Порівняйте результат агента з попереднім запуском без документів.</p></div>
+    <div class="warn"><h4>Що лишається за людиною</h4><p>Мета, межі, компроміси, ризики та приймання. Це не автоматизується разом із кодом.</p></div>
+  </div>
+  <div class="chk" style="grid-template-columns:1fr;margin-top:18px">
+    <div><h4>І головне: вимоги змінюватимуться</h4><p>Жодна специфікація не буває остаточною — бізнес уточнює правила, ринок і закон змінюються. Тому і документи, і система мають бути <b>адаптивними</b>: вимоги живуть у репозиторії й версіонуються разом із кодом, модель даних і архітектура проєктуються під зміну, а критерії приймання дають змогу безпечно переробити реалізацію. Специфікація — не бетон, а креслення, яке перевидають.</p></div>
+  </div>
+  <p class="note">Дякую за увагу. Питання?</p>
+</div>
+
+<div id="wipe"></div>
+<div id="spine"></div>
+<div id="bar">
+  <button id="prev" title="Попередній слайд (←)">←</button>
+  <span id="count"></span>
+  <button id="next" title="Наступний слайд (→ або пробіл)">→</button>
+  <button id="fs" title="Повний екран (F)">На весь екран</button>
+</div>
+
+</div>
+</div>
+
+<script>
+/* ══ Хребет: шлях документами ═══════════════════════════════ */
+var SPINE = ["Карта","Brief","Функц.","Нефункц.","Приймання","Контракти","Контекст"];
+var spineEl = document.getElementById("spine");
+SPINE.forEach(function(n,i){
+  var b = document.createElement("button");
+  b.className = "node";
+  b.innerHTML = '<i class="dot"></i>' + n;
+  b.dataset.stage = i;
+  spineEl.appendChild(b);
+});
+var nodes = [].slice.call(spineEl.children);
+
+/* ══ Керування ══════════════════════════════════════════════ */
+var stage = document.getElementById("stage");
+var wipe = document.getElementById("wipe");
+var els = [].slice.call(document.querySelectorAll(".slide"));
+var cur = 0, wipeTimer = null;
+
+function show(n, silent){
+  n = Math.max(0, Math.min(els.length - 1, n));
+  if(n === cur && !silent) return;
+  var prev = cur, back = n < cur;
+  clearTimeout(wipeTimer);
+  els.forEach(function(el){ el.classList.remove("out","anim","rev"); });
+  wipe.classList.remove("rev");
+  cur = n;
+  els[prev].classList.remove("on");
+  if(!silent){
+    els[prev].classList.add("out","anim");
+    if(back) els[prev].classList.add("rev");
+  }
+  els[cur].classList.remove("on");
+  void els[cur].offsetWidth;                 // перезапуск анімації
+  els[cur].classList.add("on");
+  els[cur].scrollTop = 0;
+  if(!silent){
+    els[cur].classList.add("anim");
+    if(back) els[cur].classList.add("rev");
+    wipe.classList.remove("go"); void wipe.offsetWidth;
+    if(back) wipe.classList.add("rev");
+    wipe.classList.add("go");
+    wipeTimer = setTimeout(function(){
+      els[prev].classList.remove("out","anim","rev");
+      els[cur].classList.remove("anim","rev");
+      wipe.classList.remove("go","rev");
+    }, 680);
+  }
+  var st = parseInt(els[cur].dataset.stage, 10);
+  nodes.forEach(function(nd, i){
+    nd.classList.toggle("on", i === st);
+    nd.classList.toggle("done", i < st);
+  });
+  document.getElementById("count").textContent = (cur+1) + " / " + els.length;
+  document.getElementById("prev").disabled = cur === 0;
+  document.getElementById("next").disabled = cur === els.length - 1;
+}
+show(0, true);
+
+spineEl.addEventListener("click", function(e){
+  var b = e.target.closest(".node");
+  if(!b) return;
+  var st = b.dataset.stage;
+  for(var i = 0; i < els.length; i++){
+    if(els[i].dataset.stage === st){ show(i); return; }
+  }
+});
+
+document.getElementById("next").onclick = function(){ show(cur+1); };
+document.getElementById("prev").onclick = function(){ show(cur-1); };
+document.getElementById("fs").onclick = function(){
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.getElementById("deck").requestFullscreen();
+};
+document.addEventListener("fullscreenchange", function(){
+  document.getElementById("fs").textContent = document.fullscreenElement ? "Вийти з екрана" : "На весь екран";
+});
+document.addEventListener("keydown", function(e){
+  if(e.key === "ArrowRight" || e.key === " " || e.key === "PageDown"){ e.preventDefault(); show(cur+1); }
+  else if(e.key === "ArrowLeft" || e.key === "PageUp"){ e.preventDefault(); show(cur-1); }
+  else if(e.key === "Home"){ show(0); }
+  else if(e.key === "End"){ show(els.length-1); }
+  else if(e.key.toLowerCase() === "f"){ document.getElementById("fs").click(); }
+});
+
+var t, bar = document.getElementById("bar");
+function idle(){ clearTimeout(t); bar.classList.remove("idle"); t = setTimeout(function(){ bar.classList.add("idle"); }, 2600); }
+document.addEventListener("mousemove", idle); idle();
+
+var x0 = null;
+document.addEventListener("touchstart", function(e){ x0 = e.changedTouches[0].clientX; }, {passive:true});
+document.addEventListener("touchend", function(e){
+  if(x0 === null) return;
+  var dx = e.changedTouches[0].clientX - x0;
+  if(Math.abs(dx) > 60) show(cur + (dx < 0 ? 1 : -1));
+  x0 = null;
+}, {passive:true});
+</script>
+</body>
+</html>
