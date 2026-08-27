@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Методи аутентифікації користувача у веб-застосунку</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07171C;
+  --petrol:#0B2027;
+  --panel:#102E38;
+  --panel-2:#16414F;
+  --line:#1F5464;
+  --amber:#F5A524;
+  --amber-dim:#8a5c11;
+  --mint:#3FD9B8;
+  --muted:#7FA0A9;
+  --paper:#EAF3F2;
+
+  --f-display:"Unbounded","Manrope",system-ui,sans-serif;
+  --f-body:"Manrope",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"Courier New",monospace;
+
+  --pad-x:clamp(48px,6vw,120px);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--f-body);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Deck shell ---------- */
+.deck{position:fixed;inset:0}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;align-items:center;
+  padding:clamp(40px,5vh,80px) var(--pad-x) 96px calc(var(--pad-x) + 40px);
+  background:
+    radial-gradient(120% 90% at 12% 0%, #113442 0%, var(--petrol) 48%, var(--ink) 100%);
+  opacity:0;visibility:hidden;
+  transform:translateY(18px);
+  transition:opacity .45s ease, transform .45s ease, visibility .45s;
+}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+
+.slide__inner{width:100%;max-width:1360px;margin:0 auto}
+
+/* ---------- Magnetic stripe rail ---------- */
+.rail{
+  position:absolute;left:0;top:0;bottom:0;width:40px;
+  background:linear-gradient(180deg,#0A1D24,#08161B);
+  border-right:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+}
+.rail::before{
+  content:"";position:absolute;left:12px;top:0;bottom:0;width:2px;
+  background:repeating-linear-gradient(180deg,var(--line) 0 6px,transparent 6px 14px);
+  opacity:.7;
+}
+.rail__num{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.34em;
+  color:var(--amber);writing-mode:vertical-rl;text-orientation:mixed;
+  padding-left:14px;
+}
+
+/* ---------- Scanner beam signature ---------- */
+.beam{
+  position:absolute;left:0;right:0;height:2px;pointer-events:none;z-index:60;
+  background:linear-gradient(90deg,transparent,var(--amber),transparent);
+  box-shadow:0 0 22px 4px rgba(245,165,36,.45);
+  opacity:0;
+}
+.beam.run{animation:scan .62s cubic-bezier(.4,0,.2,1)}
+@keyframes scan{
+  0%{top:0;opacity:0}
+  12%{opacity:1}
+  88%{opacity:1}
+  100%{top:100%;opacity:0}
+}
+
+/* ---------- Typography ---------- */
+.eyebrow{
+  font-family:var(--f-mono);font-size:12px;font-weight:700;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--amber);
+  display:flex;align-items:center;gap:12px;margin-bottom:22px;
+}
+.eyebrow::after{content:"";height:1px;flex:1;max-width:180px;background:var(--amber-dim)}
+
+h1{
+  font-family:var(--f-display);font-weight:800;
+  font-size:clamp(40px,5.4vw,80px);line-height:1.02;letter-spacing:-.02em;
+}
+h2{
+  font-family:var(--f-display);font-weight:600;
+  font-size:clamp(28px,3.4vw,50px);line-height:1.08;letter-spacing:-.015em;
+  margin-bottom:28px;
+}
+h2 em{font-style:normal;color:var(--amber)}
+.lede{
+  font-size:clamp(16px,1.32vw,21px);line-height:1.6;color:var(--muted);
+  max-width:70ch;
+}
+.lede strong{color:var(--paper);font-weight:700}
+
+/* ---------- Title slide ---------- */
+.title-meta{
+  margin-top:44px;display:flex;flex-wrap:wrap;gap:14px;
+}
+.chip{
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:999px;padding:9px 18px;color:var(--muted);
+}
+.chip--hot{border-color:var(--amber);color:var(--amber)}
+
+.keycard{
+  margin-top:56px;max-width:520px;
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:linear-gradient(135deg,var(--panel),#0C242C);
+}
+.keycard__stripe{height:38px;background:repeating-linear-gradient(90deg,#0A1D24 0 3px,#12313C 3px 7px);border-bottom:1px solid var(--line)}
+.keycard__body{padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.keycard__k{font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.keycard__v{font-family:var(--f-display);font-weight:600;font-size:19px;margin-top:6px}
+.keycard__dot{width:10px;height:10px;border-radius:50%;background:var(--mint);box-shadow:0 0 14px var(--mint);flex:none;margin-bottom:6px}
+
+/* ---------- Grids & cards ---------- */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+
+.card{
+  background:linear-gradient(160deg,var(--panel) 0%,#0C242C 100%);
+  border:1px solid var(--line);border-radius:12px;
+  padding:24px 24px 26px;
+  position:relative;
+}
+.card__tag{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:12px;display:block;
+}
+.card h3{
+  font-family:var(--f-display);font-weight:600;font-size:clamp(17px,1.5vw,22px);
+  line-height:1.2;margin-bottom:12px;
+}
+.card p{font-size:clamp(13px,1.02vw,15px);line-height:1.62;color:var(--muted)}
+.card ul{list-style:none;margin-top:10px}
+.card li{
+  font-size:clamp(13px,1.02vw,15px);line-height:1.55;color:var(--muted);
+  padding-left:18px;position:relative;margin-bottom:8px;
+}
+.card li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--amber)}
+.card li b{color:var(--paper);font-weight:700}
+.card--accent{border-color:var(--amber);box-shadow:0 0 0 1px rgba(245,165,36,.15) inset}
+.card--flat{background:transparent}
+
+/* ---------- Table ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:clamp(12.5px,1.02vw,15px)}
+.tbl th{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--amber);text-align:left;padding:0 16px 12px;border-bottom:1px solid var(--line);font-weight:700;
+}
+.tbl td{padding:14px 16px;border-bottom:1px solid rgba(31,84,100,.45);color:var(--muted);line-height:1.5;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td:first-child{color:var(--paper);font-weight:700}
+.tbl tbody tr:hover td{background:rgba(22,65,79,.4)}
+.ok{color:var(--mint);font-weight:700}
+.bad{color:#FF7A6B;font-weight:700}
+.mid{color:var(--amber);font-weight:700}
+
+/* ---------- Flow diagram ---------- */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:8px}
+.flow__step{
+  flex:1;min-width:150px;
+  border:1px solid var(--line);border-radius:10px;padding:18px 16px;
+  background:linear-gradient(160deg,var(--panel),#0C242C);
+}
+.flow__n{font-family:var(--f-mono);font-size:11px;color:var(--amber);letter-spacing:.2em;display:block;margin-bottom:8px}
+.flow__step p{font-size:13.5px;line-height:1.5;color:var(--muted)}
+.flow__step b{color:var(--paper)}
+.flow__arrow{
+  align-self:center;color:var(--amber);font-family:var(--f-mono);font-size:18px;
+  padding:0 10px;flex:none;
+}
+
+/* ---------- Code ---------- */
+pre{
+  background:#08181E;border:1px solid var(--line);border-left:3px solid var(--amber);
+  border-radius:8px;padding:20px 22px;overflow:auto;
+  font-family:var(--f-mono);font-size:13.5px;line-height:1.72;color:#BFD8DC;
+}
+.c-key{color:var(--amber)}
+.c-str{color:var(--mint)}
+.c-cmt{color:#4E7580;font-style:italic}
+
+/* ---------- Callout ---------- */
+.callout{
+  border-left:3px solid var(--mint);background:rgba(63,217,184,.07);
+  padding:18px 22px;border-radius:0 8px 8px 0;margin-top:24px;
+  font-size:clamp(14px,1.1vw,16.5px);line-height:1.6;color:var(--paper);
+}
+.callout b{color:var(--mint)}
+
+/* ---------- Controls ---------- */
+.hud{
+  position:fixed;z-index:80;bottom:22px;right:26px;
+  display:flex;align-items:center;gap:10px;
+}
+.btn{
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  background:rgba(16,46,56,.9);color:var(--paper);
+  border:1px solid var(--line);border-radius:8px;
+  padding:11px 16px;cursor:pointer;
+  transition:border-color .18s, color .18s, background .18s;
+  backdrop-filter:blur(6px);
+}
+.btn:hover{border-color:var(--amber);color:var(--amber)}
+.btn:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+.btn[disabled]{opacity:.32;cursor:not-allowed}
+.btn--fs{
+  position:fixed;top:22px;right:26px;z-index:80;
+  border-color:var(--amber);color:var(--amber);
+  display:flex;align-items:center;gap:9px;
+}
+.btn--fs svg{width:14px;height:14px;fill:currentColor}
+
+.counter{
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;color:var(--muted);
+  padding:0 8px;min-width:74px;text-align:center;
+}
+.counter b{color:var(--paper)}
+
+.progress{
+  position:fixed;left:0;bottom:0;height:3px;width:100%;
+  background:rgba(31,84,100,.4);z-index:80;
+}
+.progress__bar{height:100%;width:0;background:var(--amber);box-shadow:0 0 12px var(--amber);transition:width .4s ease}
+
+.hint{
+  position:fixed;bottom:26px;left:calc(var(--pad-x) + 40px);z-index:80;
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;color:#4E7580;text-transform:uppercase;
+}
+
+@media (max-width:1100px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .hint{display:none}
+  .slide{padding-left:calc(var(--pad-x) + 20px)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="beam" id="beam"></div>
+
+<button class="btn btn--fs" id="fsBtn" aria-label="Розгорнути на весь екран">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg>
+  <span id="fsLabel">На весь екран</span>
+</button>
+
+<main class="deck" id="deck">
+
+  <!-- 01 -->
+  <section class="slide is-active">
+    <div class="rail"><span class="rail__num">01 / ВСТУП</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Доповідь · Веб-безпека</div>
+      <h1>Методи<br>аутентифікації<br>користувача</h1>
+      <p class="lede" style="margin-top:26px">Від пароля в базі до passkey у Secure Enclave: як веб-застосунок відповідає на питання <strong>«хто ти?»</strong> — і чому більшість відповідей уже застаріли.</p>
+      <div class="title-meta">
+        <span class="chip chip--hot">14 слайдів</span>
+        <span class="chip">Фактори · Сесії · Федерація · Passwordless</span>
+      </div>
+      <div class="keycard">
+        <div class="keycard__stripe"></div>
+        <div class="keycard__body">
+          <div>
+            <div class="keycard__k">Статус доступу</div>
+            <div class="keycard__v">Автентифіковано</div>
+          </div>
+          <div class="keycard__dot"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">02 / ОСНОВИ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Розмежування понять</div>
+      <h2>Аутентифікація ≠ <em>авторизація</em></h2>
+      <div class="grid g2">
+        <div class="card card--accent">
+          <span class="card__tag">AuthN · перша</span>
+          <h3>Аутентифікація — «Хто ти?»</h3>
+          <p>Підтвердження особи. Виконується один раз на вході, результат — ідентичність користувача.</p>
+          <ul>
+            <li>Перевіряє: паролі, токени, ключі, біометрію</li>
+            <li>Результат: <b>user_id</b></li>
+            <li>Помилка: <b>401 Unauthorized</b></li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">AuthZ · на кожен запит</span>
+          <h3>Авторизація — «Що тобі можна?»</h3>
+          <p>Перевірка прав на конкретний ресурс. Виконується щоразу, для кожного об'єкта окремо.</p>
+          <ul>
+            <li>Перевіряє: ролі, політики, власність (RBAC / ABAC / ReBAC)</li>
+            <li>Результат: <b>дозвіл або відмова</b></li>
+            <li>Помилка: <b>403 Forbidden</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout"><b>Аналогія:</b> паспорт на рецепції готелю — це аутентифікація. Ключ-картка саме від номера 305 — це авторизація.</div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">03 / ФАКТОРИ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Класифікація</div>
+      <h2>Чотири категорії <em>доказів</em></h2>
+      <div class="grid g4">
+        <div class="card">
+          <span class="card__tag">Knowledge</span>
+          <h3>Щось, що ти знаєш</h3>
+          <p>Пароль, PIN, графічний ключ, секретне питання.</p>
+          <ul><li>Найдешевше в реалізації</li><li>Найлегше вкрасти</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Possession</span>
+          <h3>Щось, що ти маєш</h3>
+          <p>Телефон, апаратний ключ, смарт-картка, сертифікат.</p>
+          <ul><li>Потребує фізичного доступу</li><li>Можна загубити</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Inherence</span>
+          <h3>Щось, чим ти є</h3>
+          <p>Відбиток, обличчя, райдужка, голос.</p>
+          <ul><li>Зручно для користувача</li><li>Не можна «змінити пароль»</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Context</span>
+          <h3>Де і як ти дієш</h3>
+          <p>IP, геолокація, відбиток пристрою, поведінка.</p>
+          <ul><li>Працює як фонова оцінка ризику</li><li>Самостійно недостатній</li></ul>
+        </div>
+      </div>
+      <div class="callout">Справжня двофакторність — це фактори з <b>різних</b> категорій. Пароль + секретне питання — це один фактор двічі.</div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">04 / ПАРОЛІ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Фактор знання</div>
+      <h2>Пароль: як зберігати, <em>щоб не зашкодити</em></h2>
+      <div class="grid g2" style="align-items:start">
+        <div>
+          <div class="card" style="margin-bottom:18px">
+            <span class="card__tag">Обов'язково</span>
+            <h3>Повільний хеш із сіллю</h3>
+            <ul>
+              <li><b>Argon2id</b> — рекомендація OWASP за замовчуванням</li>
+              <li><b>bcrypt</b> (cost ≥ 12) або <b>scrypt</b> — прийнятні альтернативи</li>
+              <li>Сіль — унікальна на кожен запис, генерується CSPRNG</li>
+              <li>Порівняння — тільки constant-time</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card__tag">Ніколи</span>
+            <h3>Що ламає систему</h3>
+            <ul>
+              <li>MD5, SHA-1, SHA-256 без солі — підбираються мільярдами/сек</li>
+              <li>Зберігання у відкритому вигляді або з оборотним шифруванням</li>
+              <li>Обмеження довжини до 12–16 символів</li>
+              <li>Примусова ротація кожні 30 днів — веде до <b>Pass1!</b>, <b>Pass2!</b></li>
+            </ul>
+          </div>
+        </div>
+        <div>
+<pre><span class="c-cmt">// Node.js — реєстрація</span>
+<span class="c-key">import</span> argon2 <span class="c-key">from</span> <span class="c-str">'argon2'</span>;
+
+<span class="c-key">const</span> hash = <span class="c-key">await</span> argon2.hash(password, {
+  type:        argon2.argon2id,
+  memoryCost:  <span class="c-str">19456</span>,  <span class="c-cmt">// 19 MiB</span>
+  timeCost:    <span class="c-str">2</span>,
+  parallelism: <span class="c-str">1</span>
+});
+
+<span class="c-cmt">// Вхід</span>
+<span class="c-key">const</span> ok = <span class="c-key">await</span> argon2.verify(hash, password);
+</pre>
+          <div class="callout">Перевіряйте пароль за списком витоків (<b>Have I Been Pwned</b> k-anonymity API) замість вимог «одна велика літера і спецсимвол».</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">05 / ВОЛОДІННЯ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Фактор володіння</div>
+      <h2>Другий фактор: <em>від SMS до YubiKey</em></h2>
+      <div class="grid g3">
+        <div class="card">
+          <span class="card__tag">Слабкий</span>
+          <h3>SMS / Email OTP</h3>
+          <p>Одноразовий код каналом зв'язку.</p>
+          <ul><li>Вразливий до SIM-swap і перехоплення SS7</li><li>Не захищає від фішингу</li><li>Виправданий лише як запасний варіант</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Середній</span>
+          <h3>TOTP / HOTP</h3>
+          <p>Код із застосунку на основі спільного секрету й часу (RFC 6238).</p>
+          <ul><li>Працює офлайн, безкоштовно</li><li>Секрет копіюється при компрометації сервера</li><li>Код можна виманити фішингом</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Середній</span>
+          <h3>Push-підтвердження</h3>
+          <p>Запит у довіреному застосунку: «Підтвердити вхід?»</p>
+          <ul><li>Зручно, показує контекст входу</li><li>Ризик <b>MFA fatigue</b> — спам запитами</li><li>Лікується number matching</li></ul>
+        </div>
+        <div class="card card--accent">
+          <span class="card__tag">Найсильніший</span>
+          <h3>FIDO2 / U2F ключі</h3>
+          <p>Апаратний токен (YubiKey, Titan) із криптопарою.</p>
+          <ul><li>Прив'язка до домену — <b>фішинг неможливий</b></li><li>Секрет не залишає пристрій</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Enterprise</span>
+          <h3>Смарт-картки, X.509</h3>
+          <p>Клієнтський сертифікат, часто на фізичній картці.</p>
+          <ul><li>Банки, держсектор, критична інфраструктура</li><li>Складна інфраструктура PKI</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Резерв</span>
+          <h3>Recovery-коди</h3>
+          <p>Список одноразових кодів на випадок втрати пристрою.</p>
+          <ul><li>Обов'язкові до будь-якого MFA</li><li>Зберігаються хешованими, як паролі</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">06 / БІОМЕТРІЯ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Фактор властивості</div>
+      <h2>Біометрія у вебі працює <em>не так, як здається</em></h2>
+      <div class="grid g2">
+        <div class="card card--accent">
+          <span class="card__tag">Правильна модель</span>
+          <h3>Дані не залишають пристрій</h3>
+          <p>Браузер через WebAuthn звертається до платформного автентифікатора. Face ID чи відбиток лише <b>розблоковують локальний приватний ключ</b> — на сервер летить підпис, а не біометрія.</p>
+          <ul><li>Сервер ніколи не бачить відбитка</li><li>Витік бази не компрометує біометрію</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Обмеження</span>
+          <h3>Чого біометрія не вміє</h3>
+          <ul>
+            <li>Її не можна відкликати чи змінити після витоку</li>
+            <li>Хибні спрацювання: FAR / FRR завжди компроміс</li>
+            <li>Потребує liveness detection проти фото й дипфейків</li>
+            <li>Підпадає під GDPR як особливі категорії даних</li>
+            <li>Завантаження селфі на сервер для «розпізнавання» — <b>антипатерн</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">Біометрія у вебі — це <b>спосіб розблокувати ключ</b>, а не окремий канал передачі даних на сервер.</div>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">07 / СЕСІЇ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Після успішного входу</div>
+      <h2>Сесійні cookie <em>проти</em> JWT</h2>
+      <table class="tbl">
+        <thead><tr><th>Критерій</th><th>Session cookie</th><th>JWT (Bearer)</th></tr></thead>
+        <tbody>
+          <tr><td>Де стан</td><td>На сервері (Redis, БД); клієнт має лише ID</td><td>У самому токені, підписаний</td></tr>
+          <tr><td>Відкликання</td><td><span class="ok">Миттєве</span> — видалили запис</td><td><span class="bad">Складне</span> — потрібен denylist або короткий TTL</td></tr>
+          <tr><td>Масштабування</td><td>Потрібне спільне сховище</td><td><span class="ok">Stateless</span>, зручно для мікросервісів</td></tr>
+          <tr><td>Розмір на запит</td><td>Десятки байт</td><td>Сотні байт — на кожному запиті</td></tr>
+          <tr><td>Головний ризик</td><td>CSRF — лікується <b>SameSite=Lax/Strict</b> + токен</td><td>XSS, якщо зберігати в <b>localStorage</b></td></tr>
+          <tr><td>Термін життя</td><td>Довгий, продовжується активністю</td><td>Access 5–15 хв + refresh-токен із ротацією</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">Практичний компроміс для SPA: <b>access-токен у пам'яті</b>, <b>refresh-токен у HttpOnly + Secure + SameSite cookie</b>. localStorage для токенів — не використовувати.</div>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">08 / СХЕМИ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Транспортний рівень</div>
+      <h2>HTTP-схеми та <em>машинна</em> аутентифікація</h2>
+      <table class="tbl">
+        <thead><tr><th>Механізм</th><th>Як працює</th><th>Де доречно</th></tr></thead>
+        <tbody>
+          <tr><td>Basic Auth</td><td><span style="font-family:var(--f-mono)">Authorization: Basic base64(login:pass)</span></td><td>Внутрішні сервіси, тільки поверх HTTPS</td></tr>
+          <tr><td>Digest Auth</td><td>Хеш-челендж замість передачі пароля</td><td><span class="bad">Практично не використовується</span></td></tr>
+          <tr><td>Bearer token</td><td><span style="font-family:var(--f-mono)">Authorization: Bearer &lt;token&gt;</span></td><td>Стандарт для REST API та SPA</td></tr>
+          <tr><td>API key</td><td>Статичний ключ у заголовку</td><td>Сервіс-до-сервісу; не для користувачів</td></tr>
+          <tr><td>HMAC-підпис</td><td>Підпис методу, тіла й часу секретом (AWS SigV4)</td><td>Платіжні API, захист від replay</td></tr>
+          <tr><td>mTLS</td><td>Клієнт і сервер пред'являють сертифікати</td><td>Банки, IoT, service mesh</td></tr>
+          <tr><td>Kerberos / SPNEGO</td><td>Квитки з домен-контролера</td><td>Прозорий вхід у корпоративній мережі</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">09 / ФЕДЕРАЦІЯ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Делегована аутентифікація</div>
+      <h2>OAuth 2.0, OIDC <em>і</em> SAML</h2>
+      <div class="grid g3">
+        <div class="card">
+          <span class="card__tag">Часта помилка</span>
+          <h3>OAuth 2.0 — це авторизація</h3>
+          <p>Протокол делегування доступу до ресурсів. Він відповідає на питання «що застосунку можна робити від мого імені», а не «хто я».</p>
+          <ul><li>Видає access-токен для API</li><li>Сам по собі не підтверджує особу</li></ul>
+        </div>
+        <div class="card card--accent">
+          <span class="card__tag">Сучасний стандарт</span>
+          <h3>OpenID Connect</h3>
+          <p>Тонкий шар поверх OAuth 2.0, який додає саме аутентифікацію: <b>id_token</b> у форматі JWT із claims про користувача.</p>
+          <ul><li>Основа для «Увійти через Google/Apple/GitHub»</li><li>Discovery через <b>/.well-known</b></li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Enterprise</span>
+          <h3>SAML 2.0 · LDAP · AD</h3>
+          <p>XML-based SSO — досі домінує у великих компаніях і держсекторі. LDAP/Active Directory — перевірка облікових даних у каталозі.</p>
+          <ul><li>SCIM — автоматичне провізіонування акаунтів</li></ul>
+        </div>
+      </div>
+      <div class="callout">Для SPA та мобільних застосунків — тільки <b>Authorization Code + PKCE</b>. Implicit flow офіційно застарілий і не використовується.</div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">10 / PASSKEYS</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Безпарольний вхід</div>
+      <h2>WebAuthn: <em>як це працює</em></h2>
+      <div class="flow">
+        <div class="flow__step"><span class="flow__n">01</span><p>Сервер надсилає випадковий <b>challenge</b> і свій домен (rpId)</p></div>
+        <div class="flow__arrow">→</div>
+        <div class="flow__step"><span class="flow__n">02</span><p>Браузер передає запит автентифікатору — телефону, ключу, Secure Enclave</p></div>
+        <div class="flow__arrow">→</div>
+        <div class="flow__step"><span class="flow__n">03</span><p>Користувач розблоковує пристрій: <b>відбиток, обличчя або PIN</b></p></div>
+        <div class="flow__arrow">→</div>
+        <div class="flow__step"><span class="flow__n">04</span><p>Пристрій підписує challenge <b>приватним ключем</b>, який його не покидає</p></div>
+        <div class="flow__arrow">→</div>
+        <div class="flow__step"><span class="flow__n">05</span><p>Сервер перевіряє підпис збереженим <b>публічним ключем</b></p></div>
+      </div>
+      <div class="grid g2" style="margin-top:26px">
+        <div class="card card--flat" style="border-color:var(--mint)">
+          <span class="card__tag" style="color:var(--mint)">Переваги</span>
+          <ul>
+            <li>Ключ прив'язаний до домену — <b>фішинг технічно неможливий</b></li>
+            <li>На сервері немає секрету, який можна вкрасти</li>
+            <li>Passkeys синхронізуються між пристроями через iCloud / Google</li>
+            <li>Вхід у два кліки — конверсія зростає</li>
+          </ul>
+        </div>
+        <div class="card card--flat">
+          <span class="card__tag">Що врахувати</span>
+          <ul>
+            <li>Потрібен запасний метод для нових і чужих пристроїв</li>
+            <li>Складніший сценарій відновлення доступу</li>
+            <li>Синхронізовані passkeys залежать від безпеки хмарного акаунта</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">11 / БЕЗ ПАРОЛЯ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Інші безпарольні сценарії</div>
+      <h2>Magic link, OTP <em>та їхня ціна</em></h2>
+      <div class="grid g3">
+        <div class="card">
+          <span class="card__tag">Email</span>
+          <h3>Magic link</h3>
+          <p>Одноразове посилання на пошту замість пароля.</p>
+          <ul><li>Нема чого вкрасти з бази</li><li>Безпека дорівнює безпеці поштової скриньки</li><li>Ризик: сканери посилань у корпоративній пошті «клікають» першими</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Email / SMS</span>
+          <h3>OTP як єдиний фактор</h3>
+          <p>Код на пошту або телефон замість пароля.</p>
+          <ul><li>Звично для користувачів</li><li>Затримки доставки псують UX</li><li>Вартість SMS і ризик SMS-pumping атак</li></ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Гібрид</span>
+          <h3>Прогресивна міграція</h3>
+          <p>Реалістичний шлях для наявного продукту.</p>
+          <ul><li>Passkey пропонується як апгрейд після звичайного входу</li><li>Пароль лишається запасним каналом</li><li>Метрика успіху — частка входів без пароля</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">12 / СТРАТЕГІЇ</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Композиція методів</div>
+      <h2>MFA, step-up <em>і адаптивна</em> перевірка</h2>
+      <div class="grid g3">
+        <div class="card">
+          <span class="card__tag">Базове</span>
+          <h3>MFA</h3>
+          <p>Два або більше факторів із різних категорій на вході. Знижує ризик захоплення акаунта на порядки.</p>
+        </div>
+        <div class="card card--accent">
+          <span class="card__tag">Точкове</span>
+          <h3>Step-up authentication</h3>
+          <p>Додаткове підтвердження лише перед критичною дією: зміна пароля чи email, платіж, видалення акаунта, доступ адміністратора.</p>
+        </div>
+        <div class="card">
+          <span class="card__tag">Розумне</span>
+          <h3>Адаптивна / risk-based</h3>
+          <p>Другий фактор вимагається тільки при аномалії: новий пристрій, інша країна, нетипова поведінка, IP із поганою репутацією.</p>
+        </div>
+      </div>
+      <table class="tbl" style="margin-top:28px">
+        <thead><tr><th>Метод</th><th>Стійкість до фішингу</th><th>Зручність</th><th>Вартість</th></tr></thead>
+        <tbody>
+          <tr><td>Тільки пароль</td><td><span class="bad">Немає</span></td><td><span class="mid">Середня</span></td><td><span class="ok">Мінімальна</span></td></tr>
+          <tr><td>Пароль + SMS</td><td><span class="bad">Низька</span></td><td><span class="mid">Середня</span></td><td><span class="mid">SMS-трафік</span></td></tr>
+          <tr><td>Пароль + TOTP</td><td><span class="mid">Часткова</span></td><td><span class="mid">Середня</span></td><td><span class="ok">Мінімальна</span></td></tr>
+          <tr><td>Passkey / FIDO2</td><td><span class="ok">Повна</span></td><td><span class="ok">Висока</span></td><td><span class="mid">Розробка</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">13 / ПРАКТИКА</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Чек-лист впровадження</div>
+      <h2>Що зробити <em>обов'язково</em></h2>
+      <div class="grid g2">
+        <div class="card">
+          <span class="card__tag">Захист входу</span>
+          <ul>
+            <li>Rate limiting за IP та за акаунтом, експоненційні затримки</li>
+            <li>Захист від credential stuffing і password spraying</li>
+            <li>Однакова відповідь на неіснуючий логін і невірний пароль — щоб не розкривати список акаунтів</li>
+            <li>CAPTCHA або proof-of-work після кількох невдач</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Життєвий цикл сесії</span>
+          <ul>
+            <li>Регенерація ID сесії одразу після входу — проти session fixation</li>
+            <li>Ротація refresh-токенів із виявленням повторного використання</li>
+            <li>Реальна інвалідація на сервері при logout</li>
+            <li>Розрив усіх сесій при зміні пароля</li>
+            <li>Список активних пристроїв у профілі користувача</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Транспорт і зберігання</span>
+          <ul>
+            <li>HTTPS скрізь, HSTS, cookie з <b>Secure + HttpOnly + SameSite</b></li>
+            <li>Токени — ніколи в URL, логах чи localStorage</li>
+            <li>Секрети — у сховищі ключів, не в репозиторії</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="card__tag">Відновлення та аудит</span>
+          <ul>
+            <li>Скидання пароля — одноразовий токен із коротким TTL</li>
+            <li>Лист-сповіщення про вхід із нового пристрою</li>
+            <li>Журнал подій аутентифікації для розслідувань</li>
+            <li>Відновлення доступу не має бути слабшим за сам вхід</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide">
+    <div class="rail"><span class="rail__num">14 / ПІДСУМОК</span></div>
+    <div class="slide__inner">
+      <div class="eyebrow">Висновки</div>
+      <h2>Три тези, які варто <em>забрати з собою</em></h2>
+      <div class="grid g3">
+        <div class="card card--accent">
+          <span class="card__tag">Теза 1</span>
+          <h3>Пароль — не точка, а спадок</h3>
+          <p>Він залишиться ще надовго, але має бути правильно захищений і поступово ставати запасним, а не основним методом.</p>
+        </div>
+        <div class="card">
+          <span class="card__tag">Теза 2</span>
+          <h3>Не всі MFA рівні</h3>
+          <p>SMS краще за нічого, TOTP краще за SMS, але тільки криптографічна прив'язка до домену робить фішинг неможливим.</p>
+        </div>
+        <div class="card">
+          <span class="card__tag">Теза 3</span>
+          <h3>Вхід — це лише початок</h3>
+          <p>Broken Access Control досі №1 в OWASP Top 10. Аутентифікація одна на вхід, авторизація — на кожен ресурс окремо.</p>
+        </div>
+      </div>
+      <div style="margin-top:44px">
+        <div class="eyebrow" style="margin-bottom:14px">Пріоритет впровадження</div>
+        <p class="lede" style="font-family:var(--f-mono);font-size:clamp(14px,1.25vw,18px);color:var(--paper);letter-spacing:.02em">
+          Passkeys / FIDO2 <span style="color:var(--amber)">→</span> TOTP <span style="color:var(--amber)">→</span> Push <span style="color:var(--amber)">→</span> SMS
+        </p>
+      </div>
+      <div class="callout" style="max-width:760px"><b>Запитання?</b> Далі можна поглибитись у будь-який блок: реалізація WebAuthn, налаштування OIDC-провайдера або аудит наявної системи входу.</div>
+    </div>
+  </section>
+
+</main>
+
+<div class="hint">← → або пробіл · F — повний екран</div>
+
+<div class="hud">
+  <button class="btn" id="prevBtn" aria-label="Попередній слайд">←</button>
+  <span class="counter"><b id="cur">1</b> / <span id="total">14</span></span>
+  <button class="btn" id="nextBtn" aria-label="Наступний слайд">→</button>
+</div>
+
+<div class="progress"><div class="progress__bar" id="bar"></div></div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const beam   = document.getElementById('beam');
+  const cur    = document.getElementById('cur');
+  const bar    = document.getElementById('bar');
+  const prev   = document.getElementById('prevBtn');
+  const next   = document.getElementById('nextBtn');
+  const fsBtn  = document.getElementById('fsBtn');
+  const fsLbl  = document.getElementById('fsLabel');
+  let i = 0;
+
+  document.getElementById('total').textContent = slides.length;
+
+  function render(){
+    slides.forEach((s, n) => s.classList.toggle('is-active', n === i));
+    cur.textContent = i + 1;
+    bar.style.width = ((i + 1) / slides.length * 100) + '%';
+    prev.disabled = i === 0;
+    next.disabled = i === slides.length - 1;
+    beam.classList.remove('run');
+    void beam.offsetWidth;
+    beam.classList.add('run');
+  }
+
+  function go(n){
+    const t = Math.max(0, Math.min(slides.length - 1, n));
+    if (t !== i){ i = t; render(); }
+  }
+
+  prev.addEventListener('click', () => go(i - 1));
+  next.addEventListener('click', () => go(i + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End')  { e.preventDefault(); go(slides.length - 1); }
+    else if (e.key === 'f' || e.key === 'F' || e.key === 'а' || e.key === 'А') { toggleFs(); }
+  });
+
+  function toggleFs(){
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  fsBtn.addEventListener('click', toggleFs);
+  document.addEventListener('fullscreenchange', () => {
+    fsLbl.textContent = document.fullscreenElement ? 'Вийти з екрана' : 'На весь екран';
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
