@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [017](/streams/017) | 04.09.2026 | Живий кодинг: mini X за 2 години з AI-агентом | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/IGudWZHHq_I) |
 | [016](/streams/016) | 28.08.2026 | Специфікація як новий вихідний код | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/dy79Bdktwxo) |
 | [015](/streams/015) | 21.08.2026 | OAuth 2.0 та OpenID Connect | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ZcHi3dm9tZQ) |
 | [014](/streams/014) | 14.08.2026 | Методи аутентифікації користувача | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/x2MGgT3qkN8) |

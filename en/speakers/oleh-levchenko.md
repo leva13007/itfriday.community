@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#017](/en/streams/017) | Host | Live-coding mini X in 2 hours with an AI agent — Oleksandr Blazheiko as guest advisor | 04.09.2026 |
 | [#013](/en/streams/013) | Participant | Structured Interviews & the STAR Method — live Q&A with Ihor Kotov | 07.08.2026 |
 | [#009](/en/streams/009) | Speaker | tmux + AI Agents | 10.07.2026 |
 | [#008](/en/streams/008) | Speaker | React+Vite vs Next.js — when to choose what | 03.07.2026 |
