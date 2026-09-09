@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [018](/en/streams/018) | 11.09.2026 | LinkedIn That Works For You | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/v9dLbeQk3YY) |
 | [017](/en/streams/017) | 04.09.2026 | Live Build: Mini X in 2 Hours with an AI Agent | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/IGudWZHHq_I) |
 | [016](/en/streams/016) | 28.08.2026 | Specification as the New Source Code | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/dy79Bdktwxo) |
 | [015](/en/streams/015) | 21.08.2026 | OAuth 2.0 and OpenID Connect | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/ZcHi3dm9tZQ) |
