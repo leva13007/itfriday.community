@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG — Retrieval-Augmented Generation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --screen:#EFF4F7;
+  --ink:#2C3641;
+  --ink-soft:#6A7784;
+  --navy:#5F87A8;
+  --teal:#5FB6A3;
+  --rust:#C98F8A;
+  --amber:#D9AE84;
+  --hair:#D3DFE7;
+  --disp:"Space Grotesk","Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono","Cascadia Mono",monospace;
+  --body:"Source Sans 3","Segoe UI",sans-serif;
+  --wipe:.66s;
+  --mm-fine:rgba(70,110,140,.030);
+  --mm-bold:rgba(70,110,140,.055);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--screen);color:var(--ink);
+  font-family:var(--body);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#deck{position:relative;width:100vw;height:100vh;background:var(--screen)}
+#stage{
+  position:relative;width:100vw;height:100vh;
+  background:var(--screen);color:var(--ink);overflow:hidden;
+}
+#stage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:radial-gradient(115% 105% at 50% 45%,rgba(255,255,255,0) 62%,rgba(40,70,95,.07) 100%);
+  mix-blend-mode:multiply;
+}
+
+/* ── аркуш міліметрівки ─────────────────────── */
+.slide{
+  position:absolute;inset:0;
+  padding:clamp(28px,4vh,52px) clamp(30px,4.4vw,80px) clamp(78px,10vh,104px);
+  display:none;flex-direction:column;overflow:auto;
+  background-color:var(--screen);
+  background-image:
+    linear-gradient(var(--mm-bold) 1px,transparent 1px),
+    linear-gradient(90deg,var(--mm-bold) 1px,transparent 1px),
+    linear-gradient(var(--mm-fine) 1px,transparent 1px),
+    linear-gradient(90deg,var(--mm-fine) 1px,transparent 1px);
+  background-size:40px 40px,40px 40px,8px 8px,8px 8px;
+}
+.slide.on{display:flex;z-index:2}
+.slide.out{display:flex;z-index:1}
+.slide.on.anim{animation:pushIn var(--wipe) cubic-bezier(.62,.02,.28,1)}
+.slide.out.anim{animation:pushOut var(--wipe) cubic-bezier(.62,.02,.28,1) forwards}
+@keyframes pushIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes pushOut{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+.slide.on.anim.rev{animation-name:pushInRev}
+.slide.out.anim.rev{animation-name:pushOutRev}
+@keyframes pushInRev{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@keyframes pushOutRev{from{transform:translateX(0)}to{transform:translateX(100%)}}
+#wipe{
+  position:absolute;top:0;bottom:0;width:16px;left:100%;z-index:3;display:none;
+  background:linear-gradient(90deg,
+    rgba(120,155,180,.55) 0 1px,
+    #0F1C26 1px 4px,
+    #050C13 4px 9px,
+    #16303F 9px 12px,
+    #2F5468 12px 14.5px,
+    rgba(214,232,240,.85) 14.5px 16px);
+  box-shadow:-10px 0 26px -6px rgba(9,26,38,.42), 12px 0 34px -8px rgba(9,26,38,.34);
+}
+#wipe::before,#wipe::after{content:"";position:absolute;top:0;bottom:0;width:1px}
+#wipe::before{left:0;background:linear-gradient(180deg,rgba(217,174,132,.45),rgba(217,174,132,.08) 40%,rgba(217,174,132,.45))}
+#wipe::after{right:-2px;width:2px;background:rgba(240,250,255,.55);filter:blur(1.2px)}
+#wipe.go{display:block;animation:barSweep var(--wipe) cubic-bezier(.62,.02,.28,1)}
+#wipe.go.rev{animation-name:barSweepRev;transform:scaleX(-1)}
+@keyframes barSweep{from{left:100%}to{left:-16px}}
+@keyframes barSweepRev{from{left:-16px}to{left:100%}}
+@media (prefers-reduced-motion:reduce){
+  .slide.anim,#wipe.go,.stack div{animation:none}
+  #wipe.go{display:none}
+}
+
+/* ── типографіка ────────────────────────────── */
+.eyebrow{
+  font-family:var(--mono);font-size:clamp(11px,.85vw,14px);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--rust);display:flex;gap:14px;align-items:center;margin-bottom:10px;
+}
+.eyebrow .rule{flex:1;height:1px;background:var(--hair)}
+.eyebrow .id{color:var(--ink-soft);white-space:nowrap}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(38px,5.2vw,88px);line-height:1.02;letter-spacing:-.02em}
+h2{font-family:var(--disp);font-weight:700;font-size:clamp(26px,3vw,50px);line-height:1.08;letter-spacing:-.015em}
+.sub{font-size:clamp(15px,1.15vw,21px);color:var(--ink-soft);margin-top:10px;max-width:88ch;line-height:1.45}
+.en{
+  font-family:var(--mono);font-size:clamp(10.5px,.82vw,14px);letter-spacing:.1em;
+  color:var(--navy);margin-top:9px;line-height:1.5;max-width:92ch;
+  padding-left:11px;border-left:2px solid var(--navy);
+}
+.lede{margin-top:24px;font-size:clamp(17px,1.35vw,25px);line-height:1.5;max-width:62ch;color:var(--ink-soft)}
+b{font-weight:600}
+.hair{height:1px;background:var(--hair);margin:20px 0}
+
+/* сітки */
+.cols{display:grid;gap:clamp(20px,2.4vw,44px);margin-top:20px}
+.c2{grid-template-columns:1fr 1fr}
+.c2w{grid-template-columns:1.05fr .95fr}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* панелі-списки */
+.panel h3{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-soft);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--hair);
+}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.panel li{font-size:clamp(13.5px,1.02vw,18.5px);line-height:1.35;padding-left:20px;position:relative;color:var(--ink)}
+.panel li::before{content:"";position:absolute;left:2px;top:.55em;width:8px;height:1.5px;background:var(--teal)}
+.panel.bad li::before{background:var(--rust)}
+.panel.bad li{color:#7A5C58}
+.panel.n li::before{background:var(--navy)}
+.panel.a li::before{background:var(--amber)}
+
+/* картки-тези */
+.chk{display:grid;grid-template-columns:1fr 1fr;gap:18px 42px;margin-top:24px}
+.chk div{border-left:2px solid var(--teal);padding:4px 0 4px 16px;background:rgba(253,255,255,.66)}
+.chk h4{font-family:var(--disp);font-size:clamp(16px,1.35vw,24px);margin-bottom:5px;line-height:1.2}
+.chk p{font-size:clamp(13px,1.02vw,18px);color:var(--ink-soft);line-height:1.4}
+.chk div.warn{border-color:var(--rust)}
+.chk div.amb{border-color:var(--amber)}
+.chk div.nv{border-color:var(--navy)}
+.chk.c3{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 26px}
+.chk.tight h4{font-size:clamp(14px,1.12vw,20px)}
+.chk.tight p{font-size:clamp(11.5px,.9vw,15.5px)}
+
+/* код */
+.code{
+  font-family:var(--mono);font-size:clamp(10.5px,.79vw,14.5px);line-height:1.62;
+  background:#E3ECF1;border-left:3px solid var(--hair);border-radius:0 4px 4px 0;
+  padding:12px 16px;white-space:pre-wrap;overflow:auto;color:#44525E;
+}
+.code.pl{border-left-color:var(--navy)}
+.code.sg{border-left-color:var(--teal)}
+.code.am{border-left-color:var(--amber)}
+.code .k{color:var(--navy);font-weight:600}
+.code .v{color:var(--teal)}
+.code .c{color:#9BAAB6}
+.code .r{color:var(--rust)}
+.lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px}
+
+/* таблиці */
+table{width:100%;border-collapse:collapse;margin-top:22px;font-size:clamp(13px,1.02vw,18.5px);background:rgba(253,255,255,.66)}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+   text-align:left;padding:0 14px 9px;border-bottom:1.5px solid var(--ink-soft)}
+td{padding:11px 14px;border-bottom:1px solid var(--hair);vertical-align:top;line-height:1.35}
+td:first-child{font-family:var(--disp);font-weight:700}
+tr:last-child td{border-bottom:none}
+table.tight td{padding:8px 14px}
+table.xtight{font-size:clamp(11.5px,.88vw,16px)}
+table.xtight td{padding:7px 12px}
+td span.en2{display:block;font-family:var(--mono);font-size:.68em;font-weight:400;
+  letter-spacing:.02em;color:var(--navy);white-space:normal;margin-top:3px;line-height:1.3}
+
+/* титульний слайд */
+.title-slide{justify-content:center}
+.title-slide h1{max-width:20ch}
+.stack{display:grid;gap:6px;margin-top:30px;max-width:700px}
+.stack div{
+  font-family:var(--mono);font-size:clamp(10.5px,.85vw,13.5px);
+  letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--hair);background:rgba(253,255,255,.72);
+  padding:8px 14px;display:flex;justify-content:space-between;gap:12px;
+  animation:slot .5s cubic-bezier(.62,.02,.28,1) both;
+}
+.stack div span{color:var(--rust);font-weight:600}
+.stack div:nth-child(1){animation-delay:.20s}
+.stack div:nth-child(2){animation-delay:.30s}
+.stack div:nth-child(3){animation-delay:.40s}
+.stack div:nth-child(4){animation-delay:.50s}
+.stack div:nth-child(5){animation-delay:.60s}
+@keyframes slot{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.legend{display:flex;gap:26px;margin-top:32px;flex-wrap:wrap}
+.legend div{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:9px}
+.swatch{width:26px;height:3px;border-radius:2px;display:inline-block}
+
+/* плитки-кроки */
+.step{border:1px solid var(--hair);background:rgba(253,255,255,.7);padding:13px 14px;position:relative}
+.step .lbl{margin-bottom:4px}
+.step p{font-size:clamp(12.5px,.95vw,16px);line-height:1.35}
+.step b{font-family:var(--disp)}
+.step.t{border-top:3px solid var(--teal)}
+.step.n{border-top:3px solid var(--navy)}
+.step.a{border-top:3px solid var(--amber)}
+
+.note{font-size:clamp(12.5px,.95vw,16.5px);color:var(--ink-soft);line-height:1.45;margin-top:14px;font-family:var(--mono)}
+.note strong{color:var(--rust);font-weight:600}
+
+/* ── схеми SVG ──────────────────────────────── */
+.pipe{width:100%;height:auto;margin-top:20px;display:block}
+.pipe .bx{fill:rgba(253,255,255,.85);stroke:var(--hair);stroke-width:1}
+.pipe .bx.n{fill:rgba(95,135,168,.15);stroke:var(--navy)}
+.pipe .bx.t{fill:rgba(95,182,163,.16);stroke:var(--teal)}
+.pipe .bx.a{fill:rgba(217,174,132,.20);stroke:var(--amber)}
+.pipe text{text-anchor:middle;font-family:var(--body)}
+.pipe .ti{font-family:var(--disp);font-weight:700;font-size:17px;fill:var(--ink)}
+.pipe .en{font-family:var(--mono);font-size:11px;fill:var(--navy);letter-spacing:.05em}
+.pipe .ds{font-size:12.5px;fill:var(--ink-soft)}
+.pipe .ar{fill:var(--hair)}
+.pipe .dash{fill:none;stroke:var(--rust);stroke-width:1.4;stroke-dasharray:5 4}
+.pipe .head{fill:var(--rust)}
+.pipe .band{font-family:var(--mono);font-size:12px;fill:var(--rust);letter-spacing:.16em;text-anchor:start}
+.pipe .lp{font-family:var(--mono);font-size:12px;fill:var(--ink-soft);letter-spacing:.04em}
+.pipe .rl{stroke:var(--hair);stroke-width:1}
+/* векторний простір */
+.pipe .axis{stroke:var(--ink-soft);stroke-width:1.2;fill:none}
+.pipe .vec{stroke:var(--navy);stroke-width:1.5;fill:none}
+.pipe .vec.t{stroke:var(--teal);stroke-width:1.8}
+.pipe .vec.q{stroke:var(--rust);stroke-width:2.4}
+.pipe .pt{fill:var(--navy)}
+.pipe .pt.t{fill:var(--teal)}
+.pipe .pt.q{fill:var(--rust)}
+.pipe .lb{font-family:var(--body);font-size:13px;fill:var(--ink);text-anchor:start}
+.pipe .lb.s{fill:var(--ink-soft);font-size:12px}
+.pipe .lb.e{text-anchor:end}
+.pipe .lb.m{text-anchor:middle}
+.pipe .ring{fill:none;stroke:var(--amber);stroke-width:1.3;stroke-dasharray:4 4}
+.pipe .arc{fill:none;stroke:var(--amber);stroke-width:1.4}
+.pipe .mono{font-family:var(--mono);font-size:12px;fill:var(--ink-soft);text-anchor:start}
+.pipe .mono.k{fill:var(--navy)}
+.pipe .mono.v{fill:var(--teal)}
+/* граф ANN */
+.pipe .gn{fill:rgba(253,255,255,.95);stroke:var(--hair);stroke-width:1.2}
+.pipe .gn.on{fill:rgba(201,143,138,.22);stroke:var(--rust);stroke-width:1.8}
+.pipe .gn.tg{fill:rgba(95,182,163,.30);stroke:var(--teal);stroke-width:2}
+.pipe .ge{stroke:var(--hair);stroke-width:1}
+.pipe .ge.on{stroke:var(--rust);stroke-width:2}
+
+/* ── хребет ──────────────────────────────────── */
+#spine{
+  position:absolute;left:clamp(30px,4.4vw,80px);right:clamp(300px,24vw,380px);
+  bottom:clamp(20px,2.6vh,32px);height:34px;z-index:6;
+  display:flex;align-items:center;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:#9BAAB6;
+}
+#spine .node{flex:1;display:flex;align-items:center;gap:8px;position:relative;
+  background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit}
+#spine .dot{width:8px;height:8px;border-radius:50%;background:var(--hair);flex:none}
+#spine .node.on{color:var(--rust);font-weight:600}
+#spine .node.on .dot{background:var(--rust);box-shadow:0 0 0 4px rgba(201,143,138,.22)}
+#spine .node.done .dot{background:var(--ink-soft)}
+#spine .node::after{content:"";position:absolute;left:0;right:0;top:3.5px;height:1px;background:var(--hair);z-index:-1}
+#spine .node:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+/* ── керування ──────────────────────────────── */
+#bar{
+  position:absolute;bottom:clamp(18px,2.4vh,30px);right:clamp(30px,4.4vw,80px);
+  display:flex;align-items:center;gap:8px;z-index:7;
+  background:rgba(58,78,94,.90);
+  border:1px solid rgba(58,78,94,.16);border-radius:999px;padding:6px 9px;
+  box-shadow:0 6px 22px -10px rgba(58,78,94,.38);
+  transition:opacity .35s;
+}
+#bar.idle{opacity:.3}
+#bar:hover{opacity:1}
+button{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+  background:transparent;color:var(--screen);border:1px solid rgba(238,245,249,.22);
+  border-radius:999px;padding:6px 13px;cursor:pointer;transition:.16s;
+}
+button:hover{background:rgba(238,245,249,.16);border-color:rgba(238,245,249,.5)}
+button:focus-visible{outline:2px solid #D9AE84;outline-offset:2px}
+button:disabled{opacity:.32;cursor:default}
+#count{font-family:var(--mono);font-size:12px;padding:0 8px;color:#C7D6DF;min-width:56px;text-align:center}
+
+@media (max-width:900px){
+  .c2,.c2w,.c3,.chk,.chk.c3{grid-template-columns:1fr}
+  #spine{display:none}
+  .slide{padding-bottom:86px}
+  table{font-size:13px}
+  th,td{padding:8px 9px}
+}
+@media print{
+  body,#deck,#stage{overflow:visible;height:auto}
+  #stage::after,#bar,#wipe{display:none}
+  .slide{display:flex!important;position:relative;page-break-after:always;height:100vh}
+}
+</style>
+</head>
+<body>
+<div id="deck">
+<div id="stage">
+
+<!-- 01 ═══ Титульний ═══════════════════════════ -->
+<div class="slide title-slide" data-stage="-1" data-title="Титульний">
+  <div class="eyebrow">Retrieval-Augmented Generation<span class="rule"></span><span class="id">Доповідь</span></div>
+  <h1>RAG: модель не мусить пам'ятати — вона мусить знайти</h1>
+  <p class="lede">LLM знає світ станом на дату навчання і нічого не знає про ваші документи. RAG не змінює модель — він щоразу знаходить потрібний фрагмент тексту й підкладає його перед відповіддю.</p>
+  <div class="stack">
+    <div><span>01</span> Ідея та архітектура</div>
+    <div><span>02</span> Вектори й векторна база</div>
+    <div><span>03</span> Чанкінг, пошук, реранжування</div>
+    <div><span>04</span> Генерація відповіді з цитуванням</div>
+    <div><span>05</span> Оцінка якості та типові помилки</div>
+  </div>
+  <div class="legend">
+    <div><i class="swatch" style="background:var(--navy)"></i>індексація</div>
+    <div><i class="swatch" style="background:var(--teal)"></i>пошук</div>
+    <div><i class="swatch" style="background:var(--amber)"></i>генерація</div>
+    <div><i class="swatch" style="background:var(--rust)"></i>ризики</div>
+  </div>
+</div>
+
+<!-- 02 ═══ Проблема ════════════════════════════ -->
+<div class="slide" data-stage="-1" data-title="Проблема">
+  <div class="eyebrow">Контекст<span class="rule"></span><span class="id">Навіщо RAG</span></div>
+  <h2>Модель упевнено відповідає навіть тоді, коли не знає</h2>
+  <p class="sub">Знання LLM «запечені» у вагах під час навчання. Звідси чотири обмеження, які й породили RAG.</p>
+  <div class="chk c3 tight">
+    <div class="warn"><h4>Дата навчання</h4><p>Усе, що сталося після cutoff, для моделі не існує: ціни, регламенти, версії API.</p></div>
+    <div class="warn"><h4>Немає ваших даних</h4><p>Внутрішні документи, тікети, договори ніколи не були в навчальній вибірці.</p></div>
+    <div class="warn"><h4>Галюцинації без джерела</h4><p>Модель оптимізована на правдоподібність, а не на істинність — і не дає посилання, яке можна перевірити.</p></div>
+  </div>
+  <div class="hair"></div>
+  <p class="lbl">Три способи це виправити</p>
+  <table class="tight xtight" style="margin-top:10px">
+    <tr><th>Підхід</th><th>Що дає</th><th>Ціна</th></tr>
+    <tr><td>Донавчання<span class="en2">fine-tuning</span></td><td>Стиль, формат, доменну поведінку</td><td>Дні й гроші на кожне оновлення даних; не вміє цитувати джерела</td></tr>
+    <tr><td>Довгий контекст</td><td>Знання рівно одного набору документів</td><td>Платите за всі токени в кожному запиті; обмежений розмір вікна</td></tr>
+    <tr><td>RAG</td><td>Свіжі приватні факти + посилання на джерело</td><td>Треба побудувати й підтримувати пошук</td></tr>
+  </table>
+  <p class="note">Це <strong>не взаємовиключні</strong> підходи: типова зріла система — RAG для фактів плюс промпт чи донавчання для тону відповіді.</p>
+</div>
+
+<!-- 03 ═══ Ідея ════════════════════════════════ -->
+<div class="slide" data-stage="0" data-title="Ідея RAG">
+  <div class="eyebrow">Визначення<span class="rule"></span><span class="id">Ідея</span></div>
+  <h2>Знайти релевантне → покласти в контекст → відповісти</h2>
+  <p class="en">Retrieval-Augmented Generation (Lewis et al., 2020) · Retriever + Generator · «іспит з відкритою книжкою»</p>
+  <p class="sub">RAG не змінює ваги моделі. Він змінює те, що модель бачить у момент відповіді: до питання користувача додається знайдений фрагмент документа.</p>
+  <div class="cols c3" style="margin-top:24px">
+    <div class="step n"><p class="lbl">Крок 1 · Retriever</p><p><b>Пошук</b><br>За запитом знаходимо k найрелевантніших фрагментів у базі знань.</p></div>
+    <div class="step t"><p class="lbl">Крок 2 · Augmentation</p><p><b>Збагачення промпту</b><br>Фрагменти вставляються в шаблон разом із питанням та інструкціями.</p></div>
+    <div class="step a"><p class="lbl">Крок 3 · Generator</p><p><b>Генерація</b><br>LLM відповідає <i>лише</i> на основі наданого контексту й посилається на джерела.</p></div>
+  </div>
+  <div class="hair"></div>
+  <div class="chk">
+    <div><h4>Зміна ролі моделі</h4><p>З «енциклопедії» модель перетворюється на <b>читача з логікою</b>: зрозуміти питання, прочитати надані фрагменти, коректно їх переказати.</p></div>
+    <div class="amb"><h4>Наслідок для якості</h4><p>Якість системи впирається у <b>пошук</b>, а не в модель. Якщо потрібного фрагмента немає в контексті, найрозумніша LLM не врятує.</p></div>
+  </div>
+</div>
+
+<!-- 04 ═══ Архітектура ═════════════════════════ -->
+<div class="slide" data-stage="0" data-title="Архітектура">
+  <div class="eyebrow">Пайплайн<span class="rule"></span><span class="id">Архітектура</span></div>
+  <h2>Дві фази: індексація та запит</h2>
+  <p class="en">Indexing (offline, періодично) · Querying (online, на кожен запит користувача)</p>
+<svg viewBox="0 0 1400 470" xmlns="http://www.w3.org/2000/svg" class="pipe">
+  <text class="band" x="14" y="30">ФАЗА A · ІНДЕКСАЦІЯ <tspan style="fill:#6A7784;letter-spacing:.04em">— один раз і при оновленні даних</tspan></text>
+  <line class="rl" x1="14" y1="42" x2="1386" y2="42"/>
+
+  <rect class="bx" x="22" y="58" width="235" height="76" rx="2"/>
+  <text class="ti" x="139" y="88">Джерела</text>
+  <text class="en" x="139" y="107">PDF · Confluence · DB</text>
+  <text class="ds" x="139" y="125">сирі документи</text>
+  <polygon class="ar" points="266,90 266,102 280,96"/>
+
+  <rect class="bx n" x="302" y="58" width="235" height="76" rx="2"/>
+  <text class="ti" x="419" y="88">Парсинг</text>
+  <text class="en" x="419" y="107">parsing · cleaning</text>
+  <text class="ds" x="419" y="125">текст, таблиці, метадані</text>
+  <polygon class="ar" points="546,90 546,102 560,96"/>
+
+  <rect class="bx n" x="582" y="58" width="235" height="76" rx="2"/>
+  <text class="ti" x="699" y="88">Чанкінг</text>
+  <text class="en" x="699" y="107">chunking · overlap</text>
+  <text class="ds" x="699" y="125">поділ на фрагменти</text>
+  <polygon class="ar" points="826,90 826,102 840,96"/>
+
+  <rect class="bx n" x="862" y="58" width="235" height="76" rx="2"/>
+  <text class="ti" x="979" y="88">Embedding-модель</text>
+  <text class="en" x="979" y="107">текст → вектор</text>
+  <text class="ds" x="979" y="125">вектор на кожен чанк</text>
+  <polygon class="ar" points="1106,90 1106,102 1120,96"/>
+
+  <rect class="bx t" x="1142" y="58" width="235" height="76" rx="2"/>
+  <text class="ti" x="1259" y="88">Векторна база</text>
+  <text class="en" x="1259" y="107">vector store · HNSW</text>
+  <text class="ds" x="1259" y="125">вектор + текст + метадані</text>
+
+  <path class="dash" d="M 1259 140 L 1259 176 L 578 176 L 578 268"/>
+  <polygon class="head" points="578,282 572,266 584,266"/>
+  <text class="lp" x="905" y="167">той самий індекс обслуговує всі запити</text>
+
+  <text class="band" x="14" y="222">ФАЗА B · ЗАПИТ <tspan style="fill:#6A7784;letter-spacing:.04em">— виконується на кожне питання, бюджет ~1–3 с</tspan></text>
+  <line class="rl" x1="14" y1="234" x2="1386" y2="234"/>
+
+  <rect class="bx" x="18" y="284" width="200" height="80" rx="2"/>
+  <text class="ti" x="118" y="316">Запит</text>
+  <text class="en" x="118" y="335">user query</text>
+  <text class="ds" x="118" y="353">питання людини</text>
+  <polygon class="ar" points="226,318 226,330 240,324"/>
+
+  <rect class="bx n" x="248" y="284" width="200" height="80" rx="2"/>
+  <text class="ti" x="348" y="316">Embedding</text>
+  <text class="en" x="348" y="335">та ж модель!</text>
+  <text class="ds" x="348" y="353">вектор запиту</text>
+  <polygon class="ar" points="456,318 456,330 470,324"/>
+
+  <rect class="bx t" x="478" y="284" width="200" height="80" rx="2"/>
+  <text class="ti" x="578" y="316">Пошук top-k</text>
+  <text class="en" x="578" y="335">вектори + BM25</text>
+  <text class="ds" x="578" y="353">20–50 кандидатів</text>
+  <polygon class="ar" points="686,318 686,330 700,324"/>
+
+  <rect class="bx t" x="708" y="284" width="200" height="80" rx="2"/>
+  <text class="ti" x="808" y="316">Реранжування</text>
+  <text class="en" x="808" y="335">cross-encoder</text>
+  <text class="ds" x="808" y="353">лишаємо 3–8</text>
+  <polygon class="ar" points="916,318 916,330 930,324"/>
+
+  <rect class="bx a" x="938" y="284" width="200" height="80" rx="2"/>
+  <text class="ti" x="1038" y="316">Промпт + LLM</text>
+  <text class="en" x="1038" y="335">context injection</text>
+  <text class="ds" x="1038" y="353">генерація відповіді</text>
+  <polygon class="ar" points="1146,318 1146,330 1160,324"/>
+
+  <rect class="bx a" x="1168" y="284" width="200" height="80" rx="2"/>
+  <text class="ti" x="1268" y="316">Відповідь</text>
+  <text class="en" x="1268" y="335">answer + citations</text>
+  <text class="ds" x="1268" y="353">із посиланнями</text>
+
+  <path class="dash" d="M 1268 372 L 1268 412 L 590 412 L 590 396"/>
+  <polygon class="head" points="590,382 584,398 596,398"/>
+  <text class="lp" x="700" y="434">agentic RAG: якщо відповідь неповна — переформулювати запит і шукати ще раз</text>
+</svg>
+  <p class="note">Головне правило: <strong>запит і документи кодуються однією й тією ж embedding-моделлю</strong>. Заміна моделі означає повну переіндексацію бази.</p>
+</div>
+
+<!-- 05 ═══ Що таке вектор ══════════════════════ -->
+<div class="slide" data-stage="1" data-title="Що таке вектор">
+  <div class="eyebrow">Основа пошуку<span class="rule"></span><span class="id">Вектор</span></div>
+  <h2>Вектор: сенс тексту як точка в просторі</h2>
+  <p class="en">Embedding — щільний вектор із 384–3072 чисел · близькість = косинусна схожість (cosine similarity)</p>
+<svg viewBox="0 0 1400 430" xmlns="http://www.w3.org/2000/svg" class="pipe">
+  <!-- ліва частина: текст → модель → числа -->
+  <rect class="bx" x="24" y="60" width="240" height="66" rx="2"/>
+  <text class="ti" x="144" y="90" style="font-size:15px">Фрагмент тексту</text>
+  <text class="ds" x="144" y="110">«Повернення коштів — 14 днів»</text>
+  <polygon class="ar" points="274,86 274,98 288,92"/>
+
+  <rect class="bx n" x="300" y="60" width="250" height="66" rx="2"/>
+  <text class="ti" x="425" y="90" style="font-size:15px">Embedding-модель</text>
+  <text class="en" x="425" y="110">нейромережа-кодувальник</text>
+
+  <path class="dash" d="M 425 132 L 425 168" style="stroke:var(--navy)"/>
+  <polygon class="head" points="425,182 419,166 431,166" style="fill:var(--navy)"/>
+
+  <rect class="bx t" x="24" y="188" width="526" height="72" rx="2"/>
+  <text class="mono" x="44" y="216" style="font-size:13.5px;fill:var(--teal)">[ 0.021,  -0.113,  0.884,  0.037,  ...  -0.256 ]</text>
+  <text class="mono" x="44" y="242">1024 числа — це координати точки у просторі сенсів</text>
+
+  <text class="lb" x="24" y="300">Модель навчена так, що близькі <tspan style="font-weight:600">за змістом</tspan> тексти</text>
+  <text class="lb" x="24" y="322">опиняються поруч — навіть без жодного спільного слова.</text>
+  <text class="lb s" x="24" y="352">«скасувати бронювання» ≈ «як анулювати запис»</text>
+  <text class="lb s" x="24" y="374">для пошуку за словами це різні тексти, для векторів — сусіди</text>
+  <text class="mono" x="24" y="408" style="fill:var(--rust)">cos θ = (A · B) / (|A| · |B|)   →   від −1 до 1</text>
+
+  <line class="rl" x1="600" y1="30" x2="600" y2="410"/>
+  <text class="lb s" x="628" y="40">Спрощення: 2 виміри замість 1024</text>
+
+  <!-- права частина: векторний простір -->
+  <path class="axis" d="M 700 60 L 700 350 L 1380 350"/>
+  <text class="lb s" x="1380" y="374" text-anchor="end">вимір 1</text>
+  <text class="lb s" x="688" y="56" text-anchor="end">вимір 2</text>
+
+  <!-- вектори близької групи -->
+  <line class="vec t" x1="700" y1="350" x2="1040" y2="118"/>
+  <circle class="pt t" cx="1040" cy="118" r="6"/>
+  <text class="lb" x="1056" y="114">«Повернення коштів протягом 14 днів»</text>
+
+  <line class="vec q" x1="700" y1="350" x2="1000" y2="160"/>
+  <circle class="pt q" cx="1000" cy="160" r="7"/>
+  <text class="lb" x="1016" y="156" style="font-weight:600;fill:#C98F8A">ЗАПИТ: «як повернути гроші»</text>
+
+  <line class="vec t" x1="700" y1="350" x2="950" y2="205"/>
+  <circle class="pt t" cx="950" cy="205" r="6"/>
+  <text class="lb" x="966" y="201">«Оформлення повернення в кабінеті»</text>
+
+  <!-- далека група -->
+  <line class="vec" x1="700" y1="350" x2="1230" y2="252"/>
+  <circle class="pt" cx="1230" cy="252" r="5.5"/>
+  <line class="vec" x1="700" y1="350" x2="1290" y2="300"/>
+  <circle class="pt" cx="1290" cy="300" r="5.5"/>
+  <ellipse class="ring" cx="1262" cy="276" rx="88" ry="52" transform="rotate(20 1262 276)"/>
+  <text class="lb s" x="1360" y="338" text-anchor="end">інші теми: доставка, графік роботи</text>
+
+  <!-- кут -->
+  <path class="arc" d="M 820 279 A 145 145 0 0 1 838 262"/>
+  <text class="mono" x="846" y="286" style="fill:var(--amber)">θ малий → cos θ ≈ 0.89</text>
+  <text class="lb s" x="700" y="398">Пошук = знайти k точок, найближчих до точки запиту.</text>
+</svg>
+</div>
+
+<!-- 06 ═══ Метрики близькості ══════════════════ -->
+<div class="slide" data-stage="1" data-title="Метрики близькості">
+  <div class="eyebrow">Основа пошуку<span class="rule"></span><span class="id">Метрики</span></div>
+  <h2>Чим міряти близькість двох векторів</h2>
+  <p class="en">Метрику диктує модель, а не смак: у картці embedding-моделі завжди вказано, з чим її навчали</p>
+<svg viewBox="0 0 1400 300" xmlns="http://www.w3.org/2000/svg" class="pipe">
+  <!-- ── 1. КОСИНУС ── -->
+  <text class="mono" x="4" y="24" style="fill:var(--rust);font-weight:600">&lt;=&gt;  косинусна</text>
+  <rect class="bx t" x="1" y="36" width="262" height="176" rx="2"/>
+  <line class="vec t" x1="41" y1="190" x2="206" y2="66"/>
+  <circle class="pt t" cx="206" cy="66" r="5"/>
+  <line class="vec" x1="41" y1="190" x2="216" y2="140"/>
+  <circle class="pt" cx="216" cy="140" r="5"/>
+  <path class="arc" d="M 88 155 A 60 60 0 0 1 98 173"/>
+  <text class="mono" x="104" y="152" style="fill:var(--amber)">θ</text>
+  <text class="lb s" x="14" y="236">Кут між векторами.</text>
+  <text class="lb s" x="14" y="256">Довжина ігнорується: абзац і речення</text>
+  <text class="lb s" x="14" y="276">про одне й те саме — поруч.</text>
+
+  <!-- ── 2. СКАЛЯРНИЙ ДОБУТОК ── -->
+  <text class="mono" x="288" y="24" style="fill:var(--rust);font-weight:600">&lt;#&gt;  скалярний добуток</text>
+  <rect class="bx n" x="285" y="36" width="262" height="176" rx="2"/>
+  <line class="vec" x1="325" y1="190" x2="500" y2="75"/>
+  <circle class="pt" cx="500" cy="75" r="5"/>
+  <line class="vec t" x1="325" y1="190" x2="405" y2="105"/>
+  <circle class="pt t" cx="405" cy="105" r="5"/>
+  <path class="arc" d="M 405 105 L 421 128" style="stroke-dasharray:3 3"/>
+  <circle class="pt" cx="421" cy="128" r="3.5" style="fill:var(--amber)"/>
+  <text class="mono" x="430" y="150" style="fill:var(--amber)">проєкція</text>
+  <text class="lb s" x="298" y="236">Кут <tspan style="font-weight:600">і</tspan> довжина разом.</text>
+  <text class="lb s" x="298" y="256">Довший вектор виграє — корисно там,</text>
+  <text class="lb s" x="298" y="276">де норма кодує вагу чи популярність.</text>
+
+  <!-- ── 3. ЕВКЛІДОВА ── -->
+  <text class="mono" x="572" y="24" style="fill:var(--rust);font-weight:600">&lt;-&gt;  евклідова (L2)</text>
+  <rect class="bx" x="569" y="36" width="262" height="176" rx="2"/>
+  <line class="vec t" x1="639" y1="175" x2="769" y2="90" style="stroke-width:2.2"/>
+  <circle class="pt t" cx="639" cy="175" r="6"/>
+  <circle class="pt t" cx="769" cy="90" r="6"/>
+  <text class="mono" x="690" y="118" style="fill:var(--teal)">d</text>
+  <line class="rl" x1="639" y1="175" x2="769" y2="175" style="stroke-dasharray:3 3"/>
+  <line class="rl" x1="769" y1="175" x2="769" y2="90" style="stroke-dasharray:3 3"/>
+  <text class="lb s" x="582" y="236">Пряма відстань між точками.</text>
+  <text class="lb s" x="582" y="256">Зображення, обличчя, аудіо;</text>
+  <text class="lb s" x="582" y="276">обов'язкова для кластеризації.</text>
+
+  <!-- ── 4. МАНХЕТТЕНСЬКА ── -->
+  <text class="mono" x="856" y="24" style="fill:var(--rust);font-weight:600">&lt;+&gt;  манхеттенська (L1)</text>
+  <rect class="bx" x="853" y="36" width="262" height="176" rx="2"/>
+  <path class="vec" d="M 923 175 L 1053 175 L 1053 90" style="stroke:var(--amber);stroke-width:2.4"/>
+  <circle class="pt" cx="923" cy="175" r="6" style="fill:var(--amber)"/>
+  <circle class="pt" cx="1053" cy="90" r="6" style="fill:var(--amber)"/>
+  <text class="mono" x="960" y="196" style="fill:var(--amber)">|Δx|</text>
+  <text class="mono" x="1062" y="136" style="fill:var(--amber)">|Δy|</text>
+  <text class="lb s" x="866" y="236">Сума модулів різниць — «по вулицях».</text>
+  <text class="lb s" x="866" y="256">Тільки для інтерпретованих ознак,</text>
+  <text class="lb s" x="866" y="276">не для щільних embeddings.</text>
+
+  <!-- ── 5. ХЕММІНГА ── -->
+  <text class="mono" x="1140" y="24" style="fill:var(--rust);font-weight:600">&lt;~&gt;  Хеммінга (bit)</text>
+  <rect class="bx a" x="1137" y="36" width="262" height="176" rx="2"/>
+  <rect x="1216" y="76" width="24" height="76" rx="2" style="fill:rgba(201,143,138,.22)"/>
+  <rect x="1312" y="76" width="24" height="76" rx="2" style="fill:rgba(201,143,138,.22)"/>
+  <text class="mono" x="1160" y="100" style="font-size:15px;letter-spacing:.28em">1 0 1 1 0 0 1</text>
+  <text class="mono" x="1160" y="144" style="font-size:15px;letter-spacing:.28em">1 0 0 1 0 1 1</text>
+  <text class="mono" x="1160" y="184" style="fill:var(--rust);font-weight:600">різних бітів = 2</text>
+  <text class="lb s" x="1150" y="236">Порівняння через XOR — дуже швидко.</text>
+  <text class="lb s" x="1150" y="256">Бінарна квантизація: грубий відбір</text>
+  <text class="lb s" x="1150" y="276">кандидатів, далі точне переранжування.</text>
+</svg>
+  <div class="hair"></div>
+  <p class="note"><strong>Головне:</strong> якщо вектори L2-нормалізовані, косинус, скалярний добуток і L2 дають <strong>однакове ранжування</strong> — різниця лише у швидкості. Тому багато систем нормалізують вектори на індексації й далі рахують найдешевший скалярний добуток.</p>
+</div>
+
+<!-- 07 ═══ Метрики на практиці ══════════════════ -->
+<div class="slide" data-stage="1" data-title="Метрики на практиці">
+  <div class="eyebrow">Основа пошуку<span class="rule"></span><span class="id">pgvector</span></div>
+  <h2>Який оператор коли брати</h2>
+  <table class="tight xtight">
+    <tr><th>Оператор</th><th>Коли доречний</th><th>Нюанс</th></tr>
+    <tr><td>&lt;=&gt;<span class="en2">cosine</span></td><td>Дефолт для тексту. Коли не впевнені в нормалізації або в базі вектори з різних джерел</td><td>Значення 0…2; схожість = 1 − відстань</td></tr>
+    <tr><td>&lt;#&gt;<span class="en2">inner product</span></td><td>Вектори гарантовано нормалізовані і потрібна максимальна швидкість. Або рекомендації, де довжина кодує популярність</td><td>Повертає від'ємне значення: Postgres сортує за зростанням</td></tr>
+    <tr><td>&lt;-&gt;<span class="en2">L2 / euclidean</span></td><td>Зображення, обличчя, аудіо. Обов'язкова для k-means і DBSCAN — вони визначені через L2</td><td>Для нормалізованих векторів зводиться до косинуса</td></tr>
+    <tr><td>&lt;+&gt;<span class="en2">L1 / manhattan</span></td><td>Рідкісний випадок: незалежні інтерпретовані ознаки (ціна, вага, розмір), а не embeddings</td><td>Менш чутлива до викидів в окремих координатах</td></tr>
+    <tr><td>&lt;~&gt;<span class="en2">hamming</span></td><td>Тип bit після бінарної квантизації: швидко відібрати ~200 кандидатів на базах від десятків мільйонів. Дедуплікація за хешами</td><td>У 32 рази менше пам'яті; далі переранжування float-векторами</td></tr>
+  </table>
+  <div class="cols c2" style="margin-top:22px">
+    <div class="code sg"><span class="c">-- індекс МУСИТЬ відповідати оператору</span>
+CREATE INDEX ON chunks USING hnsw
+  (embedding <span class="k">vector_cosine_ops</span>)
+  WITH (m = 16, ef_construction = 64);
+
+SELECT id, text, <span class="v">1 - (embedding &lt;=&gt; :q)</span> AS sim
+FROM chunks
+WHERE updated_at &gt; <span class="v">'2026-01-01'</span>
+ORDER BY embedding &lt;=&gt; :q
+LIMIT 5;</div>
+    <div class="chk" style="grid-template-columns:1fr;margin-top:0">
+      <div class="warn"><h4>Найчастіша помилка</h4><p>Індекс створено з <span style="font-family:var(--mono);font-size:.9em">vector_l2_ops</span>, а запит іде через <span style="font-family:var(--mono);font-size:.9em">&lt;=&gt;</span>. Індекс мовчки ігнорується — і ви отримуєте повний перебір бази без жодної помилки в логах.</p></div>
+      <div class="nv"><h4>Приклад: text-embedding-3-small</h4><p>Повертає вже нормалізовані вектори на 1536 вимірів, тож коректний вибір — косинус. Але після скорочення розмірності (Matryoshka, <span style="font-family:var(--mono);font-size:.9em">dimensions=512</span>) вектор перестає бути одиничним і потребує ручної нормалізації.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 ═══ Векторна база ═══════════════════════ -->
+<div class="slide" data-stage="2" data-title="Векторна база">
+  <div class="eyebrow">Сховище<span class="rule"></span><span class="id">Векторна БД</span></div>
+  <h2>Векторна база: зберігає вектори і швидко знаходить сусідів</h2>
+  <p class="en">Vector database · ANN — Approximate Nearest Neighbour · HNSW · pgvector · Qdrant · Elasticsearch</p>
+<svg viewBox="0 0 1400 400" xmlns="http://www.w3.org/2000/svg" class="pipe">
+  <text class="band" x="20" y="26">ЩО ЗБЕРІГАЄТЬСЯ</text>
+  <line class="rl" x1="20" y1="38" x2="600" y2="38"/>
+
+  <rect class="bx t" x="20" y="52" width="580" height="88" rx="2"/>
+  <text class="mono k" x="38" y="76">id</text>   <text class="mono v" x="120" y="76">policy_refund_v4 · розділ 4.2 · чанк 3</text>
+  <text class="mono k" x="38" y="98">vector</text> <text class="mono v" x="120" y="98">[0.021, −0.113, 0.884, … ]  ← пошук іде по ньому</text>
+  <text class="mono k" x="38" y="120">text</text>  <text class="mono v" x="120" y="120">«Повернення коштів здійснюється протягом…»</text>
+
+  <rect class="bx" x="20" y="152" width="580" height="70" rx="2"/>
+  <text class="mono k" x="38" y="178">metadata</text>
+  <text class="mono v" x="140" y="178">source · page · updated_at · lang</text>
+  <text class="mono v" x="140" y="200">department · acl (права доступу)</text>
+  <text class="lb s" x="20" y="248">Метадані дають фільтр <tspan style="font-weight:600">до</tspan> векторного пошуку:</text>
+  <text class="mono" x="20" y="272" style="fill:var(--rust)">where updated_at &gt; '2026-01-01' and 'support' in acl</text>
+
+  <text class="lb s" x="20" y="312">Плюс операції звичайної БД: додати, оновити,</text>
+  <text class="lb s" x="20" y="332">видалити, реплікація, бекап, шардування.</text>
+  <text class="lb s" x="20" y="362">Видалений документ мусить зникнути з індексу —</text>
+  <text class="lb s" x="20" y="382">інакше система цитуватиме скасований регламент.</text>
+
+  <line class="rl" x1="648" y1="20" x2="648" y2="390"/>
+
+  <text class="band" x="690" y="26">ЯК ЗНАХОДИТЬ ШВИДКО <tspan style="fill:#6A7784;letter-spacing:.04em">— граф сусідів HNSW</tspan></text>
+  <line class="rl" x1="690" y1="38" x2="1380" y2="38"/>
+
+  <!-- ребра графа -->
+  <line class="ge" x1="760" y1="110" x2="880" y2="80"/>
+  <line class="ge" x1="880" y1="80" x2="1010" y2="120"/>
+  <line class="ge" x1="760" y1="110" x2="820" y2="200"/>
+  <line class="ge" x1="820" y1="200" x2="700" y2="270"/>
+  <line class="ge" x1="820" y1="200" x2="930" y2="270"/>
+  <line class="ge" x1="1010" y1="120" x2="1130" y2="90"/>
+  <line class="ge" x1="1010" y1="120" x2="1090" y2="205"/>
+  <line class="ge" x1="1090" y1="205" x2="1240" y2="160"/>
+  <line class="ge" x1="1090" y1="205" x2="1180" y2="290"/>
+  <line class="ge" x1="930" y1="270" x2="1050" y2="330"/>
+  <line class="ge" x1="1180" y1="290" x2="1300" y2="240"/>
+  <line class="ge" x1="1050" y1="330" x2="1180" y2="290"/>
+  <line class="ge" x1="1240" y1="160" x2="1300" y2="240"/>
+  <line class="ge" x1="930" y1="270" x2="1090" y2="205"/>
+
+  <!-- шлях пошуку -->
+  <line class="ge on" x1="760" y1="110" x2="880" y2="80"/>
+  <line class="ge on" x1="880" y1="80" x2="1010" y2="120"/>
+  <line class="ge on" x1="1010" y1="120" x2="1090" y2="205"/>
+  <line class="ge on" x1="1090" y1="205" x2="1180" y2="290"/>
+
+  <circle class="gn on" cx="760" cy="110" r="13"/>
+  <circle class="gn on" cx="880" cy="80" r="13"/>
+  <circle class="gn on" cx="1010" cy="120" r="13"/>
+  <circle class="gn on" cx="1090" cy="205" r="13"/>
+  <circle class="gn tg" cx="1180" cy="290" r="16"/>
+  <circle class="gn" cx="820" cy="200" r="12"/>
+  <circle class="gn" cx="700" cy="270" r="12"/>
+  <circle class="gn" cx="930" cy="270" r="12"/>
+  <circle class="gn" cx="1130" cy="90" r="12"/>
+  <circle class="gn" cx="1240" cy="160" r="12"/>
+  <circle class="gn" cx="1050" cy="330" r="12"/>
+  <circle class="gn" cx="1300" cy="240" r="12"/>
+
+  <text class="lb s" x="740" y="88" text-anchor="end">вхідна</text>
+  <text class="lb s" x="740" y="106" text-anchor="end">точка</text>
+  <text class="lb" x="1204" y="286" style="font-weight:600">знайдений сусід</text>
+  <text class="lb s" x="1204" y="306">= найрелевантніший чанк</text>
+  <text class="lp" x="1035" y="372" text-anchor="middle">замість перебору 10 млн векторів — кілька десятків кроків графом</text>
+</svg>
+  <p class="note">Компроміс ANN: <strong>трохи точності в обмін на швидкість</strong>. Ручки <span style="color:var(--ink)">M</span> та <span style="color:var(--ink)">ef_search</span> регулюють баланс «повнота пошуку ↔ затримка».</p>
+</div>
+
+<!-- 07 ═══ Чанкінг ═════════════════════════════ -->
+<div class="slide" data-stage="3" data-title="Чанкінг">
+  <div class="eyebrow">Підготовка даних<span class="rule"></span><span class="id">Чанкінг</span></div>
+  <h2>Чанкінг: компроміс між точністю і повнотою</h2>
+  <p class="en">Chunking · chunk size · overlap · Parent Document Retrieval</p>
+  <p class="sub">Чанк — це одиниця пошуку. Замалий втрачає контекст і робить відповідь неповною; завеликий розмиває вектор і тягне в промпт зайвий шум.</p>
+  <table class="tight xtight">
+    <tr><th>Стратегія</th><th>Як працює</th><th>Коли доречно</th></tr>
+    <tr><td>Рекурсивний<span class="en2">recursive split</span></td><td>Ділить за абзацами, потім реченнями, потім символами</td><td>Дефолт для більшості текстів: не рве речення посередині</td></tr>
+    <tr><td>За структурою<span class="en2">document-based</span></td><td>За заголовками й розділами документа</td><td>Регламенти, документація, Markdown, код — найкраща якість</td></tr>
+    <tr><td>Батьківський документ<span class="en2">small-to-big</span></td><td>Шукаємо по малих чанках, у контекст даємо великий батьківський блок</td><td>Найкращий компроміс: точний пошук + повний контекст</td></tr>
+  </table>
+  <div class="chk" style="margin-top:22px">
+    <div class="amb"><h4>Практичний старт</h4><p>512 токенів, перекриття 50–80, поділ за заголовками. Далі — вимірювати, а не вгадувати: змініть один параметр і подивіться на recall@k.</p></div>
+    <div class="warn"><h4>Класична помилка</h4><p>Чанк без «шапки»: фрагмент «строк становить 14 днів» без назви розділу й документа. Додавайте заголовки розділу в текст самого чанка.</p></div>
+  </div>
+</div>
+
+<!-- 08 ═══ Пошук ═══════════════════════════════ -->
+<div class="slide" data-stage="3" data-title="Пошук">
+  <div class="eyebrow">Ядро системи<span class="rule"></span><span class="id">Пошук</span></div>
+  <h2>Гібридний пошук плюс реранжування</h2>
+  <p class="en">Dense retrieval · BM25 · Hybrid · RRF — Reciprocal Rank Fusion · Cross-encoder reranking</p>
+  <div class="cols c3">
+    <div class="panel n">
+      <h3>Векторний (dense)</h3>
+      <ul>
+        <li>Розуміє синоніми й перефразування</li>
+        <li>Витримує помилки у словах</li>
+        <li><b>Слабке місце:</b> артикули, коди помилок, прізвища, номери версій</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>За словами (BM25)</h3>
+      <ul>
+        <li>Ідеальний для рідкісних термінів: <span style="font-family:var(--mono);font-size:.88em">ERR-5041</span>, «ст. 42»</li>
+        <li>Прозорий і дешевий</li>
+        <li><b>Слабке місце:</b> інша лексика — нуль результатів</li>
+      </ul>
+    </div>
+    <div class="panel a">
+      <h3>Гібрид + реранкер</h3>
+      <ul>
+        <li>Два пошуки паралельно, злиття через RRF</li>
+        <li>Cross-encoder читає запит і чанк <b>разом</b> і лишає 3–8 найкращих</li>
+        <li>Стандарт де-факто для продакшну</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hair"></div>
+  <div class="chk c3 tight">
+    <div><h4>Навіщо реранкер</h4><p>Головна цінність — не порядок, а <b>скорочення контексту</b>: 5 точних чанків замість 30 приблизних дають кращу відповідь і дешевший запит.</p></div>
+    <div class="amb"><h4>Lost in the middle</h4><p>Модель гірше помічає інформацію в середині довгого контексту. Найрелевантніше ставте на початок і в кінець промпту.</p></div>
+    <div class="nv"><h4>Переписування запиту</h4><p>«А що з тим договором?» — у векторному просторі майже шум. Перед пошуком LLM розгортає запит у самодостатнє питання з історії діалогу.</p></div>
+  </div>
+</div>
+
+<!-- 09 ═══ Генерація ═══════════════════════════ -->
+<div class="slide" data-stage="4" data-title="Генерація">
+  <div class="eyebrow">Відповідь<span class="rule"></span><span class="id">Промпт</span></div>
+  <h2>Промпт: контекст, межі та обов'язок цитувати</h2>
+  <div class="cols c2w">
+    <div class="code am"><span class="c">СИСТЕМНИЙ ПРОМПТ</span>
+
+Відповідай <span class="k">виключно</span> на основі наведених нижче
+фрагментів. Якщо відповіді в них немає — скажи
+<span class="v">«У документах немає відповіді на це питання»</span>
+і не додавай припущень.
+
+Після кожного твердження став посилання [1], [2]
+на номер фрагмента. Якщо фрагменти суперечать
+один одному — вкажи це явно.
+
+<span class="c">КОНТЕКСТ</span>
+[1] policy_refund_v4.pdf · розділ 4.2 · 11.03.2026
+    <span class="v">"Повернення здійснюється протягом 14 днів..."</span>
+[2] faq_support.md · Повернення · 02.02.2026
+    <span class="v">"Кошти зараховуються на картку, з якої..."</span>
+
+<span class="c">ПИТАННЯ</span>
+Скільки чекати повернення коштів?</div>
+    <div class="panel a">
+      <h3>Що обов'язково має бути в промпті</h3>
+      <ul>
+        <li><b>Заборона на зовнішні знання</b> — інакше модель домішає загальні відомості до ваших регламентів</li>
+        <li><b>Дозвіл сказати «не знаю»</b> — без цього модель вигадає, бо «мусить» відповісти</li>
+        <li><b>Формат цитування</b> — джерело, розділ, дата: користувач має змогу перевірити</li>
+        <li><b>Обробка суперечностей</b> — дві версії документа в базі трапляються постійно</li>
+        <li><b>Роздільники між фрагментами</b> та їх дати актуальності</li>
+      </ul>
+      <h3 style="margin-top:20px">І ще одне</h3>
+      <ul>
+        <li>Текст із бази — це <b>дані, а не команди</b>: у документ можна вписати ін'єкцію промпту</li>
+        <li>Права доступу фільтруються на рівні пошуку, а не проханням до моделі «не розповідати»</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 10 ═══ Оцінка ══════════════════════════════ -->
+<div class="slide" data-stage="5" data-title="Оцінка якості">
+  <div class="eyebrow">Контроль якості<span class="rule"></span><span class="id">Метрики</span></div>
+  <h2>Без метрик RAG налаштовують навпомацки</h2>
+  <p class="sub">Систему міряють у двох точках окремо: чи <b>знайшли</b> потрібне і чи <b>правильно переказали</b> знайдене. Без такого поділу неможливо зрозуміти, що саме лагодити.</p>
+  <table class="tight xtight">
+    <tr><th>Метрика</th><th>Що показує</th><th>Що робити, якщо низька</th></tr>
+    <tr><td>Recall@k<span class="en2">пошук</span></td><td>Чи потрапив потрібний чанк у top-k взагалі</td><td>Чанкінг, embedding-модель, гібридний пошук, більше k</td></tr>
+    <tr><td>MRR / NDCG<span class="en2">пошук</span></td><td>Наскільки високо він у списку</td><td>Додати реранкер, підкрутити ваги гібриду</td></tr>
+    <tr><td>Faithfulness<span class="en2">генерація</span></td><td>Чи кожне твердження підтверджене контекстом</td><td>Жорсткіший промпт, менше чанків, дозвіл на «не знаю»</td></tr>
+    <tr><td>Answer relevancy<span class="en2">генерація</span></td><td>Чи відповідає текст саме на поставлене питання</td><td>Переписування запиту, інша модель, інший шаблон</td></tr>
+  </table>
+  <div class="chk c3 tight" style="margin-top:20px">
+    <div class="nv"><h4>Golden dataset</h4><p>50–200 реальних питань із перевіреними відповідями та документами-джерелами. Найцінніший артефакт проєкту — збирайте з першого тижня.</p></div>
+    <div class="nv"><h4>Інструменти</h4><p>RAGAS, DeepEval, LangSmith, Langfuse. Оцінка здебільшого через LLM-as-a-judge — звіряйте її з людською вибіркою.</p></div>
+    <div class="amb"><h4>Регресійний прогін</h4><p>Кожна зміна промпту, моделі чи чанкінгу — прогін по golden set у CI. Інакше покращення одного сценарію тихо ламає п'ять інших.</p></div>
+  </div>
+</div>
+
+<!-- 11 ═══ Помилки ═════════════════════════════ -->
+<div class="slide" data-stage="5" data-title="Типові помилки">
+  <div class="eyebrow">Практика<span class="rule"></span><span class="id">Граблі</span></div>
+  <h2>Де RAG ламається найчастіше</h2>
+  <table class="tight xtight">
+    <tr><th>Симптом</th><th>Справжня причина</th><th>Лікування</th></tr>
+    <tr><td>«Не знаю» на очевидне питання</td><td>Потрібного чанка немає в top-k: невдалий поділ або інша лексика</td><td>Гібридний пошук, більший k + реранкер, контекст у чанку</td></tr>
+    <tr><td>Відповідь неповна</td><td>Інформація розкидана по кількох чанках, у контекст потрапив один</td><td>Parent document retrieval, більший чанк, перекриття</td></tr>
+    <tr><td>Цитує застарілий документ</td><td>Стара й нова версія лежать в індексі поруч</td><td>Дедуплікація, версіонування, видалення при оновленні</td></tr>
+    <tr><td>Плутає таблиці й цифри</td><td>Таблиця розрізана або перетворилася на плоский текст</td><td>Окремий парсер таблиць, зберігати як Markdown</td></tr>
+    <tr><td>Працює в демо, падає в проді</td><td>Тестували на 10 документах, а в базі 100 тисяч — шуму на порядки більше</td><td>Оцінка на реальному обсязі, фільтри за метаданими</td></tr>
+  </table>
+  <p class="note">Правило діагностики: <strong>спершу подивіться, які саме чанки потрапили в контекст</strong>. У 8 випадках із 10 винен пошук, а не модель.</p>
+</div>
+
+<!-- 12 ═══ Висновки ════════════════════════════ -->
+<div class="slide" data-stage="5" data-title="Висновки">
+  <div class="eyebrow">Підсумок<span class="rule"></span><span class="id">Висновки</span></div>
+  <h2>Коли RAG — правильна відповідь</h2>
+  <div class="cols c2">
+    <div class="panel">
+      <h3>Варто застосовувати</h3>
+      <ul>
+        <li>База знань велика й регулярно змінюється</li>
+        <li>Потрібні посилання на джерело й перевірність</li>
+        <li>Дані приватні або мають розмежування доступу</li>
+        <li>Треба швидко оновити чи прибрати знання без перенавчання</li>
+      </ul>
+    </div>
+    <div class="panel bad">
+      <h3>Не варто</h3>
+      <ul>
+        <li>Корпус маленький і стабільний — просто покладіть його в контекст</li>
+        <li>Задача не про факти, а про стиль чи формат — це донавчання</li>
+        <li>Потрібен огляд усього корпусу («про що ці 500 звітів») — top-k тут не працює</li>
+        <li>Потрібні точні агрегації й підрахунки — це SQL, а не векторний пошук</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hair"></div>
+  <div class="chk c3 tight">
+    <div><h4>Теза 1</h4><p>RAG — це <b>інженерія пошуку</b>, а не магія моделі. Якість визначає те, що потрапило в контекст.</p></div>
+    <div><h4>Теза 2</h4><p>Найбільший приріст дають нудні речі: чистий парсинг, розумний чанкінг, метадані, гібрид, реранкер.</p></div>
+    <div><h4>Теза 3</h4><p>Без golden set і метрик будь-яке «стало краще» — це відчуття, а не факт.</p></div>
+  </div>
+  <p class="note">Дякую за увагу. <strong>Питання?</strong></p>
+</div>
+
+<div id="wipe"></div>
+<div id="spine"></div>
+<div id="bar">
+  <button id="prev" title="Попередній слайд (←)">←</button>
+  <span id="count"></span>
+  <button id="next" title="Наступний слайд (→ або пробіл)">→</button>
+  <button id="fs" title="Повний екран (F)">На весь екран</button>
+</div>
+
+</div>
+</div>
+
+<script>
+var SPINE = ["Ідея","Вектор","База","Пошук","Відповідь","Оцінка"];
+var spineEl = document.getElementById("spine");
+SPINE.forEach(function(n,i){
+  var b = document.createElement("button");
+  b.className = "node";
+  b.innerHTML = '<i class="dot"></i>' + n;
+  b.dataset.stage = i;
+  spineEl.appendChild(b);
+});
+var nodes = [].slice.call(spineEl.children);
+
+var wipe = document.getElementById("wipe");
+var els = [].slice.call(document.querySelectorAll(".slide"));
+var cur = 0, wipeTimer = null;
+
+function show(n, silent){
+  n = Math.max(0, Math.min(els.length - 1, n));
+  if(n === cur && !silent) return;
+  var prev = cur, back = n < cur;
+  clearTimeout(wipeTimer);
+  els.forEach(function(el){ el.classList.remove("out","anim","rev"); });
+  wipe.classList.remove("rev");
+  cur = n;
+  els[prev].classList.remove("on");
+  if(!silent){
+    els[prev].classList.add("out","anim");
+    if(back) els[prev].classList.add("rev");
+  }
+  els[cur].classList.remove("on");
+  void els[cur].offsetWidth;
+  els[cur].classList.add("on");
+  els[cur].scrollTop = 0;
+  if(!silent){
+    els[cur].classList.add("anim");
+    if(back) els[cur].classList.add("rev");
+    wipe.classList.remove("go"); void wipe.offsetWidth;
+    if(back) wipe.classList.add("rev");
+    wipe.classList.add("go");
+    wipeTimer = setTimeout(function(){
+      els[prev].classList.remove("out","anim","rev");
+      els[cur].classList.remove("anim","rev");
+      wipe.classList.remove("go","rev");
+    }, 680);
+  }
+  var st = parseInt(els[cur].dataset.stage, 10);
+  nodes.forEach(function(nd, i){
+    nd.classList.toggle("on", i === st);
+    nd.classList.toggle("done", i < st);
+  });
+  document.getElementById("count").textContent = (cur+1) + " / " + els.length;
+  document.getElementById("prev").disabled = cur === 0;
+  document.getElementById("next").disabled = cur === els.length - 1;
+}
+show(0, true);
+
+spineEl.addEventListener("click", function(e){
+  var b = e.target.closest(".node");
+  if(!b) return;
+  var st = b.dataset.stage;
+  for(var i = 0; i < els.length; i++){
+    if(els[i].dataset.stage === st){ show(i); return; }
+  }
+});
+
+document.getElementById("next").onclick = function(){ show(cur+1); };
+document.getElementById("prev").onclick = function(){ show(cur-1); };
+document.getElementById("fs").onclick = function(){
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.getElementById("deck").requestFullscreen();
+};
+document.addEventListener("fullscreenchange", function(){
+  document.getElementById("fs").textContent = document.fullscreenElement ? "Вийти з екрана" : "На весь екран";
+});
+document.addEventListener("keydown", function(e){
+  if(e.key === "ArrowRight" || e.key === " " || e.key === "PageDown"){ e.preventDefault(); show(cur+1); }
+  else if(e.key === "ArrowLeft" || e.key === "PageUp"){ e.preventDefault(); show(cur-1); }
+  else if(e.key === "Home"){ show(0); }
+  else if(e.key === "End"){ show(els.length-1); }
+  else if(e.key.toLowerCase() === "f"){ document.getElementById("fs").click(); }
+});
+
+var t, bar = document.getElementById("bar");
+function idle(){ clearTimeout(t); bar.classList.remove("idle"); t = setTimeout(function(){ bar.classList.add("idle"); }, 2600); }
+document.addEventListener("mousemove", idle); idle();
+
+var x0 = null;
+document.addEventListener("touchstart", function(e){ x0 = e.changedTouches[0].clientX; }, {passive:true});
+document.addEventListener("touchend", function(e){
+  if(x0 === null) return;
+  var dx = e.changedTouches[0].clientX - x0;
+  if(Math.abs(dx) > 60) show(cur + (dx < 0 ? 1 : -1));
+  x0 = null;
+}, {passive:true});
+</script>
+</body>
+</html>

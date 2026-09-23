@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [020](/streams/020) | 25.09.2026 | RAG: модель не мусить пам'ятати, вона мусить знайти | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ZIyIUK7vGQU) |
 | [019](/streams/019) | 18.09.2026 | Graphify: 70× менше токенів чи маркетинг? | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/Vn57Gw4Txz4) |
 | [018](/streams/018) | 11.09.2026 | LinkedIn, який працює на тебе | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/v9dLbeQk3YY) |
 | [017](/streams/017) | 04.09.2026 | Живий кодинг: mini X за 2 години з AI-агентом | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/IGudWZHHq_I) |
