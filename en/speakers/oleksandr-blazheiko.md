@@ -23,6 +23,7 @@ Vue.js · Node.js · TypeScript · AI/LLM · STT/TTS · WebSocket · Redis · Mo
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#021](/en/streams/021) | Guest | If AI already writes the code, what is a developer for? From levels of working with AI and infrastructure to trade-offs and engineering accountability | 02.10.2026 |
 | [#020](/en/streams/020) | Guest | RAG: the model doesn't have to remember — it has to find; from vectors and pgvector to citations and quality metrics | 25.09.2026 |
 | [#017](/en/streams/017) | Guest advisor | Live-coding mini X in 2 hours with an AI agent — commenting on decisions, occasionally sharing his screen | 04.09.2026 |
 | [#016](/en/streams/016) | Guest | Specification as the new source code — a document set for working with an AI agent | 28.08.2026 |
