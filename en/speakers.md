@@ -32,6 +32,13 @@ const speakers = [
     org: 'Petro Mohyla Black Sea National University',
     profile: '/en/speakers/ihor-kotov',
   },
+  {
+    avatar: '/speakers/serhii-lytvyn.jpg',
+    name: 'Serhii Lytvyn',
+    title: 'Senior Frontend / Agentic UI Developer',
+    org: 'AAA game development',
+    profile: '/en/speakers/serhii-lytvyn',
+  },
 ]
 </script>
 

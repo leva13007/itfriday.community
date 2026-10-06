@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [022](/en/streams/022) | 09.10.2026 | AI Writes the Code. Who Gets the Promotion? | [Serhii Lytvyn](/en/speakers/serhii-lytvyn) | [Watch](https://youtube.com/live/icenkn7tmdY) |
 | [021](/en/streams/021) | 02.10.2026 | If AI Already Writes the Code, What Is a Developer For? | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/ROs1CGNbXdo) |
 | [020](/en/streams/020) | 25.09.2026 | RAG: The Model Doesn't Have to Remember — It Has to Find | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/ZIyIUK7vGQU) |
 | [019](/en/streams/019) | 18.09.2026 | Graphify: 70× Fewer Tokens or Marketing? | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/Vn57Gw4Txz4) |

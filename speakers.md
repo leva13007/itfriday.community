@@ -32,6 +32,13 @@ const speakers = [
     org: 'ЧНУ ім. Петра Могили',
     profile: '/speakers/ihor-kotov',
   },
+  {
+    avatar: '/speakers/serhii-lytvyn.jpg',
+    name: 'Сергій Литвин',
+    title: 'Senior Frontend / Agentic UI розробник',
+    org: 'AAA-геймдев',
+    profile: '/speakers/serhii-lytvyn',
+  },
 ]
 </script>
 
