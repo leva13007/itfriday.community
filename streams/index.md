@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [023](/streams/023) | 16.10.2026 | Pet-проєкт: від ідеї до production | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/3psATdryIYA) |
 | [022](/streams/022) | 09.10.2026 | AI пише код. Хто отримує підвищення? | [Сергій Литвин](/speakers/serhii-lytvyn) | [Дивитись](https://youtube.com/live/icenkn7tmdY) |
 | [021](/streams/021) | 02.10.2026 | Якщо ШІ вже пише код, навіщо потрібен розробник? | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ROs1CGNbXdo) |
 | [020](/streams/020) | 25.09.2026 | RAG: модель не мусить пам'ятати, вона мусить знайти | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ZIyIUK7vGQU) |

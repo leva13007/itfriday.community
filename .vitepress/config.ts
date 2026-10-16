@@ -3,6 +3,9 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   base: '/',
 
+  // Internal docs and repo meta files — never published to the site
+  srcExclude: ['notes/**', 'README.md', 'CLAUDE.md', '**/CLAUDE.md'],
+
   themeConfig: {
     logo: { dark: '/logo-light.png', light: '/logo-dark.png' },
     siteTitle: false,

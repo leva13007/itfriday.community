@@ -61,8 +61,9 @@ site/
     logo-light.png  # Full logo, light version
     streams/        # Stream thumbnails: NNN.png
     speakers/       # Speaker photos: {slug}.jpg (when provided)
+  notes/            # Internal research/plans/brainstorms — NOT published (srcExclude)
   .vitepress/
-    config.ts       # Nav, sidebar, i18n config
+    config.ts       # Nav, sidebar, i18n config, srcExclude
     dist/           # Built output (do not edit manually)
   .github/
     workflows/
@@ -192,6 +193,19 @@ Three channels:
 - **Missing promised materials** → Telegram chat with `#матеріали` tag
 
 When the content repo becomes public on GitHub, update `issues.md` to add a direct GitHub link for content issues.
+
+---
+
+## Internal Notes (`/notes`)
+
+Research, plans, idea breakdowns, brainstorms. Excluded from the VitePress build via `srcExclude` in `.vitepress/config.ts` (together with `README.md` and `CLAUDE.md`) — never rendered on the site.
+
+**But the repo is public on GitHub** — notes are visible there. No secrets, personal data, or private arrangements with speakers.
+
+Adding a note:
+1. Create `notes/YYYY-MM-DD-slug.md` with frontmatter: `title`, `date`, `type` (research | plan | idea | brainstorm), `status` (open | in-progress | done | dropped)
+2. Add a row at the **top** of the table in `notes/README.md`
+3. UA only — no `en/` mirror needed
 
 ---
 
