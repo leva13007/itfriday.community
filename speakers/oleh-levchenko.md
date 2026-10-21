@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · Кар'єра в IT ·
 
 | Стрім | Роль | Тема | Дата |
 |-------|------|------|------|
+| [#024](/streams/024) | Доповідач | Нова AWS Lambda для AI-агентів — рекап ServerlessDays Cardiff 2026 і воркшопу AWS Lambda MicroVMs | 23.10.2026 |
 | [#019](/streams/019) | Доповідач | Graphify: контрольний experiment — 71.5× claim vs реальний issue з Excalidraw | 18.09.2026 |
 | [#018](/streams/018) | Доповідач | LinkedIn, який працює на тебе — live-аудит власного профілю | 11.09.2026 |
 | [#017](/streams/017) | Ведучий | Живий кодинг mini X за 2 години з AI-агентом — Олександр Блажейко як гість-радник | 04.09.2026 |

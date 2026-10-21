@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [024](/streams/024) | 23.10.2026 | Нова AWS Lambda для AI-агентів: рекап ServerlessDays Cardiff | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/uzaPapLB6B8) |
 | [023](/streams/023) | 16.10.2026 | Pet-проєкт: від ідеї до production | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/3psATdryIYA) |
 | [022](/streams/022) | 09.10.2026 | AI пише код. Хто отримує підвищення? | [Сергій Литвин](/speakers/serhii-lytvyn) | [Дивитись](https://youtube.com/live/icenkn7tmdY) |
 | [021](/streams/021) | 02.10.2026 | Якщо ШІ вже пише код, навіщо потрібен розробник? | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ROs1CGNbXdo) |

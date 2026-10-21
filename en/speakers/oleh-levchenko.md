@@ -23,6 +23,7 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#024](/en/streams/024) | Speaker | The new AWS Lambda for AI agents — ServerlessDays Cardiff 2026 and the AWS Lambda MicroVMs workshop recap | 23.10.2026 |
 | [#019](/en/streams/019) | Speaker | Graphify: controlled experiment — the 71.5× claim vs a real Excalidraw issue | 18.09.2026 |
 | [#018](/en/streams/018) | Speaker | LinkedIn That Works For You — live audit of my own profile | 11.09.2026 |
 | [#017](/en/streams/017) | Host | Live-coding mini X in 2 hours with an AI agent — Oleksandr Blazheiko as guest advisor | 04.09.2026 |
