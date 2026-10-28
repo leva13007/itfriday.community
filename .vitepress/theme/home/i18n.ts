@@ -15,8 +15,9 @@ export const strings = {
     title: "ІТ П'ятниця",
     subtitle: 'Живе українське IT онлайн',
     lead: "Технічне і людське — щоп'ятниці в прямому ефірі на YouTube.",
-    stats: (streams: number, speakers: number, since: string) =>
-      `${streams} ${ukPlural(streams, 'стрім', 'стріми', 'стрімів')} · ${speakers} ${ukPlural(speakers, 'спікер', 'спікери', 'спікерів')} · з ${since}`,
+    statStreams: (n: number) => ukPlural(n, 'стрім', 'стріми', 'стрімів'),
+    statSpeakers: (n: number) => ukPlural(n, 'спікер', 'спікери', 'спікерів'),
+    statSince: (month: string) => `в ефірі з ${month}`,
     joinTelegram: 'Приєднатись у Telegram',
     watchRecordings: 'Дивитись записи',
 
@@ -47,8 +48,9 @@ export const strings = {
     title: 'IT Friday',
     subtitle: 'Live Ukrainian IT, online',
     lead: 'Technical and human — live on YouTube every Friday.',
-    stats: (streams: number, speakers: number, since: string) =>
-      `${streams} streams · ${speakers} speakers · since ${since}`,
+    statStreams: (n: number) => (n === 1 ? 'stream' : 'streams'),
+    statSpeakers: (n: number) => (n === 1 ? 'speaker' : 'speakers'),
+    statSince: (month: string) => `on air since ${month}`,
     joinTelegram: 'Join on Telegram',
     watchRecordings: 'Watch recordings',
 

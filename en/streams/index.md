@@ -6,6 +6,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [025](/en/streams/025) | 30.10.2026 | Hiring Without Filters: Recruiter vs Developer, Part 1 | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Yuliia Kaiunko](/en/speakers/yuliia-kaiunko) | [Watch](https://youtube.com/live/0MRUaILCrVY) |
 | [024](/en/streams/024) | 23.10.2026 | The New AWS Lambda for AI Agents: ServerlessDays Cardiff Recap | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/uzaPapLB6B8) |
 | [023](/en/streams/023) | 16.10.2026 | Pet Project: From Idea to Production | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/3psATdryIYA) |
 | [022](/en/streams/022) | 09.10.2026 | AI Writes the Code. Who Gets the Promotion? | [Serhii Lytvyn](/en/speakers/serhii-lytvyn) | [Watch](https://youtube.com/live/icenkn7tmdY) |

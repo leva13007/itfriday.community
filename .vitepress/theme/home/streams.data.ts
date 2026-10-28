@@ -54,13 +54,18 @@ function parse(url: string, src: string): Stream | null {
   const time = dateLine!.match(/(\d{1,2}):(\d{2})\s*London/)
   const start = londonToUtc(...date, time ? +time[1] : DEFAULT_HOUR, time ? +time[2] : 0)
 
-  const title = (src.match(/^#\s+#\d+\s+[—–-]\s+(.+)$/m)?.[1] ?? `#${num}`).replace(/`/g, '').trim()
   const youtube = src.match(/https?:\/\/(?:www\.)?youtube\.com\/live\/[\w-]+/)?.[0] ?? null
 
   const guests: Guest[] = []
   for (const m of src.matchAll(/\[([^\]]+)\]\((?:\/en)?\/speakers\/([a-z0-9-]+)\)/g)) {
     const [, name, slug] = m
     if (slug !== HOST_SLUG && !guests.some((g) => g.slug === slug)) guests.push({ slug, name })
+  }
+
+  // Headings often end with " · Guest Name" — the guest is shown separately, so drop the suffix.
+  let title = (src.match(/^#\s+#\d+\s+[—–-]\s+(.+)$/m)?.[1] ?? `#${num}`).replace(/`/g, '').trim()
+  for (const g of guests) {
+    if (title.endsWith(` · ${g.name}`)) title = title.slice(0, -(g.name.length + 3)).trim()
   }
 
   return { num, url: url.replace(/\.html$/, ''), title, start, youtube, guests, thumb: `/streams/${num}.png` }

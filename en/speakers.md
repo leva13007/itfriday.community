@@ -39,6 +39,13 @@ const speakers = [
     org: 'AAA game development',
     profile: '/en/speakers/serhii-lytvyn',
   },
+  {
+    avatar: '/speakers/yuliia-kaiunko.jpg',
+    name: 'Yuliia Kaiunko',
+    title: 'HRD / Lead Recruiter',
+    org: 'Kozak Group',
+    profile: '/en/speakers/yuliia-kaiunko',
+  },
 ]
 </script>
 

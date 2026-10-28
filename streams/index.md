@@ -6,6 +6,7 @@
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [025](/streams/025) | 30.10.2026 | IT-найм без фільтрів: рекрутер vs розробник, ч.1 | [Олег Левченко](/speakers/oleh-levchenko) · [Юлія Каюнко](/speakers/yuliia-kaiunko) | [Дивитись](https://youtube.com/live/0MRUaILCrVY) |
 | [024](/streams/024) | 23.10.2026 | Нова AWS Lambda для AI-агентів: рекап ServerlessDays Cardiff | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/uzaPapLB6B8) |
 | [023](/streams/023) | 16.10.2026 | Pet-проєкт: від ідеї до production | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/3psATdryIYA) |
 | [022](/streams/022) | 09.10.2026 | AI пише код. Хто отримує підвищення? | [Сергій Литвин](/speakers/serhii-lytvyn) | [Дивитись](https://youtube.com/live/icenkn7tmdY) |
