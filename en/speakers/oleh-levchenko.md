@@ -23,11 +23,13 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#025](/en/streams/025) | Interviewer | Hiring Without Filters: Recruiter vs Developer, Part 1 — interview with Yuliia Kaiunko | 30.10.2026 |
 | [#024](/en/streams/024) | Speaker | The new AWS Lambda for AI agents — ServerlessDays Cardiff 2026 and the AWS Lambda MicroVMs workshop recap | 23.10.2026 |
 | [#019](/en/streams/019) | Speaker | Graphify: controlled experiment — the 71.5× claim vs a real Excalidraw issue | 18.09.2026 |
 | [#018](/en/streams/018) | Speaker | LinkedIn That Works For You — live audit of my own profile | 11.09.2026 |
 | [#017](/en/streams/017) | Host | Live-coding mini X in 2 hours with an AI agent — Oleksandr Blazheiko as guest advisor | 04.09.2026 |
 | [#013](/en/streams/013) | Participant | Structured Interviews & the STAR Method — live Q&A with Ihor Kotov | 07.08.2026 |
+| [#012](/en/streams/012) | Interviewer | InertiaJS: SPA Without a Separate API? — discussion with Oleh Talanov | 31.07.2026 |
 | [#009](/en/streams/009) | Speaker | tmux + AI Agents | 10.07.2026 |
 | [#008](/en/streams/008) | Speaker | React+Vite vs Next.js — when to choose what | 03.07.2026 |
 | [#007](/en/streams/007) | Speaker | React Fragment — component deep dive and FragmentInstance | 26.06.2026 |
