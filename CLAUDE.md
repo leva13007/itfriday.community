@@ -16,7 +16,7 @@ Built with **VitePress** (static site generator). **Separate nested git repo** �
 
 ---
 
-## Commands (run from `site/` folder)
+## Commands (run from the repo root)
 
 ```bash
 pnpm dev        # Dev server → localhost:5173
@@ -89,6 +89,8 @@ Add a new stream summary page:
 3. Copy thumbnail to `public/streams/NNN.png`
 4. Content: thumbnail, date, participants (with profile links), key theses, YouTube link, resources
 5. Resources section must include: LinkedIn, Telegram, Discord links (in that order after content-specific links)
+6. Add a row at the **top** of the "Appearances" table in **every** participant's profile (`speakers/{slug}.md` + `en/speakers/{slug}.md`) — **including the host `oleh-levchenko`**, who is the one most often forgotten (QA issue #9)
+7. Run the pre-commit checks from "Quality rules" below
 
 ---
 
@@ -195,6 +197,13 @@ Three channels:
 
 When the content repo becomes public on GitHub, update `issues.md` to add a direct GitHub link for content issues.
 
+### QA bug workflow
+
+A QA team files site bugs as GitHub issues labelled `bug` (with REQ-/TC- references to their own test docs). When fixing:
+- One commit per issue, message ends with `Fixes #N` so the issue closes on merge
+- After fixing, add the root cause as a rule to "Quality rules" below if it could happen again
+- If a fix touches something an open `notes/` document mentions, update that note too (strike through + date)
+
 ---
 
 ## Internal Notes (`/notes`)
@@ -218,6 +227,41 @@ Every published page needs its own `description:` in frontmatter — it becomes 
 - Streams: `Стрім ІТ П'ятниці #NNN: <тема>. <одне речення з «Про що поговоримо»>` / `IT Friday stream #NNN: <topic>. <one sentence>`
 - Speakers: `<Ім'я> — <роль>. Профіль спікера та виступи на ІТ П'ятниці.` / `<Name> — <role>. Speaker profile and talks at IT Friday.`
 - **No straight double quotes `"` inside the text** — VitePress doesn't escape them in the meta tag and the attribute breaks. Use «…» (UA) / “…” (EN).
+
+---
+
+## Quality rules (from QA — don't reintroduce fixed bugs)
+
+Each rule below was a real bug, fixed in QA cycle 1 (October 2026). Check them whenever you touch the related area.
+
+| Area | Rule | Was |
+|---|---|---|
+| Speaker profiles | Every stream a speaker appears on is in their "Appearances" table (UA + EN), host included | #9 |
+| Links | Only `https://`, relative and `mailto:` links. Browser-internal URLs (`chrome://`, `about:`, `edge://`, `file://`) go in inline code with a "paste into the address bar" hint, never as `[text](url)` | #8 |
+| Images | Every meaningful `<img>`/`![]()` has a non-empty alt. The header logo alt is set per locale in `config.ts` (`logo.alt`); keep it when touching `logo` or `siteTitle` | #6 |
+| i18n | No English UI text on UA pages. Default theme strings are translated in `locales.root.themeConfig` (`outline`, `docFooter`, `notFound`, …); custom Vue components take strings from `.vitepress/theme/home/i18n.ts`, never hardcoded | #5 |
+| Contrast | Text must meet WCAG AA 4.5:1 in both themes. Keep the high-contrast Shiki themes (`markdown.theme`) and the overrides at the bottom of `.vitepress/theme/style.css`; any new color pair gets its ratio checked | #7 |
+| Meta | Every page has its own `description:` (see "Page descriptions") | #4 |
+
+Known open limitation: the mobile hamburger's `aria-label="mobile navigation"` is hardcoded in VitePress 1.6 and stays English.
+
+### Pre-commit checks
+
+```bash
+pnpm build                                   # must pass
+
+# Speaker profiles list every stream they're linked from (no output = OK)
+for f in streams/0*.md; do n=$(basename $f .md); for s in $(grep -o '/speakers/[a-z-]*' $f | sort -u | sed 's#/speakers/##'); do
+  grep -q "/streams/$n)" speakers/$s.md || echo "UA missing: $s #$n"
+  grep -q "/en/streams/$n)" en/speakers/$s.md || echo "EN missing: $s #$n"
+done; done
+
+# No non-web links (no output = OK)
+grep -rnE '\]\((chrome|about|edge|file):' --include='*.md' . | grep -v node_modules
+
+# Pages without a description (no output = OK)
+grep -rL '^description:' --include='*.md' streams en/streams speakers en/speakers posts en/posts wiki en/wiki
+```
 
 ---
 

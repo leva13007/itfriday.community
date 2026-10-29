@@ -26,4 +26,4 @@
 |---|---|---|---|
 | 2026-10-08 | [Узгодження сайту з маніфестом](./2026-10-08-manifesto-alignment.md) | plan | open |
 | 2026-10-08 | [Аудит вікі](./2026-10-08-wiki-audit.md) | research | open |
-| 2026-10-08 | [Аналіз сайту](./2026-10-08-site-analysis.md) | research | open |
+| 2026-10-08 | [Аналіз сайту](./2026-10-08-site-analysis.md) | research | in-progress |
