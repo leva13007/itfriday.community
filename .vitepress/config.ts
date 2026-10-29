@@ -19,6 +19,13 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:image', content: 'https://itfriday.community/logo-dark.png' }],
+    // Umami Cloud analytics — only counts visits on the production domain
+    ['script', {
+      defer: '',
+      src: 'https://cloud.umami.is/script.js',
+      'data-website-id': '5a2bd2f4-f241-47d7-832e-91b5ada7e52d',
+      'data-domains': 'itfriday.community',
+    }],
   ],
 
   // Per-page link previews (Telegram, LinkedIn) — og:* mirror the page's own title/description
