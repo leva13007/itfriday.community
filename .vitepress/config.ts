@@ -7,7 +7,6 @@ export default defineConfig({
   srcExclude: ['notes/**', 'README.md', 'CLAUDE.md', '**/CLAUDE.md'],
 
   themeConfig: {
-    logo: { dark: '/logo-light.png', light: '/logo-dark.png' },
     siteTitle: false,
   },
 
@@ -24,6 +23,8 @@ export default defineConfig({
       title: 'ІТ П\'ятниця',
       description: 'Онлайн-ком\'юніті для IT-спеціалістів по всьому світу',
       themeConfig: {
+        // siteTitle is hidden, so alt is the logo link's only accessible name
+        logo: { dark: '/logo-light.png', light: '/logo-dark.png', alt: 'ІТ П\'ятниця' },
         nav: [
           { text: 'Про нас', link: '/about' },
           { text: 'Стріми', link: '/streams/' },
@@ -65,6 +66,7 @@ export default defineConfig({
       title: 'IT Friday',
       description: 'Online community for IT professionals worldwide',
       themeConfig: {
+        logo: { dark: '/logo-light.png', light: '/logo-dark.png', alt: 'IT Friday' },
         nav: [
           { text: 'About', link: '/en/about' },
           { text: 'Streams', link: '/en/streams/' },
