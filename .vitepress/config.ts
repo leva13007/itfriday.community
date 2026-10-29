@@ -58,6 +58,23 @@ export default defineConfig({
         footer: {
           message: 'ІТ П\'ятниця · @zloyleva',
         },
+        // Default theme UI strings are English-only — translate them for the UA locale
+        outline: { label: 'На цій сторінці' },
+        docFooter: { prev: 'Попередня сторінка', next: 'Наступна сторінка' },
+        darkModeSwitchLabel: 'Тема',
+        lightModeSwitchTitle: 'Увімкнути світлу тему',
+        darkModeSwitchTitle: 'Увімкнути темну тему',
+        sidebarMenuLabel: 'Меню',
+        returnToTopLabel: 'Нагору',
+        langMenuLabel: 'Змінити мову',
+        skipToContentLabel: 'Перейти до вмісту',
+        lastUpdated: { text: 'Оновлено' },
+        notFound: {
+          title: 'СТОРІНКУ НЕ ЗНАЙДЕНО',
+          quote: 'Схоже, цієї сторінки немає — або посилання застаріло. Почнімо з головної.',
+          linkLabel: 'перейти на головну',
+          linkText: 'На головну',
+        },
       },
     },
     en: {
