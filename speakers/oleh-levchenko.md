@@ -1,4 +1,5 @@
 ---
+description: "Олег Левченко — Senior Full Stack JavaScript Developer, Засновник IT Friday. Профіль спікера та виступи на ІТ П'ятниці."
 title: Олег Левченко
 ---
 

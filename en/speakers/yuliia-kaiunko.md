@@ -1,4 +1,5 @@
 ---
+description: "Yuliia Kaiunko — HRD / Lead Recruiter, Kozak Group. Speaker profile and talks at IT Friday."
 title: Yuliia Kaiunko
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Олег Таланов — CTO і Co-Founder, WebCap Digitals. Профіль спікера та виступи на ІТ П'ятниці."
 title: Олег Таланов
 ---
 

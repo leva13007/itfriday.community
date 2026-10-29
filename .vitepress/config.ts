@@ -21,6 +21,14 @@ export default defineConfig({
     ['meta', { property: 'og:image', content: 'https://itfriday.community/logo-dark.png' }],
   ],
 
+  // Per-page link previews (Telegram, LinkedIn) — og:* mirror the page's own title/description
+  transformHead({ title, description }) {
+    return [
+      ['meta', { property: 'og:title', content: title }],
+      ['meta', { property: 'og:description', content: description }],
+    ]
+  },
+
   locales: {
     root: {
       lang: 'uk-UA',

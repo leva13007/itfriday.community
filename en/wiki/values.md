@@ -1,3 +1,7 @@
+---
+description: "IT Friday's values — the community's inner compass: closeness over scale, technical and human topics on equal terms."
+---
+
 # Values
 
 Our internal compass: when it's unclear what to do — the answer is here.

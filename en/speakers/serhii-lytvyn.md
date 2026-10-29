@@ -1,4 +1,5 @@
 ---
+description: "Serhii Lytvyn — Senior Frontend / Agentic UI Developer. Speaker profile and talks at IT Friday."
 title: Serhii Lytvyn
 ---
 

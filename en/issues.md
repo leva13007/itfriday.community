@@ -1,4 +1,5 @@
 ---
+description: "Found a site bug, an inaccuracy in a talk, or missing promised materials? How and where to report it."
 title: Issues — Feedback
 ---
 

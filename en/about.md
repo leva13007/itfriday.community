@@ -1,3 +1,7 @@
+---
+description: "About IT Friday: how the community grew out of the Zaporizhzhia meetup Zengineers.Community and why it exists today."
+---
+
 # About
 
 **Online community for IT professionals worldwide — live, technical, and human in equal measure.**

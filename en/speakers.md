@@ -1,4 +1,5 @@
 ---
+description: "IT Friday Hall of Speakers: everyone who has appeared on the community's streams, with profiles and talk topics."
 title: Speakers
 ---
 

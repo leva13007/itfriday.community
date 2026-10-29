@@ -1,4 +1,5 @@
 ---
+description: "Юлія Каюнко — HRD / Lead Recruiter, Kozak Group. Профіль спікера та виступи на ІТ П'ятниці."
 title: Юлія Каюнко
 ---
 

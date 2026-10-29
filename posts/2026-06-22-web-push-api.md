@@ -1,4 +1,5 @@
 ---
+description: "Повний гайд по Web Push API від Олександра Блажейка: архітектура, Service Worker, VAPID і практична реалізація сповіщень."
 title: "Web Push API"
 date: 2026-06-22
 tags: [tech]

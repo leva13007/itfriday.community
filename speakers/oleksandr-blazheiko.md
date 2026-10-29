@@ -1,4 +1,5 @@
 ---
+description: "Олександр Блажейко — Software Development Engineer, Fullstack. Профіль спікера та виступи на ІТ П'ятниці."
 title: Олександр Блажейко
 ---
 

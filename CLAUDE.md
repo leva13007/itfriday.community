@@ -84,7 +84,7 @@ site/
 ## After Each Stream
 
 Add a new stream summary page:
-1. Create `streams/NNN.md` (UA) and `en/streams/NNN.md` (EN)
+1. Create `streams/NNN.md` (UA) and `en/streams/NNN.md` (EN) with a `description:` in frontmatter (see "Page descriptions" below)
 2. Update `streams/index.md` and `en/streams/index.md` to include the new entry
 3. Copy thumbnail to `public/streams/NNN.png`
 4. Content: thumbnail, date, participants (with profile links), key theses, YouTube link, resources
@@ -111,7 +111,7 @@ Add a new stream summary page:
 ### Adding a new speaker
 
 1. Add their entry to the `speakers` array in `speakers.md` and `en/speakers.md`
-2. Create `speakers/{slug}.md` (UA) and `en/speakers/{slug}.md` (EN) — copy from an existing profile
+2. Create `speakers/{slug}.md` (UA) and `en/speakers/{slug}.md` (EN) — copy from an existing profile, update its `description:`
 3. If they provided a photo: save to `public/speakers/{slug}.jpg`
 4. Update the stream page(s) where they appeared — link their name to their profile
 
@@ -168,6 +168,7 @@ No fixed schedule. Publish when there's something worth saying.
    ```markdown
    ---
    title: "..."
+   description: "..."
    date: YYYY-MM-DD
    tags: [community]   # community | tech | career
    ---
@@ -206,6 +207,17 @@ Adding a note:
 1. Create `notes/YYYY-MM-DD-slug.md` with frontmatter: `title`, `date`, `type` (research | plan | idea | brainstorm), `status` (open | in-progress | done | dropped)
 2. Add a row at the **top** of the table in `notes/README.md`
 3. UA only — no `en/` mirror needed
+
+---
+
+## Page descriptions
+
+Every published page needs its own `description:` in frontmatter — it becomes `<meta name="description">` and `og:description` (link previews in Telegram/LinkedIn). Without it the page falls back to the site-wide description.
+
+- One or two sentences, ≤ ~200 characters, in the page's language
+- Streams: `Стрім ІТ П'ятниці #NNN: <тема>. <одне речення з «Про що поговоримо»>` / `IT Friday stream #NNN: <topic>. <one sentence>`
+- Speakers: `<Ім'я> — <роль>. Профіль спікера та виступи на ІТ П'ятниці.` / `<Name> — <role>. Speaker profile and talks at IT Friday.`
+- **No straight double quotes `"` inside the text** — VitePress doesn't escape them in the meta tag and the attribute breaks. Use «…» (UA) / “…” (EN).
 
 ---
 

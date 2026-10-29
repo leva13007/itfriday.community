@@ -1,3 +1,7 @@
+---
+description: "IT Friday stream formats: technical deep-dives, live coding, conference recaps, career stories, interviews and more."
+---
+
 # Stream Formats
 
 Every stream belongs to one of 11 directions.

@@ -1,4 +1,5 @@
 ---
+description: "Oleh Levchenko — Senior Full Stack JavaScript Developer, IT Friday Founder. Speaker profile and talks at IT Friday."
 title: Oleh Levchenko
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Oleksandr Blazheiko — Software Development Engineer, Fullstack. Speaker profile and talks at IT Friday."
 title: Oleksandr Blazheiko
 ---
 
