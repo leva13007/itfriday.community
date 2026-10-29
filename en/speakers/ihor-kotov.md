@@ -1,4 +1,5 @@
 ---
+description: "Ihor Kotov — Aspiring Full Stack and Java Developer. Speaker profile and talks at IT Friday."
 title: Ihor Kotov
 ---
 

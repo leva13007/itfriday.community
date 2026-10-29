@@ -1,4 +1,5 @@
 ---
+description: "Oleh Talanov — CTO and Co-Founder, WebCap Digitals. Speaker profile and talks at IT Friday."
 title: Oleh Talanov
 ---
 

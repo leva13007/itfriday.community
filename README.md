@@ -26,15 +26,15 @@ After each stream — add a new page:
 
 ```bash
 # Create stream page (UA + EN)
-site/streams/NNN.md
-site/en/streams/NNN.md
+streams/NNN.md
+en/streams/NNN.md
 
 # Update stream index (UA + EN)
-site/streams/index.md
-site/en/streams/index.md
+streams/index.md
+en/streams/index.md
 
 # Copy thumbnail
-site/public/streams/NNN.png
+public/streams/NNN.png
 ```
 
 ## Version bump
@@ -51,4 +51,4 @@ Push to `main` → GitHub Actions → GitHub Pages → live at [itfriday.communi
 
 ## Next Step
 
-Publish stream page for the most recent IT Friday stream: create `site/streams/NNN.md` (UA + EN) and update `streams/index.md`.
+Publish stream page for the most recent IT Friday stream: create `streams/NNN.md` (UA + EN) and update `streams/index.md`.

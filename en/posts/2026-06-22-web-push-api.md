@@ -1,4 +1,5 @@
 ---
+description: "Oleksandr Blazheiko's complete guide to the Web Push API: architecture, Service Workers, VAPID and a practical notification setup."
 title: "Web Push API"
 date: 2026-06-22
 tags: [tech]

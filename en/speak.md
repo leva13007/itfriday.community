@@ -1,4 +1,5 @@
 ---
+description: "Want to speak at IT Friday? Who it's for, which formats exist and how to apply for a stream."
 title: Become a Speaker
 ---
 

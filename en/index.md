@@ -1,4 +1,5 @@
 ---
+description: "IT Friday — an online community for IT professionals worldwide. Weekly Friday streams about tech, careers and life in IT."
 layout: home
 markdownStyles: false
 ---

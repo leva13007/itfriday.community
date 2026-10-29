@@ -7,8 +7,12 @@ export default defineConfig({
   srcExclude: ['notes/**', 'README.md', 'CLAUDE.md', '**/CLAUDE.md'],
 
   themeConfig: {
-    logo: { dark: '/logo-light.png', light: '/logo-dark.png' },
     siteTitle: false,
+  },
+
+  // Default github-light/dark token colors fall below WCAG AA 4.5:1 on the code block background
+  markdown: {
+    theme: { light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' },
   },
 
   head: [
@@ -17,6 +21,14 @@ export default defineConfig({
     ['meta', { property: 'og:image', content: 'https://itfriday.community/logo-dark.png' }],
   ],
 
+  // Per-page link previews (Telegram, LinkedIn) — og:* mirror the page's own title/description
+  transformHead({ title, description }) {
+    return [
+      ['meta', { property: 'og:title', content: title }],
+      ['meta', { property: 'og:description', content: description }],
+    ]
+  },
+
   locales: {
     root: {
       lang: 'uk-UA',
@@ -24,6 +36,8 @@ export default defineConfig({
       title: 'ІТ П\'ятниця',
       description: 'Онлайн-ком\'юніті для IT-спеціалістів по всьому світу',
       themeConfig: {
+        // siteTitle is hidden, so alt is the logo link's only accessible name
+        logo: { dark: '/logo-light.png', light: '/logo-dark.png', alt: 'ІТ П\'ятниця' },
         nav: [
           { text: 'Про нас', link: '/about' },
           { text: 'Стріми', link: '/streams/' },
@@ -57,6 +71,23 @@ export default defineConfig({
         footer: {
           message: 'ІТ П\'ятниця · @zloyleva',
         },
+        // Default theme UI strings are English-only — translate them for the UA locale
+        outline: { label: 'На цій сторінці' },
+        docFooter: { prev: 'Попередня сторінка', next: 'Наступна сторінка' },
+        darkModeSwitchLabel: 'Тема',
+        lightModeSwitchTitle: 'Увімкнути світлу тему',
+        darkModeSwitchTitle: 'Увімкнути темну тему',
+        sidebarMenuLabel: 'Меню',
+        returnToTopLabel: 'Нагору',
+        langMenuLabel: 'Змінити мову',
+        skipToContentLabel: 'Перейти до вмісту',
+        lastUpdated: { text: 'Оновлено' },
+        notFound: {
+          title: 'СТОРІНКУ НЕ ЗНАЙДЕНО',
+          quote: 'Схоже, цієї сторінки немає — або посилання застаріло. Почнімо з головної.',
+          linkLabel: 'перейти на головну',
+          linkText: 'На головну',
+        },
       },
     },
     en: {
@@ -65,6 +96,7 @@ export default defineConfig({
       title: 'IT Friday',
       description: 'Online community for IT professionals worldwide',
       themeConfig: {
+        logo: { dark: '/logo-light.png', light: '/logo-dark.png', alt: 'IT Friday' },
         nav: [
           { text: 'About', link: '/en/about' },
           { text: 'Streams', link: '/en/streams/' },

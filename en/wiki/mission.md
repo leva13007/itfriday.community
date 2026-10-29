@@ -1,3 +1,7 @@
+---
+description: "IT Friday's mission: an online community for IT professionals worldwide — live, technical and human in equal measure."
+---
+
 # Mission
 
 **Online community for IT professionals worldwide — live, technical, and human in equal measure.**

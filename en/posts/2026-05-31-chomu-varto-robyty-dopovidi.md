@@ -1,4 +1,5 @@
 ---
+description: "Oleh Levchenko on why you should give talks even as a junior: stage fright, first talks and what they do for your career."
 title: "Why you should give talks — even if you know nothing"
 date: 2026-05-31
 tags: [career]

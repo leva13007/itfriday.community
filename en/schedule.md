@@ -1,3 +1,7 @@
+---
+description: "IT Friday stream schedule: every Friday at 19:00 London / 21:00 Kyiv. The next stream and where to follow announcements."
+---
+
 # Schedule
 
 ## Next stream

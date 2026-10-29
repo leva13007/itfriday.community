@@ -31,3 +31,12 @@
   white-space: nowrap;
 }
 .section-link:hover { text-decoration: underline; }
+
+/* WCAG AA contrast (≥4.5:1) overrides for default theme colors */
+:root {
+  --vp-code-lang-color: var(--vp-c-text-2);
+  --vp-button-brand-bg: #4f6bc6; /* default #5672cd is 4.48:1 with white text */
+}
+.dark {
+  --vp-button-brand-hover-bg: #3451b2; /* default #5c73e7 is 4.15:1 with white text */
+}

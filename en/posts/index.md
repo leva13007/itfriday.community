@@ -1,4 +1,5 @@
 ---
+description: "IT Friday posts: notes, posts and articles about tech, careers and the community."
 title: Posts
 ---
 

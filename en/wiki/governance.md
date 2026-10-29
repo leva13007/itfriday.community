@@ -1,3 +1,7 @@
+---
+description: "How IT Friday is run: the governance model, seasonal pauses and how to help the community."
+---
+
 # Governance
 
 ## Model
