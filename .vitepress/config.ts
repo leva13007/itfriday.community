@@ -10,6 +10,11 @@ export default defineConfig({
     siteTitle: false,
   },
 
+  // Default github-light/dark token colors fall below WCAG AA 4.5:1 on the code block background
+  markdown: {
+    theme: { light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' },
+  },
+
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
     ['meta', { property: 'og:type', content: 'website' }],
