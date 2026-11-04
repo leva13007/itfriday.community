@@ -10,6 +10,7 @@ description: "Архів усіх стрімів ІТ П'ятниці — з н�
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [026](/streams/026) | 06.11.2026 | RAG чи AI-агент: що обрати для пошуку по документах? | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/aSMQZ5RQU3Q) |
 | [025](/streams/025) | 30.10.2026 | IT-найм без фільтрів: рекрутер vs розробник, ч.1 | [Олег Левченко](/speakers/oleh-levchenko) · [Юлія Каюнко](/speakers/yuliia-kaiunko) | [Дивитись](https://youtube.com/live/0MRUaILCrVY) |
 | [024](/streams/024) | 23.10.2026 | Нова AWS Lambda для AI-агентів: рекап ServerlessDays Cardiff | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/uzaPapLB6B8) |
 | [023](/streams/023) | 16.10.2026 | Pet-проєкт: від ідеї до production | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/3psATdryIYA) |

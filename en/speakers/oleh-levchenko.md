@@ -24,6 +24,7 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
+| [#026](/en/streams/026) | Speaker | RAG or an AI agent: which to choose for document search — a live experiment | 06.11.2026 |
 | [#025](/en/streams/025) | Interviewer | Hiring Without Filters: Recruiter vs Developer, Part 1 — interview with Yuliia Kaiunko | 30.10.2026 |
 | [#024](/en/streams/024) | Speaker | The new AWS Lambda for AI agents — ServerlessDays Cardiff 2026 and the AWS Lambda MicroVMs workshop recap | 23.10.2026 |
 | [#019](/en/streams/019) | Speaker | Graphify: controlled experiment — the 71.5× claim vs a real Excalidraw issue | 18.09.2026 |
