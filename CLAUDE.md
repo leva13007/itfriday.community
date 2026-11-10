@@ -91,6 +91,19 @@ Add a new stream summary page:
 5. Resources section must include: LinkedIn, Telegram, Discord links (in that order after content-specific links)
 6. Add a row at the **top** of the "Appearances" table in **every** participant's profile (`speakers/{slug}.md` + `en/speakers/{slug}.md`) — **including the host `oleh-levchenko`**, who is the one most often forgotten (QA issue #9)
 7. Run the pre-commit checks from "Quality rules" below
+8. If the stream has a curated chat file (`it_community_stuff/streams/NNN/stream-NN-chat.md`), add a `## З чату` / `## From the chat` section — see "Chat highlights" below
+
+### Chat highlights (`## З чату` / `## From the chat`)
+
+The live chat is part of the stream: viewers' questions and ideas get credited on the page, like speakers get profiles. First used on #026.
+
+- **Placement:** after `## Таймкоди` / `## Timecodes`, before `## Ресурси` / `## Resources`.
+- **Curated, never a raw dump:** 3–7 items. Only technical questions, ideas and constructive critique. No greetings, no personal or off-topic messages (relocation, visas, private life).
+- **Item shape:** a `>` quote with the YouTube handle in bold (`**@handle:**`), then a `→` line saying what happened next: answered live (with a timecode link once timecodes exist), open question → Discord, idea → noted/backlog, became a future stream topic.
+- **Quotes:** verbatim but trimmed to the point; fix nothing except obvious typos. EN page translates them and says so once in the intro line.
+- **Handles as shown in YouTube** — never guess or add a real name.
+- **Opt-out line** in the intro of every section: removal on request via Telegram. Honour removal requests on both locales.
+- Source of truth for what to publish: `stream-NN-chat.md` in `it_community_stuff` (curated from the raw `chat/chat.md`).
 
 ---
 
