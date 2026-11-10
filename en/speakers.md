@@ -47,6 +47,13 @@ const speakers = [
     org: 'Kozak Group',
     profile: '/en/speakers/yuliia-kaiunko',
   },
+  {
+    avatar: '/speakers/vladyslav-barankevych.jpg',
+    name: 'Vladyslav Barankevych',
+    title: 'iOS Developer',
+    org: 'Sombra',
+    profile: '/en/speakers/vladyslav-barankevych',
+  },
 ]
 </script>
 

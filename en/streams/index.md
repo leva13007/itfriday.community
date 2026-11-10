@@ -10,6 +10,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [027](/en/streams/027) | 13.11.2026 | How to Find a Tech Job Right Now: Mobile and Web Experience | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Vladyslav Barankevych](/en/speakers/vladyslav-barankevych) | [Watch](https://youtube.com/live/3WpBVJVnJAQ) |
 | [026](/en/streams/026) | 06.11.2026 | RAG or an AI Agent: Which to Choose for Document Search? | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/aSMQZ5RQU3Q) |
 | [025](/en/streams/025) | 30.10.2026 | Hiring Without Filters: Recruiter vs Developer, Part 1 | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Yuliia Kaiunko](/en/speakers/yuliia-kaiunko) | [Watch](https://youtube.com/live/0MRUaILCrVY) |
 | [024](/en/streams/024) | 23.10.2026 | The New AWS Lambda for AI Agents: ServerlessDays Cardiff Recap | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/uzaPapLB6B8) |
