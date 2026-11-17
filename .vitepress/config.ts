@@ -1,7 +1,22 @@
-import { defineConfig } from 'vitepress'
+import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { defineConfig, type HeadConfig } from 'vitepress'
+
+const SITE = 'https://itfriday.community'
+const ROOT = resolve(__dirname, '..')
+
+/** `en/streams/027.md` → `/en/streams/027`, `streams/index.md` → `/streams/` (matches cleanUrls) */
+function pathOf(relativePath: string) {
+  return '/' + relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '')
+}
 
 export default defineConfig({
   base: '/',
+
+  // One URL per page: /page (not /page.html) — GitHub Pages serves both, canonical points here
+  cleanUrls: true,
+
+  sitemap: { hostname: SITE },
 
   // Internal docs and repo meta files — never published to the site
   srcExclude: ['notes/**', 'README.md', 'CLAUDE.md', '**/CLAUDE.md'],
@@ -18,7 +33,6 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:image', content: 'https://itfriday.community/logo-dark.png' }],
     // Umami Cloud analytics — only counts visits on the production domain
     ['script', {
       defer: '',
@@ -28,12 +42,48 @@ export default defineConfig({
     }],
   ],
 
-  // Per-page link previews (Telegram, LinkedIn) — og:* mirror the page's own title/description
-  transformHead({ title, description }) {
-    return [
+  // Stream headings end with " · Guest Name" — keep that in the H1, drop it from <title>/og:title
+  // (the guest is already in the description) so titles stay closer to ~60 chars (QA #12)
+  transformPageData(pageData) {
+    if (/^(?:en\/)?streams\/\d{3}\.md$/.test(pageData.relativePath)) {
+      pageData.title = pageData.title.replace(/\s+·\s+[^·]+$/, '')
+    }
+  },
+
+  // Per-page SEO + link previews (Telegram, LinkedIn, Discord) — QA #12
+  transformHead({ title, description, pageData }) {
+    const rel = pageData.relativePath
+    const head: HeadConfig[] = [
       ['meta', { property: 'og:title', content: title }],
       ['meta', { property: 'og:description', content: description }],
     ]
+    if (pageData.isNotFound || rel === '404.md') {
+      head.push(['meta', { property: 'og:image', content: `${SITE}/logo-dark.png` }])
+      return head
+    }
+
+    const url = SITE + pathOf(rel)
+    head.push(['link', { rel: 'canonical', href: url }], ['meta', { property: 'og:url', content: url }])
+
+    // Stream pages: their own cover instead of the generic logo
+    const num = rel.match(/^(?:en\/)?streams\/(\d{3})\.md$/)?.[1]
+    const cover = num && existsSync(resolve(ROOT, `public/streams/${num}.png`)) ? `/streams/${num}.png` : null
+    head.push(
+      ['meta', { property: 'og:image', content: SITE + (cover ?? '/logo-dark.png') }],
+      ['meta', { name: 'twitter:card', content: cover ? 'summary_large_image' : 'summary' }],
+    )
+
+    // hreflang: UA page ↔ its en/ mirror, only when both exist
+    const ua = rel.startsWith('en/') ? rel.slice(3) : rel
+    const en = `en/${ua}`
+    if (existsSync(resolve(ROOT, ua)) && existsSync(resolve(ROOT, en))) {
+      head.push(
+        ['link', { rel: 'alternate', hreflang: 'uk', href: SITE + pathOf(ua) }],
+        ['link', { rel: 'alternate', hreflang: 'en', href: SITE + pathOf(en) }],
+        ['link', { rel: 'alternate', hreflang: 'x-default', href: SITE + pathOf(ua) }],
+      )
+    }
+    return head
   },
 
   locales: {
