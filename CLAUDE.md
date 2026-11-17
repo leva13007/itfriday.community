@@ -1,8 +1,10 @@
-# site/CLAUDE.md
+# CLAUDE.md — itfriday.community
 
-Guidance for working inside the `site/` folder (public community website).
+Guidance for working in the public community website repo.
 
-For project-wide context see the root `CLAUDE.md`.
+For project-wide context (mission, formats, governance, stream content) see the private content repo
+`~/projects/community/it_community_stuff/` and its `CLAUDE.md`. That repo is the source of truth;
+this one is the public showcase.
 
 ---
 
@@ -10,7 +12,7 @@ For project-wide context see the root `CLAUDE.md`.
 
 The public website for the IT Friday community: **[itfriday.community](https://itfriday.community)**
 
-Built with **VitePress** (static site generator). **Separate nested git repo** — has its own `.git`, its own GitHub repository, and deploys independently via GitHub Actions → GitHub Pages.
+Built with **VitePress** (static site generator). **Standalone repo** (sibling of `it_community_stuff`, not nested in it) — own GitHub repository (`leva13007/itfriday.community`, public), deploys via GitHub Actions → GitHub Pages.
 
 **Package manager: pnpm** (`pnpm-lock.yaml` is the lock file).
 
@@ -29,7 +31,7 @@ pnpm preview    # Preview the built site locally
 ## Folder Structure
 
 ```
-site/
+./
   index.md          # Ukrainian homepage (default language)
   about.md          # About page (UA)
   schedule.md       # Stream schedule (UA)
