@@ -40,3 +40,12 @@
 .dark {
   --vp-button-brand-hover-bg: #3451b2; /* default #5c73e7 is 4.15:1 with white text */
 }
+
+/* Next-stream card on /schedule (same component as the home hero, QA #11) */
+.schedule-next {
+  max-width: 560px;
+  margin: 16px 0 24px;
+}
+/* .vp-doc underlines every link; the card styles its own (vp-raw needs postcssIsolateStyles to opt out) */
+.vp-doc .schedule-next a { text-decoration: none; }
+.vp-doc .schedule-next a.meanwhile:hover { text-decoration: underline; }

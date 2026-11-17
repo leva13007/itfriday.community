@@ -6,9 +6,11 @@ description: "IT Friday stream schedule: every Friday at 19:00 London / 21:00 Ky
 
 ## Next stream
 
-> Date and topic will be announced in [Telegram](https://t.me/+QRJNFfHaLxMwYzcy).
+<div class="vp-raw schedule-next">
+  <NextStream />
+</div>
 
-Subscribe to not miss it — **every Friday at 19:00 London / 21:00 Kyiv**.
+Streams go live **every Friday at 19:00 London / 21:00 Kyiv**.
 
 ## Stay updated
 

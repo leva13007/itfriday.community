@@ -4,6 +4,7 @@ import HomeHero from './components/HomeHero.vue'
 import HomeLatest from './components/HomeLatest.vue'
 import HomeSpeakers from './components/HomeSpeakers.vue'
 import HomeCta from './components/HomeCta.vue'
+import NextStream from './components/NextStream.vue'
 import './style.css'
 
 export default {
@@ -13,5 +14,7 @@ export default {
     app.component('HomeLatest', HomeLatest)
     app.component('HomeSpeakers', HomeSpeakers)
     app.component('HomeCta', HomeCta)
+    // Also used on /schedule — one source for "next stream" across pages (QA #11)
+    app.component('NextStream', NextStream)
   },
 } satisfies Theme
