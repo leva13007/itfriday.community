@@ -43,6 +43,9 @@ export const strings = {
     ctaTitle: 'Маєш що розповісти?',
     ctaText: 'Кейс, баг, який ловив три дні, або інструмент, що здивував, — цього досить. Бути «визнаним експертом» не обовʼязково.',
     ctaButton: 'Стати спікером',
+
+    playVideo: 'Дивитись запис стріму',
+    watchHere: 'Дивитись · YouTube',
   },
   en: {
     title: 'IT Friday',
@@ -76,5 +79,8 @@ export const strings = {
     ctaTitle: 'Got something to share?',
     ctaText: "A case, a bug you chased for three days, a tool that surprised you — that's enough. You don't need to be a \"recognized expert\".",
     ctaButton: 'Become a speaker',
+
+    playVideo: 'Watch the stream recording',
+    watchHere: 'Watch · YouTube',
   },
 }

@@ -1,6 +1,7 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig, type HeadConfig } from 'vitepress'
+import { parse as parseStream } from './theme/home/streamParse'
 
 const SITE = 'https://itfriday.community'
 const ROOT = resolve(__dirname, '..')
@@ -72,6 +73,26 @@ export default defineConfig({
       ['meta', { property: 'og:image', content: SITE + (cover ?? '/logo-dark.png') }],
       ['meta', { name: 'twitter:card', content: cover ? 'summary_large_image' : 'summary' }],
     )
+
+    // VideoObject JSON-LD: Google can show the page as a video result (the video is embedded via <StreamVideo />).
+    // Only for streams that already happened — an upcoming stream has no uploadDate yet.
+    if (num) {
+      const stream = parseStream(pathOf(rel), readFileSync(resolve(ROOT, rel), 'utf8'))
+      const id = stream?.youtube?.match(/live\/([\w-]+)/)?.[1]
+      if (stream && id && stream.start <= Date.now()) {
+        head.push(['script', { type: 'application/ld+json' }, JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'VideoObject',
+          name: title,
+          description,
+          thumbnailUrl: [SITE + (cover ?? '/logo-dark.png'), `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`],
+          uploadDate: new Date(stream.start).toISOString(),
+          embedUrl: `https://www.youtube.com/embed/${id}`,
+          url,
+          inLanguage: 'uk',
+        })])
+      }
+    }
 
     // hreflang: UA page ↔ its en/ mirror, only when both exist
     const ua = rel.startsWith('en/') ? rel.slice(3) : rel

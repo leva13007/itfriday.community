@@ -87,7 +87,9 @@ Add a new stream summary page:
 1. Create `streams/NNN.md` (UA) and `en/streams/NNN.md` (EN) with a `description:` in frontmatter (see "Page descriptions" below)
 2. Update `streams/index.md` and `en/streams/index.md` to include the new entry
 3. Copy thumbnail to `public/streams/NNN.png`
-4. Content: thumbnail, date, participants (with profile links), key theses, YouTube link, resources
+4. Content: `<StreamVideo />` right under the H1 (not a `![]()` cover), date, participants (with profile links), key theses, YouTube link, resources
+   - `<StreamVideo />` is a lite-YouTube facade: shows `public/streams/NNN.png`, loads the real player only on click. It takes the video ID from the `youtube.com/live/…` link on the page — keep that link in that exact form
+   - Past streams also get `VideoObject` JSON-LD automatically (`transformHead` in `config.ts`) — nothing to add by hand
 5. Resources section must include: LinkedIn, Telegram, Discord links (in that order after content-specific links)
 6. Add a row at the **top** of the "Appearances" table in **every** participant's profile (`speakers/{slug}.md` + `en/speakers/{slug}.md`) — **including the host `oleh-levchenko`**, who is the one most often forgotten (QA issue #9)
 7. Run the pre-commit checks from "Quality rules" below
