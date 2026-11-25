@@ -122,7 +122,7 @@ export default defineConfig({
           { text: 'Спікери', link: '/speakers' },
           { text: 'Стати спікером', link: '/speak' },
           { text: 'Публікації', link: '/posts/' },
-          { text: 'Вікі', link: '/wiki/mission' },
+          { text: 'Вікі', link: '/wiki/', activeMatch: '^/wiki/' },
           { text: 'Розклад', link: '/schedule' },
           { text: 'Issues', link: '/issues' },
         ],
@@ -131,6 +131,7 @@ export default defineConfig({
             {
               text: 'Документи',
               items: [
+                { text: 'Огляд', link: '/wiki/' },
                 { text: 'Місія', link: '/wiki/mission' },
                 { text: 'Цінності', link: '/wiki/values' },
                 { text: 'Формати стрімів', link: '/wiki/formats' },
@@ -181,7 +182,7 @@ export default defineConfig({
           { text: 'Speakers', link: '/en/speakers' },
           { text: 'Become a Speaker', link: '/en/speak' },
           { text: 'Posts', link: '/en/posts/' },
-          { text: 'Wiki', link: '/en/wiki/mission' },
+          { text: 'Wiki', link: '/en/wiki/', activeMatch: '^/en/wiki/' },
           { text: 'Schedule', link: '/en/schedule' },
           { text: 'Issues', link: '/en/issues' },
         ],
@@ -190,6 +191,7 @@ export default defineConfig({
             {
               text: 'Documents',
               items: [
+                { text: 'Overview', link: '/en/wiki/' },
                 { text: 'Mission', link: '/en/wiki/mission' },
                 { text: 'Values', link: '/en/wiki/values' },
                 { text: 'Stream Formats', link: '/en/wiki/formats' },
