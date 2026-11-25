@@ -24,6 +24,35 @@ export default defineConfig({
 
   themeConfig: {
     siteTitle: false,
+    // Built-in local search (MiniSearch, no external service) — QA #15.
+    // Index is per locale; the default modal strings are English, so UA gets its own (QA #5).
+    search: {
+      provider: 'local',
+      options: {
+        locales: {
+          root: {
+            translations: {
+              button: { buttonText: 'Пошук', buttonAriaLabel: 'Пошук по сайту' },
+              modal: {
+                displayDetails: 'Показати детальний список',
+                resetButtonTitle: 'Очистити пошук',
+                backButtonTitle: 'Закрити пошук',
+                noResultsText: 'Нічого не знайдено за запитом',
+                footer: {
+                  selectText: 'відкрити',
+                  selectKeyAriaLabel: 'Enter',
+                  navigateText: 'перейти',
+                  navigateUpKeyAriaLabel: 'стрілка вгору',
+                  navigateDownKeyAriaLabel: 'стрілка вниз',
+                  closeText: 'закрити',
+                  closeKeyAriaLabel: 'Escape',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 
   // Default github-light/dark token colors fall below WCAG AA 4.5:1 on the code block background
