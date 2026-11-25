@@ -10,6 +10,7 @@ description: "Архів усіх стрімів ІТ П'ятниці — з н�
 
 | # | Дата | Тема | Спікери | YouTube |
 |---|---|---|---|---|
+| [029](/streams/029) | 27.11.2026 | AI в команді: правила, скіли і хто тепер потрібен | [Олег Левченко](/speakers/oleh-levchenko) · [Олег Таланов](/speakers/oleh-talanov) | [Дивитись](https://youtube.com/live/d6rjxuP78jE) |
 | [028](/streams/028) | 20.11.2026 | JavaScript виправив Date через 30 років: розбираємо Temporal API | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/oA8vXBOu8S0) |
 | [027](/streams/027) | 13.11.2026 | Як знайти роботу в IT зараз: досвід з мобілки і вебу | [Олег Левченко](/speakers/oleh-levchenko) · [Владислав Баранкевич](/speakers/vladyslav-barankevych) | [Дивитись](https://youtube.com/live/3WpBVJVnJAQ) |
 | [026](/streams/026) | 06.11.2026 | RAG чи AI-агент: що обрати для пошуку по документах? | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/aSMQZ5RQU3Q) |

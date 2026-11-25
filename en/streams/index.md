@@ -10,6 +10,7 @@ Archive of all streams — with notes, timecodes, and resources.
 
 | # | Date | Topic | Speakers | YouTube |
 |---|---|---|---|---|
+| [029](/en/streams/029) | 27.11.2026 | AI in the Team: Rules, Skills and Who We Need Now | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/d6rjxuP78jE) |
 | [028](/en/streams/028) | 20.11.2026 | JavaScript Fixed Date After 30 Years: Inside the Temporal API | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/oA8vXBOu8S0) |
 | [027](/en/streams/027) | 13.11.2026 | How to Find a Tech Job Right Now: Mobile and Web Experience | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Vladyslav Barankevych](/en/speakers/vladyslav-barankevych) | [Watch](https://youtube.com/live/3WpBVJVnJAQ) |
 | [026](/en/streams/026) | 06.11.2026 | RAG or an AI Agent: Which to Choose for Document Search? | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/aSMQZ5RQU3Q) |
