@@ -5,7 +5,7 @@ title: Ihor Kotov
 
 # Ihor Kotov
 
-<img src="/speakers/ihor-kotov.jpg" alt="Ihor Kotov" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/ihor-kotov.jpg" alt="Ihor Kotov" width="120" height="138" style="border-radius:12px;margin-bottom:16px" />
 
 **Aspiring Full Stack & Java Developer**  
 Petro Mohyla Black Sea National University · Mykolaiv, Ukraine

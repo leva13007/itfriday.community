@@ -5,7 +5,7 @@ title: Serhii Lytvyn
 
 # Serhii Lytvyn
 
-<img src="/speakers/serhii-lytvyn.jpg" alt="Serhii Lytvyn" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/serhii-lytvyn.jpg" alt="Serhii Lytvyn" width="120" height="106" style="border-radius:12px;margin-bottom:16px" />
 
 **Senior Frontend / Agentic UI Developer**  
 AAA game development company

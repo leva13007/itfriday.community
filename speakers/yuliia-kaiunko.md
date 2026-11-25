@@ -5,7 +5,7 @@ title: Юлія Каюнко
 
 # Юлія Каюнко
 
-<img src="/speakers/yuliia-kaiunko.jpg" alt="Юлія Каюнко" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/yuliia-kaiunko.jpg" alt="Юлія Каюнко" width="120" height="120" style="border-radius:12px;margin-bottom:16px" />
 
 **HRD / Lead Recruiter** · Kozak Group
 

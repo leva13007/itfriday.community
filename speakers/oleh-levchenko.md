@@ -5,7 +5,7 @@ title: Олег Левченко
 
 # Олег Левченко
 
-<img src="/speakers/oleh-levchenko.jpg" alt="Олег Левченко" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleh-levchenko.jpg" alt="Олег Левченко" width="120" height="150" style="border-radius:12px;margin-bottom:16px" />
 
 **Full Stack JavaScript Developer** · Засновник IT Friday  
 The AA · Cardiff, UK

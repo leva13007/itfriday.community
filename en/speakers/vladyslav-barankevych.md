@@ -5,7 +5,7 @@ title: Vladyslav Barankevych
 
 # Vladyslav Barankevych
 
-<img src="/speakers/vladyslav-barankevych.jpg" alt="Vladyslav Barankevych" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/vladyslav-barankevych.jpg" alt="Vladyslav Barankevych" width="120" height="120" style="border-radius:12px;margin-bottom:16px" />
 
 **iOS Developer** · Sombra
 

@@ -5,7 +5,7 @@ title: Ігор Котов
 
 # Ігор Котов
 
-<img src="/speakers/ihor-kotov.jpg" alt="Ігор Котов" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/ihor-kotov.jpg" alt="Ігор Котов" width="120" height="138" style="border-radius:12px;margin-bottom:16px" />
 
 **Full Stack & Java Developer** (студент, на початку кар'єри)  
 Чорноморський національний університет ім. Петра Могили · Миколаїв, Україна

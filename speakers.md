@@ -65,7 +65,7 @@ const speakers = [
 
 <div class="speakers-grid">
   <a v-for="s in speakers" :key="s.name" :href="s.profile" class="speaker-card">
-    <img :src="s.avatar" :alt="s.name" class="speaker-avatar" />
+    <img :src="s.avatar" :alt="s.name" class="speaker-avatar" width="52" height="52" loading="lazy" />
     <div class="speaker-info">
       <strong>{{ s.name }}</strong>
       <span>{{ s.title }}</span>
@@ -99,6 +99,7 @@ const speakers = [
 .speaker-avatar {
   width: 52px;
   height: 52px;
+  object-fit: cover;
   border-radius: 8px;
   flex-shrink: 0;
 }

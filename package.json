@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "preview": "vitepress preview"
+    "preview": "vitepress preview",
+    "images": "bash scripts/optimize-images.sh"
   },
   "keywords": [],
   "author": "",

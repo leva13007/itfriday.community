@@ -28,7 +28,7 @@ const latest = computed(() => past.value[0] ?? null)
     <!-- On air / announced: the page for the next stream already exists -->
     <template v-if="announced">
       <a class="thumb" :href="announced.url">
-        <img :src="announced.thumb" :alt="`#${announced.num}`" @error="hideBroken" />
+        <img :src="announced.thumb" :alt="`#${announced.num}`" width="1380" height="776" decoding="async" @error="hideBroken" />
         <span class="badge"><span v-if="isLive" class="dot" />{{ isLive ? t.onAir : t.nextStream }}</span>
       </a>
       <div class="body">

@@ -5,7 +5,7 @@ title: Сергій Литвин
 
 # Сергій Литвин
 
-<img src="/speakers/serhii-lytvyn.jpg" alt="Сергій Литвин" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/serhii-lytvyn.jpg" alt="Сергій Литвин" width="120" height="106" style="border-radius:12px;margin-bottom:16px" />
 
 **Senior Frontend / Agentic UI розробник**  
 AAA-геймдев компанія

@@ -5,7 +5,7 @@ title: Oleh Talanov
 
 # Oleh Talanov
 
-<img src="/speakers/oleh-talanov.jpg" alt="Oleh Talanov" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleh-talanov.jpg" alt="Oleh Talanov" width="120" height="120" style="border-radius:12px;margin-bottom:16px" />
 
 **CTO & Co-Founder** · WebCap Digitals  
 Zaporizhzhia, Ukraine

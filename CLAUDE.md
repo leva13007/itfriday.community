@@ -24,6 +24,7 @@ Built with **VitePress** (static site generator). **Standalone repo** (sibling o
 pnpm dev        # Dev server → localhost:5173
 pnpm build      # Build static files to .vitepress/dist/
 pnpm preview    # Preview the built site locally
+pnpm images     # Optimise new covers / speaker photos (see "Performance" quality rule)
 ```
 
 ---
@@ -61,8 +62,10 @@ pnpm preview    # Preview the built site locally
     favicon.png     # Square icon mark (IT circle)
     logo-dark.png   # Full logo, dark version
     logo-light.png  # Full logo, light version
-    streams/        # Stream thumbnails: NNN.png
-    speakers/       # Speaker photos: {slug}.jpg (when provided)
+    streams/        # Stream covers: NNN.png (og:image) + NNN.webp (shown on pages, made by `pnpm images`)
+    speakers/       # Speaker photos: {slug}.jpg, short side ≤ 240 px (when provided)
+  scripts/
+    optimize-images.sh  # `pnpm images` — covers → WebP, speaker photos → 240 px + no EXIF (needs: brew install webp jpeg)
   notes/            # Internal research/plans/brainstorms — NOT published (srcExclude)
   .vitepress/
     config.ts       # Nav, sidebar, i18n config, srcExclude
@@ -88,9 +91,9 @@ pnpm preview    # Preview the built site locally
 Add a new stream summary page:
 1. Create `streams/NNN.md` (UA) and `en/streams/NNN.md` (EN) with a `description:` in frontmatter (see "Page descriptions" below)
 2. Update `streams/index.md` and `en/streams/index.md` to include the new entry
-3. Copy thumbnail to `public/streams/NNN.png`
+3. Copy thumbnail to `public/streams/NNN.png`, then run `pnpm images` — it creates `NNN.webp`, which is what the page shows (the ~2 MB PNG is only for `og:image`). Commit both
 4. Content: `<StreamVideo />` right under the H1 (not a `![]()` cover), date, participants (with profile links), key theses, YouTube link, resources
-   - `<StreamVideo />` is a lite-YouTube facade: shows `public/streams/NNN.png`, loads the real player only on click. It takes the video ID from the `youtube.com/live/…` link on the page — keep that link in that exact form
+   - `<StreamVideo />` is a lite-YouTube facade: shows `public/streams/NNN.webp` (falls back to `.png`), loads the real player only on click. It takes the video ID from the `youtube.com/live/…` link on the page — keep that link in that exact form
    - Past streams also get `VideoObject` JSON-LD automatically (`transformHead` in `config.ts`) — nothing to add by hand
 5. Resources section must include: LinkedIn, Telegram, Discord links (in that order after content-specific links)
 6. Add a row at the **top** of the "Appearances" table in **every** participant's profile (`speakers/{slug}.md` + `en/speakers/{slug}.md`) — **including the host `oleh-levchenko`**, who is the one most often forgotten (QA issue #9)
@@ -131,7 +134,7 @@ The live chat is part of the stream: viewers' questions and ideas get credited o
 
 1. Add their entry to the `speakers` array in `speakers.md` and `en/speakers.md`
 2. Create `speakers/{slug}.md` (UA) and `en/speakers/{slug}.md` (EN) — copy from an existing profile, update its `description:`
-3. If they provided a photo: save to `public/speakers/{slug}.jpg`
+3. If they provided a photo: save to `public/speakers/{slug}.jpg` and run `pnpm images` (resizes it to 240 px). Give the profile `<img>` both `width="120"` and the matching `height`
 4. Update the stream page(s) where they appeared — link their name to their profile
 
 ### Speaker profile slug convention
@@ -259,6 +262,8 @@ Each rule below was a real bug, fixed in QA cycle 1 (October 2026). Check them w
 | i18n | No English UI text on UA pages. Default theme strings are translated in `locales.root.themeConfig` (`outline`, `docFooter`, `notFound`, …); custom Vue components take strings from `.vitepress/theme/home/i18n.ts`, never hardcoded | #5 |
 | Contrast | Text must meet WCAG AA 4.5:1 in both themes. Keep the high-contrast Shiki themes (`markdown.theme`) and the overrides at the bottom of `.vitepress/theme/style.css`; any new color pair gets its ratio checked | #7 |
 | Meta | Every page has its own `description:` (see "Page descriptions") | #4 |
+| Performance | Pages never show the raw PNG cover: every `public/streams/NNN.png` has an `NNN.webp` (`pnpm images`), speaker photos are ≤ 240 px on the short side. Every `<img>` has `width` + `height` (or sits in an `aspect-ratio` box) so nothing jumps on load | #16 |
+| Navigation | Every section URL (`/streams/`, `/posts/`, `/wiki/`, EN too) opens a page, not a 404 | #14 |
 
 Known open limitation: the mobile hamburger's `aria-label="mobile navigation"` is hardcoded in VitePress 1.6 and stays English.
 
@@ -275,6 +280,9 @@ done; done
 
 # No non-web links (no output = OK)
 grep -rnE '\]\((chrome|about|edge|file):' --include='*.md' . | grep -v node_modules
+
+# Every cover has its WebP (no output = OK)
+for f in public/streams/[0-9][0-9][0-9].png; do [ -f "${f%.png}.webp" ] || echo "no webp: $f"; done
 
 # Pages without a description (no output = OK)
 grep -rL '^description:' --include='*.md' streams en/streams speakers en/speakers posts en/posts wiki en/wiki

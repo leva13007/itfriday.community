@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { londonToUtc, DEFAULT_HOUR } from './time'
 
 // Parses stream pages as they are written today (no frontmatter needed):
@@ -16,6 +18,7 @@ export interface Stream {
   start: number
   youtube: string | null
   guests: Guest[]
+  /** Cover for on-page display (WebP when generated). og:image uses the PNG — see config.ts */
   thumb: string
 }
 export const HOST_SLUG = 'oleh-levchenko'
@@ -62,5 +65,9 @@ export function parse(url: string, src: string): Stream | null {
     if (title.endsWith(` · ${g.name}`)) title = title.slice(0, -(g.name.length + 3)).trim()
   }
 
-  return { num, url: url.replace(/\.html$/, ''), title, start, youtube, guests, thumb: `/streams/${num}.png` }
+  // Pages show the WebP made by `pnpm images` (~100 KB vs ~2 MB PNG, QA #16); the PNG stays for og:image.
+  // Runs only in Node (config + data loader); paths are relative to the repo root, where vitepress runs.
+  const thumb = existsSync(resolve('public/streams', `${num}.webp`)) ? `/streams/${num}.webp` : `/streams/${num}.png`
+
+  return { num, url: url.replace(/\.html$/, ''), title, start, youtube, guests, thumb }
 }

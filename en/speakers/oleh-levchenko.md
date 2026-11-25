@@ -5,7 +5,7 @@ title: Oleh Levchenko
 
 # Oleh Levchenko
 
-<img src="/speakers/oleh-levchenko.jpg" alt="Oleh Levchenko" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleh-levchenko.jpg" alt="Oleh Levchenko" width="120" height="150" style="border-radius:12px;margin-bottom:16px" />
 
 **Full Stack JavaScript Developer** · IT Friday Founder  
 The AA · Cardiff, UK

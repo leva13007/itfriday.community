@@ -5,7 +5,7 @@ title: Олег Таланов
 
 # Олег Таланов
 
-<img src="/speakers/oleh-talanov.jpg" alt="Олег Таланов" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleh-talanov.jpg" alt="Олег Таланов" width="120" height="120" style="border-radius:12px;margin-bottom:16px" />
 
 **CTO & Co-Founder** · WebCap Digitals  
 Запоріжжя, Україна

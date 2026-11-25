@@ -5,7 +5,7 @@ title: Oleksandr Blazheiko
 
 # Oleksandr Blazheiko
 
-<img src="/speakers/oleksandr-blazheiko.jpg" alt="Oleksandr Blazheiko" width="120" style="border-radius:12px;margin-bottom:16px" />
+<img src="/speakers/oleksandr-blazheiko.jpg" alt="Oleksandr Blazheiko" width="120" height="159" style="border-radius:12px;margin-bottom:16px" />
 
 **Software Development Engineer** · Fullstack  
 Ukraine

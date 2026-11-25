@@ -37,7 +37,8 @@ function play(e: MouseEvent) {
       allowfullscreen
     />
     <a v-else class="facade" :href="`https://www.youtube.com/watch?v=${id}`" @click="play">
-      <img :src="stream.thumb" :alt="`#${stream.num} — ${stream.title}`" />
+      <!-- LCP element: load it first; width/height reserve the box before it arrives (QA #16) -->
+      <img :src="stream.thumb" :alt="`#${stream.num} — ${stream.title}`" width="1380" height="776" fetchpriority="high" decoding="async" />
       <!-- Chrome that mimics the real YouTube embed, so it reads as a player, not a picture -->
       <span class="play" aria-hidden="true">
         <svg viewBox="0 0 68 48"><path class="bg" d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.3.3 34 .3 34 .3s-21.3 0-26.5 1.4a8.5 8.5 0 0 0-6 6C.1 13 .1 24 .1 24s0 11 1.4 16.3a8.5 8.5 0 0 0 6 6C12.7 47.7 34 47.7 34 47.7s21.3 0 26.5-1.4a8.5 8.5 0 0 0 6-6C67.9 35 67.9 24 67.9 24s0-11-1.4-16.3z" /><path d="M45 24 27 14v20z" fill="#fff" /></svg>

@@ -16,7 +16,7 @@ const latest = computed(() => past.value.slice(0, 3))
       </div>
       <div class="grid">
         <a v-for="s in latest" :key="s.num" class="card" :href="s.url">
-          <img class="thumb" :src="s.thumb" :alt="`#${s.num}`" loading="lazy" />
+          <img class="thumb" :src="s.thumb" :alt="`#${s.num}`" width="1380" height="776" loading="lazy" decoding="async" />
           <div class="body">
             <p class="meta">#{{ s.num }} · {{ formatDay(s.start, lang, false) }}</p>
             <p class="title">{{ s.title }}</p>
