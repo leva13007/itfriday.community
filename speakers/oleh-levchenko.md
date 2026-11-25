@@ -1,5 +1,5 @@
 ---
-description: "Олег Левченко — Senior Full Stack JavaScript Developer, Засновник IT Friday. Профіль спікера та виступи на ІТ П'ятниці."
+description: "Олег Левченко — Full Stack JavaScript Developer, Засновник IT Friday. Профіль спікера та виступи на ІТ П'ятниці."
 title: Олег Левченко
 ---
 
@@ -7,14 +7,14 @@ title: Олег Левченко
 
 <img src="/speakers/oleh-levchenko.jpg" alt="Олег Левченко" width="120" style="border-radius:12px;margin-bottom:16px" />
 
-**Senior Full Stack JavaScript Developer** · Засновник IT Friday  
+**Full Stack JavaScript Developer** · Засновник IT Friday  
 The AA · Cardiff, UK
 
 [YouTube @zloyleva](https://youtube.com/@zloyleva) · [itfriday.community](https://itfriday.community)
 
 ---
 
-Senior Full Stack JavaScript Developer з 7+ роками досвіду. Будує масштабовані веб-застосунки на React, Node.js і AWS. Засновник IT Friday.
+Full Stack JavaScript Developer з 7+ роками досвіду. Будує масштабовані веб-застосунки на React, Node.js і AWS. Засновник IT Friday.
 
 ## Теми
 

@@ -1,5 +1,5 @@
 ---
-description: "Oleh Levchenko — Senior Full Stack JavaScript Developer, IT Friday Founder. Speaker profile and talks at IT Friday."
+description: "Oleh Levchenko — Full Stack JavaScript Developer, IT Friday Founder. Speaker profile and talks at IT Friday."
 title: Oleh Levchenko
 ---
 
@@ -7,14 +7,14 @@ title: Oleh Levchenko
 
 <img src="/speakers/oleh-levchenko.jpg" alt="Oleh Levchenko" width="120" style="border-radius:12px;margin-bottom:16px" />
 
-**Senior Full Stack JavaScript Developer** · IT Friday Founder  
+**Full Stack JavaScript Developer** · IT Friday Founder  
 The AA · Cardiff, UK
 
 [YouTube @zloyleva](https://youtube.com/@zloyleva) · [itfriday.community](https://itfriday.community)
 
 ---
 
-Senior Full Stack JavaScript Developer with 7+ years of experience building scalable web applications with React, Node.js and AWS. Founder of IT Friday.
+Full Stack JavaScript Developer with 7+ years of experience building scalable web applications with React, Node.js and AWS. Founder of IT Friday.
 
 ## Topics
 
