@@ -110,6 +110,7 @@ Add a new stream summary page:
 7. After the stream is over, add its `duration:`. By hand: write it in `streams/NNN.md` (UA) only and run `pnpm durations:sync` — it copies every UA duration into `en/streams/` and rewrites the planned length at the end of the `**Формат:**` / `**Format:**` line (`~60 хвилин`) to the real one (`2 год 58 хв` / `2 h 58 min`) on both locales. Or automatically: `YOUTUBE_API_KEY=... pnpm durations` fetches it from YouTube into both locales (the key stays in your shell, never in the repo). The home page shows "hours on air" only when every finished stream has a duration
 8. Run the pre-commit checks from "Quality rules" below
 9. If the stream has a curated chat file (`it_community_stuff/streams/NNN/stream-NN-chat.md`), add a `## З чату` / `## From the chat` section — see "Chat highlights" below
+10. Release: announcing a new stream bumps `version` to `1.NNN.0` (post-stream edits are patches) + `CHANGELOG.md` entry + `vX.Y.Z` tag — see "Versioning & changelog"
 
 ### Chat highlights (`## З чату` / `## From the chat`)
 
@@ -298,6 +299,10 @@ Known open limitation: the mobile hamburger's `aria-label="mobile navigation"` i
 
 ```bash
 pnpm build                                   # must pass
+
+# Version bumped and in CHANGELOG.md (no output = OK)
+v=$(node -p "require('./package.json').version"); grep -q "^## $v " CHANGELOG.md || echo "CHANGELOG missing $v"
+git tag -l "v$v" | grep -q . && echo "tag v$v already exists — bump version"
 
 # Speaker profiles list every stream they're linked from (no output = OK)
 for f in streams/0*.md; do n=$(basename $f .md); for s in $(grep -o '/speakers/[a-z-]*' $f | sort -u | sed 's#/speakers/##'); do
