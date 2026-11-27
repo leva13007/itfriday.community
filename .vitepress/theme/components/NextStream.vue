@@ -45,9 +45,10 @@ const countdown = computed(() => {
           <p class="label"><span>{{ t.nextStream }} · {{ day }} ·</span><span>{{ times }}</span></p>
           <p class="countdown">
             <span class="visually-hidden">{{ t.countdown.label(countdown.d, countdown.h, countdown.m) }}</span>
-            <span v-if="countdown.d" class="chip" aria-hidden="true">{{ countdown.d }}<small> {{ t.countdown.d }}</small></span>
-            <span class="chip" aria-hidden="true">{{ countdown.h }}<small> {{ t.countdown.h }}</small></span>
-            <span class="chip" aria-hidden="true">{{ countdown.m }}<small> {{ t.countdown.m }}</small></span>
+            <span class="in" aria-hidden="true">{{ t.countdown.prefix }}</span>
+            <span v-if="countdown.d" class="chip" aria-hidden="true">{{ countdown.d }}<small>&nbsp;{{ t.countdown.d }}</small></span>
+            <span class="chip" aria-hidden="true">{{ countdown.h }}<small>&nbsp;{{ t.countdown.h }}</small></span>
+            <span class="chip" aria-hidden="true">{{ countdown.m }}<small>&nbsp;{{ t.countdown.m }}</small></span>
           </p>
         </div>
         <a class="title" :class="{ first: isLive }" :href="announced.url">#{{ announced.num }} — {{ announced.title }}</a>
@@ -248,6 +249,7 @@ a.title:hover { color: var(--vp-c-brand-1); }
 }
 .countdown {
   display: flex;
+  align-items: center;
   gap: 6px;
   margin: 0;
   font-variant-numeric: tabular-nums;
@@ -259,6 +261,11 @@ a.title:hover { color: var(--vp-c-brand-1); }
   font-size: 14px;
   font-weight: 700;
   color: var(--vp-c-text-1);
+}
+.countdown .in {
+  margin-right: 2px;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
 }
 .countdown small {
   font-size: 13px;
