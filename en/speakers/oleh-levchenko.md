@@ -24,7 +24,7 @@ React · Node.js · TypeScript · AWS · System Design · IT Career · Community
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
-| [#029](/en/streams/029) | Interviewer | AI in the Team: Rules, Skills and Who We Need Now — discussion with Oleh Talanov | 27.11.2026 |
+| [#029](/en/streams/029) | Speaker | AI in the Team: Rules, Skills and Who We Need Now — an open conversation with the audience | 27.11.2026 |
 | [#028](/en/streams/028) | Speaker | JavaScript fixed Date after 30 years — the Temporal API with live console examples | 20.11.2026 |
 | [#027](/en/streams/027) | Interviewer | How to Find a Tech Job Right Now: Mobile and Web Experience — interview with Vladyslav Barankevych | 13.11.2026 |
 | [#026](/en/streams/026) | Speaker | RAG or an AI agent: which to choose for document search — a live experiment | 06.11.2026 |

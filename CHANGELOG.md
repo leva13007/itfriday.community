@@ -3,6 +3,13 @@
 Versioning: `1.<stream>.<patch>` — see "Versioning" in `CLAUDE.md`.
 Newest first. Not published on the site (`srcExclude`).
 
+## 1.29.3 — 2026-11-27
+
+### Changed
+- Stream #029: Oleh Talanov can't join; the stream becomes an open conversation with the audience (solo + Discord voice room). Same topic, new description and format line (UA + EN)
+- Speaker profiles: #029 removed from Oleh Talanov; Oleh Levchenko's #029 role changed Interviewer → Speaker
+- Stream #029 cover (`029.png` + `029.webp`): new thumbnail for the open-mic format
+
 ## 1.29.2 — 2026-11-27
 
 ### Fixed

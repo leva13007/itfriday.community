@@ -24,7 +24,6 @@ Laravel · Inertia.js · React · Vue.js · PHP · Software Architecture · Foun
 
 | Stream | Role | Topic | Date |
 |--------|------|-------|------|
-| [#029](/en/streams/029) | Guest | AI in the Team: Rules, Skills and Who We Need Now — discussion | 27.11.2026 |
 | [#012](/en/streams/012) | Guest | InertiaJS: SPA Without a Separate API? — discussion | 31.07.2026 |
 | [#005](/en/streams/005) | Guest | CTO, metal & Laravel + Inertia.js — interview | 12.06.2026 |
 
