@@ -1,0 +1,25 @@
+# Changelog
+
+Versioning: `1.<stream>.<patch>` — see "Versioning" in `CLAUDE.md`.
+Newest first. Not published on the site (`srcExclude`).
+
+## 1.29.2 — 2026-11-27
+
+### Fixed
+- Home: next-stream countdown gets a "Старт через" / "Starts in" prefix, chips stay on one line (`&nbsp;`) and are vertically centered
+
+## 1.29.1 — 2026-11-27
+
+### Added
+- Data-driven home page: HomeHero, HomeTopics, HomeLatest, HomeCommunity (guest stories), HomeUpdates (posts loader), HomeCta
+- Stream `topic:` frontmatter (validated at build) and `<StreamArchive />` with a topic filter on `/streams/`
+- Site footer (Schedule, Become a speaker, Wiki, Issues); top nav shortened
+- Share cards `og-image.png` / `og-image-en.png`, `apple-touch-icon.png`
+- `pnpm durations` / `pnpm durations:sync` (`scripts/fetch-durations.mjs`)
+
+### Removed
+- HomeSpeakers block on the home page
+
+## Before 1.29.1
+
+No changelog — see `git log` (stream #001 → #029).

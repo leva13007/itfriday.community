@@ -317,6 +317,22 @@ grep -rL '^description:' --include='*.md' streams en/streams speakers en/speaker
 
 ---
 
+## Versioning & changelog
+
+`package.json` `version` is `1.<stream>.<patch>`:
+- **minor = number of the latest stream page** — announcing stream #030 bumps to `1.30.0`
+- **patch** — every other release (fixes, features, content edits) between streams: `1.30.0` → `1.30.1`
+- major stays `1` unless the site is rebuilt from scratch
+
+Every push to `main` that changes the site:
+1. Bump `version` in `package.json`
+2. Add an entry at the **top** of `CHANGELOG.md` (`## X.Y.Z — YYYY-MM-DD`, sections `Added` / `Changed` / `Fixed` / `Removed`)
+3. Commit, then tag: `git tag vX.Y.Z && git push && git push --tags`
+
+`CHANGELOG.md` is in `srcExclude` — not rendered on the site.
+
+---
+
 ## Deploy
 
 Push to `main` → GitHub Actions runs `pnpm build` → deploys to GitHub Pages → live at itfriday.community within ~1 minute.

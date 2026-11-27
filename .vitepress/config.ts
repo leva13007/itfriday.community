@@ -20,7 +20,7 @@ export default defineConfig({
   sitemap: { hostname: SITE },
 
   // Internal docs and repo meta files — never published to the site
-  srcExclude: ['notes/**', 'README.md', 'CLAUDE.md', '**/CLAUDE.md'],
+  srcExclude: ['notes/**', 'README.md', 'CLAUDE.md', 'CHANGELOG.md', '**/CLAUDE.md'],
 
   themeConfig: {
     siteTitle: false,
