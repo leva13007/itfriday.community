@@ -90,7 +90,7 @@ export const strings = {
     playVideo: 'Дивитись запис стріму',
     watchHere: 'Дивитись · YouTube',
 
-    footerTagline: "Живий стрім про IT щоп'ятниці. Онлайн-ком'юніті, що виросло із запорізького мітапу Zengineers.",
+    footerTagline: "Живий стрім про IT щоп'ятниці. Незалежне онлайн-ком'юніті для IT-спеціалістів по всьому світу.",
     footerContent: 'Контент',
     footerCommunity: "Ком'юніті",
     footerHelp: 'Допомогти',
@@ -173,7 +173,7 @@ export const strings = {
     playVideo: 'Watch the stream recording',
     watchHere: 'Watch · YouTube',
 
-    footerTagline: 'A live stream about IT every Friday. An online community that grew out of the Zaporizhzhia meetup Zengineers.',
+    footerTagline: 'A live stream about IT every Friday. An independent online community for IT professionals worldwide.',
     footerContent: 'Content',
     footerCommunity: 'Community',
     footerHelp: 'Help out',

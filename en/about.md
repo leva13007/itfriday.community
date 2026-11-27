@@ -1,20 +1,20 @@
 ---
-description: "About IT Friday: how the community grew out of the Zaporizhzhia meetup Zengineers.Community and why it exists today."
+description: "About IT Friday: an independent online community for IT professionals worldwide: who we are, what we do and why."
 ---
 
 # About
 
 **Online community for IT professionals worldwide — live, technical, and human in equal measure.**
 
-## Origin
+## Background
 
-In 2017, Zaporizhzhia had a thriving IT meetup — **Zengineers.Community**.  
-Weekly Thursday gatherings, two speakers, live conversation.
-
-After COVID and the full-scale invasion in 2022, the community ceased to exist.  
+Before 2022, the IT community lived offline: meetups, talks, live conversation afterwards.  
+After COVID and the full-scale invasion of 2022, that disappeared.  
 People scattered across the world. Connections broke.
 
 **This project is the answer to that void.**
+
+IT Friday is a standalone project built from scratch. It is not a continuation, offshoot or part of any other community or meetup and has no organisational or legal ties to any of them.
 
 ## What we do
 

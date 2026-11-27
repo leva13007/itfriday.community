@@ -7,7 +7,7 @@ description: "How IT Friday is run: the governance model, seasonal pauses and ho
 ## Model
 
 The community is **solo-led** — all decisions belong to the host.  
-This is a deliberate choice, informed by the experience of Zengineers.Community where collective governance led to a split.
+This is a deliberate choice: one person owns the direction and the final call — so the community moves fast and doesn't get stuck in endless approvals.
 
 ## Pauses are an official format
 

@@ -3,6 +3,11 @@
 Versioning: `1.<stream>.<patch>` — see "Versioning" in `CLAUDE.md`.
 Newest first. Not published on the site (`srcExclude`).
 
+## 1.29.4 — 2026-11-27
+
+### Changed
+- Positioning: IT Friday is stated as an independent project with no ties to any other community or meetup. All mentions of a third-party meetup removed from the site (footer tagline, About, Mission, Governance, stream #001, internal notes); About and Mission get an explicit independence paragraph, the section is renamed "Передісторія" / "Background" (UA + EN)
+
 ## 1.29.3 — 2026-11-27
 
 ### Changed
