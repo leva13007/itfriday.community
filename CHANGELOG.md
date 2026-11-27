@@ -3,6 +3,12 @@
 Versioning: `1.<stream>.<patch>` — see "Versioning" in `CLAUDE.md`.
 Newest first. Not published on the site (`srcExclude`).
 
+## 1.29.5 — 2026-11-27
+
+### Added
+- Twitch (twitch.tv/zloyleva — streams are simulcast there): header social icon, "Де нас знайти" / "Where to find us" card on the home page, About and Schedule pages, `**Twitch:**` line on stream #029 (UA + EN)
+- `CLAUDE.md`: every stream page gets a Twitch line after the YouTube one
+
 ## 1.29.4 — 2026-11-27
 
 ### Changed

@@ -10,6 +10,7 @@ export const LINKS = {
   youtube: 'https://youtube.com/@zloyleva',
   youtubeLive: 'https://www.youtube.com/@zloyleva/live',
   discord: 'https://discord.gg/ZpWpDQq2EP',
+  twitch: 'https://www.twitch.tv/zloyleva',
   linkedin: 'https://www.linkedin.com/company/it-friday/',
   github: 'https://github.com/leva13007/itfriday.community',
 }
@@ -71,6 +72,7 @@ export const strings = {
     channelsTitle: 'Де нас знайти',
     channels: {
       youtube: 'Стріми наживо і записи',
+      twitch: 'Ті самі стріми наживо, паралельно з YouTube',
       telegram: 'Анонси і пости між стрімами',
       discord: 'Технічне спілкування будь-якого дня',
       linkedin: 'Новини та анонси англійською',
@@ -154,6 +156,7 @@ export const strings = {
     channelsTitle: 'Where to find us',
     channels: {
       youtube: 'Live streams and recordings',
+      twitch: 'The same streams live, alongside YouTube',
       telegram: 'Announcements and posts between streams',
       discord: 'Tech chat any day of the week',
       linkedin: 'News and announcements in English',

@@ -11,6 +11,7 @@ const fmtDate = (ms: number) => new Intl.DateTimeFormat(lang.value, { day: 'nume
 
 const channels = computed(() => [
   { key: 'youtube', name: 'YouTube', href: LINKS.youtube, text: t.value.channels.youtube },
+  { key: 'twitch', name: 'Twitch', href: LINKS.twitch, text: t.value.channels.twitch },
   { key: 'telegram', name: 'Telegram', href: LINKS.telegram, text: t.value.channels.telegram },
   { key: 'discord', name: 'Discord', href: LINKS.discord, text: t.value.channels.discord },
   { key: 'linkedin', name: 'LinkedIn', href: LINKS.linkedin, text: t.value.channels.linkedin },
@@ -38,6 +39,7 @@ const channels = computed(() => [
         <a v-for="c in channels" :key="c.key" class="channel" :class="c.key" :href="c.href" target="_blank" rel="noopener">
           <span class="icon" aria-hidden="true">
             <svg v-if="c.key === 'youtube'" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+            <svg v-else-if="c.key === 'twitch'" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" /></svg>
             <svg v-else-if="c.key === 'telegram'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z" /></svg>
             <svg v-else-if="c.key === 'discord'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z" /></svg>
             <span v-else class="in">in</span>

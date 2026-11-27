@@ -18,3 +18,5 @@ All past streams are in the [stream archive](/en/streams/).
 
 Subscribe on YouTube to get notified about new streams:  
 [youtube.com/@zloyleva](https://youtube.com/@zloyleva)
+
+Also live on Twitch: [twitch.tv/zloyleva](https://www.twitch.tv/zloyleva)

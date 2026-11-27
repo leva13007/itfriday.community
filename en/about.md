@@ -18,7 +18,7 @@ IT Friday is a standalone project built from scratch. It is not a continuation, 
 
 ## What we do
 
-Every Friday at **19:00 London / 21:00 Kyiv** — live stream ~40 min on YouTube [@zloyleva](https://youtube.com/@zloyleva).
+Every Friday at **19:00 London / 21:00 Kyiv** — live stream ~40 min on YouTube [@zloyleva](https://youtube.com/@zloyleva) and simultaneously on [Twitch](https://www.twitch.tv/zloyleva).
 
 Topics alternate between technical and human — both are equally valued.
 
@@ -33,6 +33,7 @@ Topics alternate between technical and human — both are equally valued.
 ## Find us
 
 - 🎥 **YouTube:** [youtube.com/@zloyleva](https://youtube.com/@zloyleva)
+- 🟣 **Twitch:** [twitch.tv/zloyleva](https://www.twitch.tv/zloyleva) — the same streams live, alongside YouTube
 - 💼 **LinkedIn:** [linkedin.com/company/it-friday](https://www.linkedin.com/company/it-friday/) — news & announcements in English
 - 💬 **Telegram:** [t.me/+QRJNFfHaLxMwYzcy](https://t.me/+QRJNFfHaLxMwYzcy) — announcements & posts between streams
 - 🛠️ **Discord:** [discord.gg/ZpWpDQq2EP](https://discord.gg/ZpWpDQq2EP) — technical discussions any day

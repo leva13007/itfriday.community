@@ -18,3 +18,5 @@ description: "Розклад стрімів ІТ П'ятниці: щоп'ятн�
 
 Підписуйся на YouTube щоб отримувати сповіщення про нові ефіри:  
 [youtube.com/@zloyleva](https://youtube.com/@zloyleva)
+
+Наживо також на Twitch: [twitch.tv/zloyleva](https://www.twitch.tv/zloyleva)

@@ -18,7 +18,7 @@ description: "Про ІТ П'ятницю: незалежне онлайн-ко�
 
 ## Що ми робимо
 
-Щоп'ятниці о **19:00 London / 21:00 Kyiv** — живий стрім ~40 хвилин на YouTube [@zloyleva](https://youtube.com/@zloyleva).
+Щоп'ятниці о **19:00 London / 21:00 Kyiv** — живий стрім ~40 хвилин на YouTube [@zloyleva](https://youtube.com/@zloyleva) і паралельно на [Twitch](https://www.twitch.tv/zloyleva).
 
 Теми чергуються: технічні та людські рівноцінні.
 
@@ -33,6 +33,7 @@ description: "Про ІТ П'ятницю: незалежне онлайн-ко�
 ## Де нас знайти
 
 - 🎥 **YouTube:** [youtube.com/@zloyleva](https://youtube.com/@zloyleva)
+- 🟣 **Twitch:** [twitch.tv/zloyleva](https://www.twitch.tv/zloyleva) — ті самі стріми наживо, паралельно з YouTube
 - 💼 **LinkedIn:** [linkedin.com/company/it-friday](https://www.linkedin.com/company/it-friday/) — новини та анонси англійською
 - 💬 **Telegram:** [t.me/+QRJNFfHaLxMwYzcy](https://t.me/+QRJNFfHaLxMwYzcy) — анонси і пости між стрімами
 - 🛠️ **Discord:** [discord.gg/ZpWpDQq2EP](https://discord.gg/ZpWpDQq2EP) — технічне спілкування будь-якого дня
