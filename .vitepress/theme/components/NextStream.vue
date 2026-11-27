@@ -5,7 +5,7 @@ import { useHome } from '../home/useHome'
 import { LINKS } from '../home/i18n'
 import { calendarLink, formatDay, formatTimes } from '../home/time'
 
-const { t, lang, prefix, past, announced, nextStart, isLive } = useHome()
+const { t, lang, prefix, past, announced, nextStart, isLive, now } = useHome()
 
 const day = computed(() => formatDay(nextStart.value, lang.value))
 const times = computed(() => formatTimes(nextStart.value))
@@ -21,6 +21,13 @@ const calendar = computed(() => {
   return calendarLink(`${t.value.title} #${s.num} — ${s.title}`, s.start, `${t.value.calendarDetails}\n${page}`, s.youtube ?? LINKS.youtubeLive)
 })
 const latest = computed(() => past.value[0] ?? null)
+
+// Ticks with `now` (every minute after mount; build time during SSR, so markup matches)
+const countdown = computed(() => {
+  const left = Math.max(0, nextStart.value - now.value)
+  const min = Math.floor(left / 60_000)
+  return { d: Math.floor(min / 1440), h: Math.floor((min % 1440) / 60), m: min % 60 }
+})
 </script>
 
 <template>
@@ -29,10 +36,20 @@ const latest = computed(() => past.value[0] ?? null)
     <template v-if="announced">
       <a class="thumb" :href="announced.url">
         <img :src="announced.thumb" :alt="`#${announced.num}`" width="1380" height="776" decoding="async" @error="hideBroken" />
-        <span class="badge"><span v-if="isLive" class="dot" />{{ isLive ? t.onAir : t.nextStream }}</span>
+        <!-- Only while live: in the normal state the label below says "next stream" and the cover stays clean
+             (the covers carry the logo and episode number in the top-right corner) -->
+        <span v-if="isLive" class="badge"><span class="dot" />{{ t.onAir }}</span>
       </a>
       <div class="body">
-        <p class="label" v-if="!isLive"><span>{{ day }} ·</span><span>{{ times }}</span></p>
+        <div class="head" v-if="!isLive">
+          <p class="label"><span>{{ t.nextStream }} · {{ day }} ·</span><span>{{ times }}</span></p>
+          <p class="countdown">
+            <span class="visually-hidden">{{ t.countdown.label(countdown.d, countdown.h, countdown.m) }}</span>
+            <span v-if="countdown.d" class="chip" aria-hidden="true">{{ countdown.d }}<small> {{ t.countdown.d }}</small></span>
+            <span class="chip" aria-hidden="true">{{ countdown.h }}<small> {{ t.countdown.h }}</small></span>
+            <span class="chip" aria-hidden="true">{{ countdown.m }}<small> {{ t.countdown.m }}</small></span>
+          </p>
+        </div>
         <a class="title" :class="{ first: isLive }" :href="announced.url">#{{ announced.num }} — {{ announced.title }}</a>
         <div class="guests" v-if="guests.length">
           <a v-for="g in guests" :key="g.slug" class="guest" :href="`${prefix}/speakers/${g.slug}`">
@@ -51,7 +68,8 @@ const latest = computed(() => past.value[0] ?? null)
           <VPButton v-if="isLive" theme="brand" :text="t.watchLive" :href="announced.youtube ?? LINKS.youtubeLive" />
           <template v-else>
             <VPButton theme="brand" :text="t.addToCalendar" :href="calendar" />
-            <VPButton theme="alt" :text="t.details" :href="announced.url" />
+            <VPButton v-if="announced.youtube" theme="alt" :text="t.remindYoutube" :href="announced.youtube" />
+            <a class="details" :href="announced.url">{{ t.details }} →</a>
           </template>
         </div>
       </div>
@@ -98,11 +116,11 @@ const latest = computed(() => past.value[0] ?? null)
   aspect-ratio: 16 / 9;
   background: var(--vp-c-bg-alt);
 }
-/* Top-right: the thumbnails carry the logo and episode number in the top-left */
+/* Top-left: the covers carry the logo and episode number in the top-right corner */
 .badge {
   position: absolute;
   top: 12px;
-  right: 12px;
+  left: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -221,6 +239,42 @@ a.title:hover { color: var(--vp-c-brand-1); }
   gap: 12px;
   margin-top: 20px;
 }
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.countdown {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.countdown .chip {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--vp-c-text-1);
+}
+.countdown small {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+}
+.details {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+.details:hover { text-decoration: underline; }
 .meanwhile {
   display: inline-block;
   margin-top: 16px;

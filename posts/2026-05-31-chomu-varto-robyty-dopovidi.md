@@ -86,4 +86,4 @@ IT — це індустрія де репутація будується рок
 
 ---
 
-_Олег Левченко — Senior Full Stack JavaScript Developer, засновник [IT Friday](https://itfriday.community) — онлайн-ком'юніті для українських IT-спеціалістів по всьому світу._
+_Олег Левченко — Full Stack JavaScript Developer, засновник [IT Friday](https://itfriday.community) — відкрите IT-ком'юніті з живим стрімом щоп'ятниці._

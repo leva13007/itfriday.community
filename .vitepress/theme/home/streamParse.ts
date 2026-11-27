@@ -1,8 +1,14 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { londonToUtc, DEFAULT_HOUR } from './time'
+import { TOPICS, isTopic, type TopicKey } from './topics'
 
-// Parses stream pages as they are written today (no frontmatter needed):
+// Parses stream pages as they are written today:
+//   ---
+//   description: "..."
+//   topic: ai               ← required, one key from topics.ts (unknown/missing = build error)
+//   duration: 1:32:10       ← optional until the stream is over; `pnpm durations` fills it from YouTube
+//   ---
 //   # #024 — Title
 //   **Дата:** 23 жовтня 2026 | 19:00 London / 21:00 Kyiv      (EN: **Date:** October 23, 2026 | ...)
 //   **YouTube: [https://youtube.com/live/...](...)**
@@ -17,9 +23,28 @@ export interface Stream {
   title: string
   start: number
   youtube: string | null
+  /** Everyone linked on the page, host included, in order of appearance (archive table) */
+  speakers: Guest[]
+  /** Speakers without the host */
   guests: Guest[]
+  topic: TopicKey
+  /** Length of the recording in seconds; null until filled in */
+  duration: number | null
   /** Cover for on-page display (WebP when generated). og:image uses the PNG — see config.ts */
   thumb: string
+}
+
+/** `topic: ai` → 'ai' from the leading frontmatter block (flat `key: value` lines only) */
+function frontmatterValue(src: string, key: string): string | null {
+  const block = src.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1]
+  const line = block?.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'))?.[1]
+  return line ? line.trim().replace(/^["']|["']$/g, '') : null
+}
+
+/** `1:32:10` / `58:03` → seconds */
+export function parseDuration(value: string): number | null {
+  const m = value.match(/^(?:(\d+):)?([0-5]?\d):([0-5]\d)$/)
+  return m ? (+(m[1] ?? 0)) * 3600 + +m[2] * 60 + +m[3] : null
 }
 export const HOST_SLUG = 'oleh-levchenko'
 
@@ -53,10 +78,22 @@ export function parse(url: string, src: string): Stream | null {
 
   const youtube = src.match(/https?:\/\/(?:www\.)?youtube\.com\/live\/[\w-]+/)?.[0] ?? null
 
-  const guests: Guest[] = []
+  const speakers: Guest[] = []
   for (const m of src.matchAll(/\[([^\]]+)\]\((?:\/en)?\/speakers\/([a-z0-9-]+)\)/g)) {
     const [, name, slug] = m
-    if (slug !== HOST_SLUG && !guests.some((g) => g.slug === slug)) guests.push({ slug, name })
+    if (!speakers.some((g) => g.slug === slug)) speakers.push({ slug, name })
+  }
+  const guests = speakers.filter((g) => g.slug !== HOST_SLUG)
+
+  // Fail the build instead of silently miscounting: every stream needs a known topic.
+  const topic = frontmatterValue(src, 'topic')
+  if (!isTopic(topic)) {
+    throw new Error(`[streams] ${url}: frontmatter "topic: ${topic ?? ''}" — expected one of: ${Object.keys(TOPICS).join(', ')} (see .vitepress/theme/home/topics.ts)`)
+  }
+  const rawDuration = frontmatterValue(src, 'duration')
+  const duration = rawDuration ? parseDuration(rawDuration) : null
+  if (rawDuration && duration === null) {
+    throw new Error(`[streams] ${url}: frontmatter "duration: ${rawDuration}" — expected H:MM:SS or MM:SS`)
   }
 
   // Headings often end with " · Guest Name" — the guest is shown separately, so drop the suffix.
@@ -69,5 +106,5 @@ export function parse(url: string, src: string): Stream | null {
   // Runs only in Node (config + data loader); paths are relative to the repo root, where vitepress runs.
   const thumb = existsSync(resolve('public/streams', `${num}.webp`)) ? `/streams/${num}.webp` : `/streams/${num}.png`
 
-  return { num, url: url.replace(/\.html$/, ''), title, start, youtube, guests, thumb }
+  return { num, url: url.replace(/\.html$/, ''), title, start, youtube, speakers, guests, topic, duration, thumb }
 }

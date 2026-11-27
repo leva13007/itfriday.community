@@ -4,11 +4,19 @@ title: Спікери
 ---
 
 <script setup>
+import { data } from './.vitepress/theme/home/streams.data'
+import { strings } from './.vitepress/theme/home/i18n'
+import { STREAM_WINDOW_MS } from './.vitepress/theme/home/time'
+
+// Number of finished streams each speaker is linked from (same data as the home page and the archive)
+const count = (slug) => data.root.filter((st) => st.start + STREAM_WINDOW_MS <= data.builtAt && st.speakers.some((sp) => sp.slug === slug)).length
+const appearances = strings.root.appearances
+
 const speakers = [
   {
     avatar: '/speakers/oleh-levchenko.jpg',
     name: 'Олег Левченко',
-    title: 'Senior Full Stack Developer · Засновник IT Friday',
+    title: 'Full Stack Developer · Засновник IT Friday',
     org: 'The AA',
     profile: '/speakers/oleh-levchenko',
   },
@@ -65,7 +73,10 @@ const speakers = [
 
 <div class="speakers-grid">
   <a v-for="s in speakers" :key="s.name" :href="s.profile" class="speaker-card">
-    <img :src="s.avatar" :alt="s.name" class="speaker-avatar" width="52" height="52" loading="lazy" />
+    <div class="speaker-top">
+      <img :src="s.avatar" :alt="s.name" class="speaker-avatar" width="56" height="56" loading="lazy" />
+      <span v-if="count(s.profile.split('/').pop())" class="speaker-count">{{ appearances(count(s.profile.split('/').pop())) }}</span>
+    </div>
     <div class="speaker-info">
       <strong>{{ s.name }}</strong>
       <span>{{ s.title }}</span>
@@ -75,20 +86,23 @@ const speakers = [
 </div>
 
 <style>
+/* Card: photo + stream count on top, text below at full card width (so names and roles never squeeze) */
 .speakers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: 12px;
   margin-top: 24px;
 }
+.vp-doc .speaker-card {
+  text-decoration: none;
+}
 .speaker-card {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 16px;
   border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
-  text-decoration: none;
+  border-radius: 12px;
   color: inherit;
   transition: border-color 0.2s, background-color 0.2s;
 }
@@ -96,12 +110,28 @@ const speakers = [
   border-color: var(--vp-c-brand-1);
   background-color: var(--vp-c-default-soft);
 }
+.speaker-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
 .speaker-avatar {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
   flex-shrink: 0;
+}
+.speaker-count {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--vp-c-brand-soft);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.7;
+  color: var(--vp-c-brand-1);
+  white-space: nowrap;
 }
 .speaker-info {
   display: flex;
@@ -110,18 +140,16 @@ const speakers = [
   min-width: 0;
 }
 .speaker-info strong {
-  font-size: 14px;
-  line-height: 1.3;
+  font-size: 15px;
+  line-height: 1.35;
   color: var(--vp-c-text-1);
 }
 .speaker-info span {
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.45;
   color: var(--vp-c-text-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-.speaker-org {
-  color: var(--vp-c-brand-1) !important;
+.speaker-info .speaker-org {
+  color: var(--vp-c-brand-1);
 }
 </style>

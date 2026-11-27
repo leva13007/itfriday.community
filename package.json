@@ -1,13 +1,15 @@
 {
   "name": "site",
-  "version": "1.0.1",
+  "version": "1.29.1",
   "description": "",
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview",
-    "images": "bash scripts/optimize-images.sh"
+    "images": "bash scripts/optimize-images.sh",
+    "durations": "node scripts/fetch-durations.mjs",
+    "durations:sync": "node scripts/fetch-durations.mjs --sync"
   },
   "keywords": [],
   "author": "",

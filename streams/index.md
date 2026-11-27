@@ -6,36 +6,4 @@ description: "Архів усіх стрімів ІТ П'ятниці — з н�
 
 Архів всіх ефірів — з нотатками, таймкодами і ресурсами.
 
-## 2026
-
-| # | Дата | Тема | Спікери | YouTube |
-|---|---|---|---|---|
-| [029](/streams/029) | 27.11.2026 | AI в команді: правила, скіли і хто тепер потрібен | [Олег Левченко](/speakers/oleh-levchenko) · [Олег Таланов](/speakers/oleh-talanov) | [Дивитись](https://youtube.com/live/d6rjxuP78jE) |
-| [028](/streams/028) | 20.11.2026 | JavaScript виправив Date через 30 років: розбираємо Temporal API | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/oA8vXBOu8S0) |
-| [027](/streams/027) | 13.11.2026 | Як знайти роботу в IT зараз: досвід з мобілки і вебу | [Олег Левченко](/speakers/oleh-levchenko) · [Владислав Баранкевич](/speakers/vladyslav-barankevych) | [Дивитись](https://youtube.com/live/3WpBVJVnJAQ) |
-| [026](/streams/026) | 06.11.2026 | RAG чи AI-агент: що обрати для пошуку по документах? | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/aSMQZ5RQU3Q) |
-| [025](/streams/025) | 30.10.2026 | IT-найм без фільтрів: рекрутер vs розробник, ч.1 | [Олег Левченко](/speakers/oleh-levchenko) · [Юлія Каюнко](/speakers/yuliia-kaiunko) | [Дивитись](https://youtube.com/live/0MRUaILCrVY) |
-| [024](/streams/024) | 23.10.2026 | Нова AWS Lambda для AI-агентів: рекап ServerlessDays Cardiff | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/uzaPapLB6B8) |
-| [023](/streams/023) | 16.10.2026 | Pet-проєкт: від ідеї до production | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/3psATdryIYA) |
-| [022](/streams/022) | 09.10.2026 | AI пише код. Хто отримує підвищення? | [Сергій Литвин](/speakers/serhii-lytvyn) | [Дивитись](https://youtube.com/live/icenkn7tmdY) |
-| [021](/streams/021) | 02.10.2026 | Якщо ШІ вже пише код, навіщо потрібен розробник? | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ROs1CGNbXdo) |
-| [020](/streams/020) | 25.09.2026 | RAG: модель не мусить пам'ятати, вона мусить знайти | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ZIyIUK7vGQU) |
-| [019](/streams/019) | 18.09.2026 | Graphify: 70× менше токенів чи маркетинг? | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/Vn57Gw4Txz4) |
-| [018](/streams/018) | 11.09.2026 | LinkedIn, який працює на тебе | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/v9dLbeQk3YY) |
-| [017](/streams/017) | 04.09.2026 | Живий кодинг: mini X за 2 години з AI-агентом | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/IGudWZHHq_I) |
-| [016](/streams/016) | 28.08.2026 | Специфікація як новий вихідний код | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/dy79Bdktwxo) |
-| [015](/streams/015) | 21.08.2026 | OAuth 2.0 та OpenID Connect | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/ZcHi3dm9tZQ) |
-| [014](/streams/014) | 14.08.2026 | Методи аутентифікації користувача | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/x2MGgT3qkN8) |
-| [013](/streams/013) | 07.08.2026 | Структуроване інтерв'ю та метод STAR | [Олег Левченко](/speakers/oleh-levchenko) · [Ігор Котов](/speakers/ihor-kotov) | [Дивитись](https://youtube.com/live/5HmD8FImE2k) |
-| [012](/streams/012) | 31.07.2026 | InertiaJS: SPA без окремого API? | [Олег Левченко](/speakers/oleh-levchenko) · [Олег Таланов](/speakers/oleh-talanov) | [Дивитись](https://youtube.com/live/Aq1-dGnv4II) |
-| [011](/streams/011) | 24.07.2026 | OWASP Top 10:2025 | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/pUNYHsXrT6g) |
-| [010](/streams/010) | 17.07.2026 | Огляд атак у вебі | [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/YDs0AGzYjoI) |
-| [009](/streams/009) | 10.07.2026 | tmux + AI-агенти | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/jbw4x3ENiJ0) |
-| [008](/streams/008) | 03.07.2026 | CSP + React+Vite vs Next.js | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/txdVcK2Sxno) |
-| [007](/streams/007) | 26.06.2026 | React Fragment + WebRTC | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/leT3mUEmIqA) |
-| [006](/streams/006) | 19.06.2026 | React ViewTransition + PWA у WEB | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/RJ9xqAfUl6M) |
-| [005](/streams/005) | 12.06.2026 | CTO, метал і Laravel + Inertia.js · інтерв'ю з Олегом Талановим | [Олег Левченко](/speakers/oleh-levchenko) · [Олег Таланов](/speakers/oleh-talanov) | [Дивитись](https://youtube.com/live/bEW6pQlMDBc) |
-| [004](/streams/004) | 05.06.2026 | uWebSockets.js Security + React Performance Tracks | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/Pad_b_yQyt8) |
-| [003](/streams/003) | 29.05.2026 | uWebSockets.js + React Conf 2025: useEffectEvent | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/7wR_NxpsSFw) |
-| [002](/streams/002) | 22.05.2026 | React 19.2: `<Activity />` + AI Language Teacher | [Олег Левченко](/speakers/oleh-levchenko) · [Олександр Блажейко](/speakers/oleksandr-blazheiko) | [Дивитись](https://youtube.com/live/R5IXxa1e8K4) |
-| [001](/streams/001) | 15.05.2026 | Запускаємо українське IT-ком'юніті з нуля | [Олег Левченко](/speakers/oleh-levchenko) | [Дивитись](https://youtube.com/live/wht8lf-h9N8) |
+<StreamArchive />

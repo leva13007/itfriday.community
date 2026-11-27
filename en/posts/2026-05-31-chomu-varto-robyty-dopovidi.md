@@ -86,4 +86,4 @@ The worst talk you'll give is still better than the one you never gave.
 
 ---
 
-_Oleh Levchenko — Senior Full Stack JavaScript Developer, founder of [IT Friday](https://itfriday.community) — an online community for Ukrainian IT specialists worldwide._
+_Oleh Levchenko — Full Stack JavaScript Developer, founder of [IT Friday](https://itfriday.community) — an open IT community with a live stream every Friday._

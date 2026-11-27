@@ -8,7 +8,9 @@
 @media (min-width: 960px) { .home-container { padding: 0 64px; } }
 
 .home-section { padding: 32px 0; }
-.home-section:last-child { padding-bottom: 80px; }
+.home-section:last-child { padding-bottom: 64px; }
+/* The default home layout adds 96–128 px under the content; the site footer follows right after */
+.VPHome { margin-bottom: 0 !important; }
 
 .section-head {
   display: flex;
@@ -49,3 +51,43 @@
 /* .vp-doc underlines every link; the card styles its own (vp-raw needs postcssIsolateStyles to opt out) */
 .vp-doc .schedule-next a { text-decoration: none; }
 .vp-doc .schedule-next a.meanwhile:hover { text-decoration: underline; }
+
+/* Warm accent for "live" and the human-side topics (career, community) — the orange of the stream covers.
+   Text pairs checked for WCAG AA: --itf-warm-1 on --itf-warm-soft over the page background ≥ 4.5:1 in both themes. */
+:root {
+  --itf-warm-1: #a3470b;
+  --itf-warm-2: #ea580c;
+  --itf-warm-soft: rgb(234 88 12 / 0.1);
+  --itf-warm-border: rgb(234 88 12 / 0.35);
+}
+.dark {
+  --itf-warm-1: #ffb27a;
+  --itf-warm-2: #ff7a1a;
+  --itf-warm-soft: rgb(255 122 26 / 0.12);
+  --itf-warm-border: rgb(255 122 26 / 0.32);
+}
+
+/* Shared chip (home topics + streams archive filter) */
+.itf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.itf-chip:hover { border-color: var(--vp-c-brand-1); }
+.itf-chip .count { font-size: 13px; font-weight: 500; color: var(--vp-c-text-2); }
+.itf-chip.human { border-color: var(--itf-warm-border); background: var(--itf-warm-soft); color: var(--itf-warm-1); }
+.itf-chip.human .count { color: var(--itf-warm-1); }
+.itf-chip.human:hover { border-color: var(--itf-warm-2); }
+.itf-chip.active { border-color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); color: var(--vp-c-brand-1); }
+.itf-chip.active .count { color: var(--vp-c-brand-1); }

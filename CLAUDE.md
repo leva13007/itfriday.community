@@ -62,10 +62,13 @@ pnpm images     # Optimise new covers / speaker photos (see "Performance" qualit
     favicon.png     # Square icon mark (IT circle)
     logo-dark.png   # Full logo, dark version
     logo-light.png  # Full logo, light version
+    og-image.png    # Share card 1200×630 for pages without a cover (UA); og-image-en.png for EN
+    apple-touch-icon.png  # 180×180 home-screen icon
     streams/        # Stream covers: NNN.png (og:image) + NNN.webp (shown on pages, made by `pnpm images`)
     speakers/       # Speaker photos: {slug}.jpg, short side ≤ 240 px (when provided)
   scripts/
     optimize-images.sh  # `pnpm images` — covers → WebP, speaker photos → 240 px + no EXIF (needs: brew install webp jpeg)
+    fetch-durations.mjs # `pnpm durations` (from YouTube, needs YOUTUBE_API_KEY) / `pnpm durations:sync` (UA → EN, no key)
   notes/            # Internal research/plans/brainstorms — NOT published (srcExclude)
   .vitepress/
     config.ts       # Nav, sidebar, i18n config, srcExclude
@@ -89,16 +92,24 @@ pnpm images     # Optimise new covers / speaker photos (see "Performance" qualit
 ## After Each Stream
 
 Add a new stream summary page:
-1. Create `streams/NNN.md` (UA) and `en/streams/NNN.md` (EN) with a `description:` in frontmatter (see "Page descriptions" below)
-2. Update `streams/index.md` and `en/streams/index.md` to include the new entry
+1. Create `streams/NNN.md` (UA) and `en/streams/NNN.md` (EN) with frontmatter:
+   ```yaml
+   ---
+   description: "..."   # see "Page descriptions" below
+   topic: ai            # ONE key from .vitepress/theme/home/topics.ts — unknown or missing fails the build
+   duration: 1:32:10    # after the stream — see step 7
+   ---
+   ```
+2. Nothing to add to `streams/index.md` — the archive table (`<StreamArchive />`) is built from the stream pages, with a topic filter (`/streams/?topic=ai`)
 3. Copy thumbnail to `public/streams/NNN.png`, then run `pnpm images` — it creates `NNN.webp`, which is what the page shows (the ~2 MB PNG is only for `og:image`). Commit both
 4. Content: `<StreamVideo />` right under the H1 (not a `![]()` cover), date, participants (with profile links), key theses, YouTube link, resources
    - `<StreamVideo />` is a lite-YouTube facade: shows `public/streams/NNN.webp` (falls back to `.png`), loads the real player only on click. It takes the video ID from the `youtube.com/live/…` link on the page — keep that link in that exact form
    - Past streams also get `VideoObject` JSON-LD automatically (`transformHead` in `config.ts`) — nothing to add by hand
 5. Resources section must include: LinkedIn, Telegram, Discord links (in that order after content-specific links)
 6. Add a row at the **top** of the "Appearances" table in **every** participant's profile (`speakers/{slug}.md` + `en/speakers/{slug}.md`) — **including the host `oleh-levchenko`**, who is the one most often forgotten (QA issue #9)
-7. Run the pre-commit checks from "Quality rules" below
-8. If the stream has a curated chat file (`it_community_stuff/streams/NNN/stream-NN-chat.md`), add a `## З чату` / `## From the chat` section — see "Chat highlights" below
+7. After the stream is over, add its `duration:`. By hand: write it in `streams/NNN.md` (UA) only and run `pnpm durations:sync` — it copies every UA duration into `en/streams/` and rewrites the planned length at the end of the `**Формат:**` / `**Format:**` line (`~60 хвилин`) to the real one (`2 год 58 хв` / `2 h 58 min`) on both locales. Or automatically: `YOUTUBE_API_KEY=... pnpm durations` fetches it from YouTube into both locales (the key stays in your shell, never in the repo). The home page shows "hours on air" only when every finished stream has a duration
+8. Run the pre-commit checks from "Quality rules" below
+9. If the stream has a curated chat file (`it_community_stuff/streams/NNN/stream-NN-chat.md`), add a `## З чату` / `## From the chat` section — see "Chat highlights" below
 
 ### Chat highlights (`## З чату` / `## From the chat`)
 
@@ -116,7 +127,23 @@ The live chat is part of the stream: viewers' questions and ideas get credited o
 
 ## Become a Speaker (`/speak`)
 
-**`/speak.md`** and **`/en/speak.md`** — CTA page for people who want to apply to speak. States the application deadline (Tuesday inclusive for that week's Friday — canonical source: content repo's `docs/governance.md` → "Дедлайн подачі заявок на виступ"). Linked from nav and from the top of `/speakers`.
+**`/speak.md`** and **`/en/speak.md`** — CTA page for people who want to apply to speak. States the application deadline (Tuesday inclusive for that week's Friday — canonical source: content repo's `docs/governance.md` → "Дедлайн подачі заявок на виступ"). Linked from the site footer, the home page CTA and the top of `/speakers`.
+
+---
+
+## Home page
+
+`index.md` / `en/index.md` are a stack of components from `.vitepress/theme/components/` (`HomeHero`, `HomeTopics`, `HomeLatest`, `HomeCommunity`, `HomeUpdates`, `HomeCta`). Everything except the copy is data-driven:
+
+- streams, next stream, topics, hours on air, speakers count — `home/streams.data.ts` (stream pages)
+- posts — `home/posts.data.ts` (newest 3)
+- "Faces of the community" — `home/stories.ts`: one short, checkable story per guest (UA + EN). New guest → add a story there
+- YouTube subscribers — `YOUTUBE_SUBSCRIBERS` in `home/i18n.ts`, updated by hand
+- UI strings — `home/i18n.ts` (both locales)
+
+The top nav is deliberately short (Streams, Speakers, Posts, About). Schedule, Become a speaker, Wiki and Issues live in the site footer (`components/SiteFooter.vue`, mounted in `theme/index.ts` via the `layout-bottom` slot; hidden on sidebar pages like the default footer).
+
+Share cards: pages without their own cover use `public/og-image.png` / `og-image-en.png` (1200×630).
 
 ---
 

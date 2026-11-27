@@ -14,7 +14,7 @@ The AA · Cardiff, UK
 
 ---
 
-Full Stack JavaScript Developer with 7+ years of experience building scalable web applications with React, Node.js and AWS. Founder of IT Friday.
+Full Stack JavaScript Developer with 9+ years of experience building scalable web applications with React, Node.js and AWS. Founder of IT Friday.
 
 ## Topics
 

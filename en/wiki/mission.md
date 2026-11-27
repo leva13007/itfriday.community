@@ -19,7 +19,7 @@ People scattered across the world. Connections broke.
 
 ## Mission
 
-Bring Ukrainian IT professionals together — regardless of country — around a shared space where:
+Bring together IT people who share [our values](/en/wiki/values) — regardless of country or passport — around a shared space where:
 
 - You can learn something new about technology (without excessive academia)
 - You can talk about real IT life — career, relocation, burnout

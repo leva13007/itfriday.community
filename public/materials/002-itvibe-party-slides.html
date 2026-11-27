@@ -52,7 +52,10 @@
       }
 
       /* КОНТЕЙНЕР СЛАЙДА */
+      /* On screens narrower than a slide the whole 1280×720 slide is scaled down (--slide-scale is set by the
+         script at the end of <body>), so nothing gets cut off on phones */
       .slide {
+        zoom: var(--slide-scale, 1);
         width: 1280px;
         height: 720px;
         background:
@@ -873,7 +876,7 @@
             />
             <div class="screenshot-placeholder" style="display:none">
               <i class="fa-solid fa-image"></i>
-              ./screenshots/chat.png
+              Скріншот чату — скоро буде
             </div>
           </div>
         </div>
@@ -895,7 +898,7 @@
             />
             <div class="screenshot-placeholder" style="display:none">
               <i class="fa-solid fa-image"></i>
-              ./screenshots/dictionary.png
+              Скріншот словника — скоро буде
             </div>
           </div>
           <div>
@@ -955,7 +958,7 @@
             />
             <div class="screenshot-placeholder" style="display:none">
               <i class="fa-solid fa-image"></i>
-              ./screenshots/lesson.png
+              Скріншот уроку — скоро буде
             </div>
           </div>
         </div>
@@ -1325,5 +1328,14 @@
         </p>
       </div>
     </div>
+      <script>
+      // Fit 1280px-wide slides into narrow screens (see .slide { zoom })
+      function fitSlides() {
+        const scale = Math.min(1, (window.innerWidth - 32) / 1280)
+        document.documentElement.style.setProperty('--slide-scale', String(scale))
+      }
+      fitSlides()
+      window.addEventListener('resize', fitSlides)
+    </script>
   </body>
 </html>

@@ -6,36 +6,4 @@ description: "Archive of all IT Friday streams — with notes, key takeaways, ti
 
 Archive of all streams — with notes, timecodes, and resources.
 
-## 2026
-
-| # | Date | Topic | Speakers | YouTube |
-|---|---|---|---|---|
-| [029](/en/streams/029) | 27.11.2026 | AI in the Team: Rules, Skills and Who We Need Now | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/d6rjxuP78jE) |
-| [028](/en/streams/028) | 20.11.2026 | JavaScript Fixed Date After 30 Years: Inside the Temporal API | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/oA8vXBOu8S0) |
-| [027](/en/streams/027) | 13.11.2026 | How to Find a Tech Job Right Now: Mobile and Web Experience | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Vladyslav Barankevych](/en/speakers/vladyslav-barankevych) | [Watch](https://youtube.com/live/3WpBVJVnJAQ) |
-| [026](/en/streams/026) | 06.11.2026 | RAG or an AI Agent: Which to Choose for Document Search? | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/aSMQZ5RQU3Q) |
-| [025](/en/streams/025) | 30.10.2026 | Hiring Without Filters: Recruiter vs Developer, Part 1 | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Yuliia Kaiunko](/en/speakers/yuliia-kaiunko) | [Watch](https://youtube.com/live/0MRUaILCrVY) |
-| [024](/en/streams/024) | 23.10.2026 | The New AWS Lambda for AI Agents: ServerlessDays Cardiff Recap | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/uzaPapLB6B8) |
-| [023](/en/streams/023) | 16.10.2026 | Pet Project: From Idea to Production | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/3psATdryIYA) |
-| [022](/en/streams/022) | 09.10.2026 | AI Writes the Code. Who Gets the Promotion? | [Serhii Lytvyn](/en/speakers/serhii-lytvyn) | [Watch](https://youtube.com/live/icenkn7tmdY) |
-| [021](/en/streams/021) | 02.10.2026 | If AI Already Writes the Code, What Is a Developer For? | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/ROs1CGNbXdo) |
-| [020](/en/streams/020) | 25.09.2026 | RAG: The Model Doesn't Have to Remember — It Has to Find | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/ZIyIUK7vGQU) |
-| [019](/en/streams/019) | 18.09.2026 | Graphify: 70× Fewer Tokens or Marketing? | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/Vn57Gw4Txz4) |
-| [018](/en/streams/018) | 11.09.2026 | LinkedIn That Works For You | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/v9dLbeQk3YY) |
-| [017](/en/streams/017) | 04.09.2026 | Live Build: Mini X in 2 Hours with an AI Agent | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/IGudWZHHq_I) |
-| [016](/en/streams/016) | 28.08.2026 | Specification as the New Source Code | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/dy79Bdktwxo) |
-| [015](/en/streams/015) | 21.08.2026 | OAuth 2.0 and OpenID Connect | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/ZcHi3dm9tZQ) |
-| [014](/en/streams/014) | 14.08.2026 | Web Authentication Methods | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/x2MGgT3qkN8) |
-| [013](/en/streams/013) | 07.08.2026 | Structured Interviews & the STAR Method | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Ihor Kotov](/en/speakers/ihor-kotov) | [Watch](https://youtube.com/live/5HmD8FImE2k) |
-| [012](/en/streams/012) | 31.07.2026 | InertiaJS: SPA Without a Separate API? | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/Aq1-dGnv4II) |
-| [011](/en/streams/011) | 24.07.2026 | OWASP Top 10:2025 | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/pUNYHsXrT6g) |
-| [010](/en/streams/010) | 17.07.2026 | Web Attacks Overview | [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/YDs0AGzYjoI) |
-| [009](/en/streams/009) | 10.07.2026 | tmux + AI Agents | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/jbw4x3ENiJ0) |
-| [008](/en/streams/008) | 03.07.2026 | CSP + React+Vite vs Next.js | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/txdVcK2Sxno) |
-| [007](/en/streams/007) | 26.06.2026 | React Fragment + WebRTC | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/leT3mUEmIqA) |
-| [006](/en/streams/006) | 19.06.2026 | React ViewTransition + PWA in the Web | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/RJ9xqAfUl6M) |
-| [005](/en/streams/005) | 12.06.2026 | CTO, metal & Laravel + Inertia.js · interview with Oleh Talanov | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleh Talanov](/en/speakers/oleh-talanov) | [Watch](https://youtube.com/live/bEW6pQlMDBc) |
-| [004](/en/streams/004) | 05.06.2026 | uWebSockets.js Security + React Performance Tracks | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/Pad_b_yQyt8) |
-| [003](/en/streams/003) | 29.05.2026 | uWebSockets.js + React Conf 2025: useEffectEvent | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/7wR_NxpsSFw) |
-| [002](/en/streams/002) | 22.05.2026 | React 19.2: `<Activity />` + AI Language Teacher | [Oleh Levchenko](/en/speakers/oleh-levchenko) · [Oleksandr Blazheiko](/en/speakers/oleksandr-blazheiko) | [Watch](https://youtube.com/live/R5IXxa1e8K4) |
-| [001](/en/streams/001) | 15.05.2026 | Launching Ukrainian IT Community from scratch | [Oleh Levchenko](/en/speakers/oleh-levchenko) | [Watch](https://youtube.com/live/wht8lf-h9N8) |
+<StreamArchive />

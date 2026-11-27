@@ -62,6 +62,7 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
+    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
     ['meta', { property: 'og:type', content: 'website' }],
     // Umami Cloud analytics — only counts visits on the production domain
     ['script', {
@@ -87,8 +88,10 @@ export default defineConfig({
       ['meta', { property: 'og:title', content: title }],
       ['meta', { property: 'og:description', content: description }],
     ]
+    // Generic share card (1200×630) for pages without their own cover — per locale
+    const card = rel.startsWith('en/') ? '/og-image-en.png' : '/og-image.png'
     if (pageData.isNotFound || rel === '404.md') {
-      head.push(['meta', { property: 'og:image', content: `${SITE}/logo-dark.png` }])
+      head.push(['meta', { property: 'og:image', content: SITE + card }])
       return head
     }
 
@@ -99,8 +102,10 @@ export default defineConfig({
     const num = rel.match(/^(?:en\/)?streams\/(\d{3})\.md$/)?.[1]
     const cover = num && existsSync(resolve(ROOT, `public/streams/${num}.png`)) ? `/streams/${num}.png` : null
     head.push(
-      ['meta', { property: 'og:image', content: SITE + (cover ?? '/logo-dark.png') }],
-      ['meta', { name: 'twitter:card', content: cover ? 'summary_large_image' : 'summary' }],
+      ['meta', { property: 'og:image', content: SITE + (cover ?? card) }],
+      ['meta', { property: 'og:image:width', content: cover ? '1380' : '1200' }],
+      ['meta', { property: 'og:image:height', content: cover ? '776' : '630' }],
+      ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     )
 
     // VideoObject JSON-LD: Google can show the page as a video result (the video is embedded via <StreamVideo />).
@@ -114,7 +119,7 @@ export default defineConfig({
           '@type': 'VideoObject',
           name: title,
           description,
-          thumbnailUrl: [SITE + (cover ?? '/logo-dark.png'), `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`],
+          thumbnailUrl: [SITE + (cover ?? card), `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`],
           uploadDate: new Date(stream.start).toISOString(),
           embedUrl: `https://www.youtube.com/embed/${id}`,
           url,
@@ -145,15 +150,12 @@ export default defineConfig({
       themeConfig: {
         // siteTitle is hidden, so alt is the logo link's only accessible name
         logo: { dark: '/logo-light.png', light: '/logo-dark.png', alt: 'ІТ П\'ятниця' },
+        // Short on purpose: the rest (schedule, become a speaker, wiki, issues) lives in the site footer
         nav: [
-          { text: 'Про нас', link: '/about' },
           { text: 'Стріми', link: '/streams/' },
           { text: 'Спікери', link: '/speakers' },
-          { text: 'Стати спікером', link: '/speak' },
           { text: 'Публікації', link: '/posts/' },
-          { text: 'Вікі', link: '/wiki/', activeMatch: '^/wiki/' },
-          { text: 'Розклад', link: '/schedule' },
-          { text: 'Issues', link: '/issues' },
+          { text: 'Про нас', link: '/about' },
         ],
         sidebar: {
           '/wiki/': [
@@ -176,9 +178,6 @@ export default defineConfig({
           { icon: { svg: '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Telegram</title><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>' }, link: 'https://t.me/+QRJNFfHaLxMwYzcy' },
         ],
         editLink: undefined,
-        footer: {
-          message: 'ІТ П\'ятниця · @zloyleva',
-        },
         // Default theme UI strings are English-only — translate them for the UA locale
         outline: { label: 'На цій сторінці' },
         docFooter: { prev: 'Попередня сторінка', next: 'Наступна сторінка' },
@@ -206,14 +205,10 @@ export default defineConfig({
       themeConfig: {
         logo: { dark: '/logo-light.png', light: '/logo-dark.png', alt: 'IT Friday' },
         nav: [
-          { text: 'About', link: '/en/about' },
           { text: 'Streams', link: '/en/streams/' },
           { text: 'Speakers', link: '/en/speakers' },
-          { text: 'Become a Speaker', link: '/en/speak' },
           { text: 'Posts', link: '/en/posts/' },
-          { text: 'Wiki', link: '/en/wiki/', activeMatch: '^/en/wiki/' },
-          { text: 'Schedule', link: '/en/schedule' },
-          { text: 'Issues', link: '/en/issues' },
+          { text: 'About', link: '/en/about' },
         ],
         sidebar: {
           '/en/wiki/': [
@@ -236,9 +231,6 @@ export default defineConfig({
           { icon: { svg: '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Telegram</title><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>' }, link: 'https://t.me/+QRJNFfHaLxMwYzcy' },
         ],
         editLink: undefined,
-        footer: {
-          message: 'IT Friday · @zloyleva',
-        },
       },
     },
   },

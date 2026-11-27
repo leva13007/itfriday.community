@@ -34,5 +34,5 @@ export function useHome() {
   const nextStart = computed(() => announced.value?.start ?? nextFridayStart(now.value))
   const isLive = computed(() => now.value >= nextStart.value && now.value < nextStart.value + STREAM_WINDOW_MS)
 
-  return { now, t, lang, prefix, all, past, announced, nextStart, isLive }
+  return { now, t, lang, isEn, prefix, all, past, announced, nextStart, isLive }
 }

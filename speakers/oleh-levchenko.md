@@ -14,7 +14,7 @@ The AA · Cardiff, UK
 
 ---
 
-Full Stack JavaScript Developer з 7+ роками досвіду. Будує масштабовані веб-застосунки на React, Node.js і AWS. Засновник IT Friday.
+Full Stack JavaScript Developer з 9+ роками досвіду. Будує масштабовані веб-застосунки на React, Node.js і AWS. Засновник IT Friday.
 
 ## Теми
 
